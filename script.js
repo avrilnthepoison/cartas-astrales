@@ -55,10 +55,38 @@ document.addEventListener("DOMContentLoaded", () => {
         const puntoCentral = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         puntoCentral.setAttribute("cx", CENTRO_X);
         puntoCentral.setAttribute("cy", CENTRO_Y);
-        puntoCentral.setAttribute("r", "4");
+        puntoCentral.setAttribute("r", "3"); // Lo pusimos un pelín más delicado a 3px
         puntoCentral.setAttribute("fill", "#111111");
         lienzoSvg.appendChild(puntoCentral);
 
-        // --- ¡Aquí empezaremos a pintar las líneas de los signos! ---
+        // --- DIBUJAR LAS 12 DIVISIONES DE LOS SIGNOS (TICKS) ---
+        // Hacemos un ciclo que vaya de 0 a 11 (los 12 signos)
+        for (let i = 0; i < 12; i++) {
+            // Cada signo está separado exactamente por 30 grados
+            const grados = i * 30;
+            // Convertimos los grados a radianes para que JavaScript los entienda matemáticamente
+            const radianes = grados * (Math.PI / 180);
+
+            // Calcular Punto 1 (En el borde exacto del círculo exterior: radio 280)
+            const x1 = CENTRO_X + RADIO_RUEDA * Math.cos(radianes);
+            const y1 = CENTRO_Y + RADIO_RUEDA * Math.sin(radianes);
+
+            // Calcular Punto 2 (Un poco más adentro de la rueda: radio 268)
+            // Esto define el largo de la pequeña línea divisoria (12 píxeles de largo)
+            const x2 = CENTRO_X + (RADIO_RUEDA - 12) * Math.cos(radianes);
+            const y2 = CENTRO_Y + (RADIO_RUEDA - 12) * Math.sin(radianes);
+
+            // Creamos el elemento línea en el SVG
+            const lineaDivisoria = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            lineaDivisoria.setAttribute("x1", x1);
+            lineaDivisoria.setAttribute("y1", y1);
+            lineaDivisoria.setAttribute("x2", x2);
+            lineaDivisoria.setAttribute("y2", y2);
+            lineaDivisoria.setAttribute("stroke", "#111111");
+            lineaDivisoria.setAttribute("stroke-width", "1"); // Súper delgada
+            
+            // Añadimos la línea al lienzo
+            lienzoSvg.appendChild(lineaDivisoria);
+        }
     }
 });
