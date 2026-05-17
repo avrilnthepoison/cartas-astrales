@@ -19,18 +19,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // 4. Función que procesará los grados astronómicos
     function generarMatematicaAstral(fecha, hora) {
         // DATOS DE PRUEBA: Simulemos un Ascendente en ACUARIO (a los 312.5° absolutos)
-        // En Whole Sign, esto significa que la Casa 1 completa debe ser ACUARIO.
+        // En Whole Sign, la Casa 1 arranca a los 0° de Acuario (grado 300 absoluto).
         const posicionesEjemplo = {
             "☉ SOL": 57.2,    // 27.2° de Tauro
             "☽ LUNA": 325.1,  // 25.1° de Acuario
         };
         
-        const gradoAscendente = 312.5; // Ascendente a los 12.5° de Acuario
+        const gradoAscendente = 312.5; 
 
         dibujarRadixWholeSign(gradoAscendente, posicionesEjemplo);
     }
 
-    // 5. Función de dibujo optimizada para el Sistema de Signos Enteros
+    // 5. Función de dibujo corregida a SENTIDO ANTIHORARIO
     function dibujarRadixWholeSign(ascendenteG, planetas) {
         // Limpiamos el contenedor
         while (lienzoSvg.firstChild) {
@@ -46,18 +46,18 @@ document.addEventListener("DOMContentLoaded", () => {
             "SAGITARIO", "CAPRICORNIO", "ACUARIO", "PISCIS"
         ];
 
-        // --- CÁLCULO DEL GIRO DINÁMICO ---
-        // Buscamos el inicio del signo del Ascendente (Cada signo son 30°)
+        // --- CÁLCULO DEL GIRO DINÁMICO (Sentido Antihorario) ---
         const indiceSignoAsc = Math.floor(ascendenteG / 30); 
-        const inicioSignoAscG = indiceSignoAsc * 30; // Grado donde empieza Acuario (300°)
+        const inicioSignoAscG = indiceSignoAsc * 30; // 300° para Acuario
         
-        // Queremos que el inicio de este signo se alinee a la izquierda (180° en la pantalla)
-        // El desfase nos dice cuántos grados debemos sumarle a todo para girar la rueda
-        const desfaceG = 180 - inicioSignoAscG;
+        // Para que avance en sentido antihorario y la Casa 1 comience fija a la izquierda (180°),
+        // sumamos el inicio del signo a los 180°.
+        const desfaceG = 180 + inicioSignoAscG;
 
-        // Función interna para ajustar cualquier grado según el giro de la carta
+        // Función matemática clave: RESTAMOS los grados originales para obligar al sentido antihorario
         function ajustarAngulo(gradosOriginales) {
-            return (gradosOriginales + desfaceG) * (Math.PI / 180);
+            const gradosCalculados = desfaceG - gradosOriginales;
+            return gradosCalculados * (Math.PI / 180);
         }
 
         // 1. Círculo exterior principal
@@ -78,9 +78,10 @@ document.addEventListener("DOMContentLoaded", () => {
         puntoCentral.setAttribute("fill", "#111111");
         lienzoSvg.appendChild(puntoCentral);
 
-        // 3. Dibujamos las divisiones de los Signos (Cúspides de Casas en Whole Sign)
+        // 3. Dibujamos las divisiones y nombres de los Signos en secuencia correcta
         for (let i = 0; i < 12; i++) {
-            // Aplicamos el ajuste de ángulo para que las líneas giren dinámicamente
+            
+            // --- LÍNEAS DIVISORIAS ---
             const radianesLinea = ajustarAngulo(i * 30);
 
             const x1 = Math.round(CENTRO_X + RADIO_RUEDA * Math.cos(radianesLinea));
@@ -97,12 +98,13 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaDivisoria.setAttribute("stroke-width", "1");
             lienzoSvg.appendChild(lineaDivisoria);
 
-            // Textos curvos de los signos con rotación dinámica
+            // --- GUÍAS CURVAS INVISIBLES PARA TEXTO ANTIHORARIO ---
             const rTexto = RADIO_RUEDA + 12; 
-            const xStart = CENTRO_X + rTexto * Math.cos(ajustarAngulo(i * 30));
-            const yStart = CENTRO_Y + rTexto * Math.sin(ajustarAngulo(i * 30));
-            const xEnd = CENTRO_X + rTexto * Math.cos(ajustarAngulo((i + 1) * 30));
-            const yEnd = CENTRO_Y + rTexto * Math.sin(ajustarAngulo((i + 1) * 30));
+            // Invertimos el inicio y fin en el arco para que el texto no se dibuje al revés o de cabeza
+            const xStart = CENTRO_X + rTexto * Math.cos(ajustarAngulo((i + 1) * 30));
+            const yStart = CENTRO_Y + rTexto * Math.sin(ajustarAngulo((i + 1) * 30));
+            const xEnd = CENTRO_X + rTexto * Math.cos(ajustarAngulo(i * 30));
+            const yEnd = CENTRO_Y + rTexto * Math.sin(ajustarAngulo(i * 30));
 
             const rutaArco = document.createElementNS("http://www.w3.org/2000/svg", "path");
             rutaArco.setAttribute("id", `arco-signo-${i}`);
@@ -126,25 +128,23 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(etiquetaTexto);
         }
 
-        // --- 4. DIBUJAR LA LÍNEA DEL ASCENDENTE (Flecha/Marca en su grado exacto) ---
+        // --- 4. MARCA DEL ASCENDENTE EN SU GRADO EXACTO (Dentro de Casa 1) ---
         const radianesAsc = ajustarAngulo(ascendenteG);
-        // La marca irá desde el borde exterior metiéndose un poco hacia el centro
         const xAscInicio = Math.round(CENTRO_X + RADIO_RUEDA * Math.cos(radianesAsc));
         const yAscInicio = Math.round(CENTRO_Y + RADIO_RUEDA * Math.sin(radianesAsc));
         const xAscFin = Math.round(CENTRO_X + (RADIO_RUEDA - 35) * Math.cos(radianesAsc));
         const yAscFin = Math.round(CENTRO_Y + (RADIO_RUEDA - 35) * Math.sin(radianesAsc));
 
-        // Creamos la línea visual del Ascendente
         const lineaAsc = document.createElementNS("http://www.w3.org/2000/svg", "line");
         lineaAsc.setAttribute("x1", String(xAscInicio));
         lineaAsc.setAttribute("y1", String(yAscInicio));
         lineaAsc.setAttribute("x2", String(xAscFin));
         lineaAsc.setAttribute("y2", String(yAscFin));
         lineaAsc.setAttribute("stroke", "#111111");
-        lineaAsc.setAttribute("stroke-width", "2"); // Un poquito más gruesa para destacar que es el Ascendente
+        lineaAsc.setAttribute("stroke-width", "1.5"); 
         lienzoSvg.appendChild(lineaAsc);
 
-        // Texto al lado de la línea del Ascendente
+        // Texto flotante para marcar el Ascendente
         const xAscTexto = Math.round(CENTRO_X + (RADIO_RUEDA - 48) * Math.cos(radianesAsc));
         const yAscTexto = Math.round(CENTRO_Y + (RADIO_RUEDA - 48) * Math.sin(radianesAsc)) + 4;
         
@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
         etiquetaAsc.textContent = "ASC";
         lienzoSvg.appendChild(etiquetaAsc);
 
-        // --- 5. DIBUJAR LOS PLANETAS CON EL NUEVO ÁNGULO GIRADO ---
+        // --- 5. PLANETAS CORREGIDOS EN SENTIDO ANTIHORARIO ---
         for (const [planeta, grados] of Object.entries(planetas)) {
             const radianesPlaneta = ajustarAngulo(grados);
             const radioPlanetas = RADIO_RUEDA - 60;
