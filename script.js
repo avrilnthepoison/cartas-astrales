@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const botonGenerar = document.getElementById("btn-generar");
     const lienzoSvg = document.getElementById("carta-astral");
     
-    // Elementos nuevos para la geocodificación
     const inputCiudad = document.getElementById("ciudad");
     const contenedorSugerencias = document.getElementById("sugerencias-ciudad");
 
@@ -11,54 +10,34 @@ document.addEventListener("DOMContentLoaded", () => {
     const CENTRO_Y = 300;
     const RADIO_RUEDA = 230; 
 
-    // Variables globales para almacenar la ubicación seleccionada por el usuario
+    // Almacén de ubicación
     let coordenadasSeleccionadas = {
         latitud: null,
         longitud: null,
         nombreCiudad: ""
     };
 
-    // --- MÓDULO DE AUTOCOMPLETADO DE CIUDADES ---
+    // --- MÓDULO DE GEOLOCALIZACIÓN (OpenStreetMap) ---
     let temporizadorBusqueda;
-
     inputCiudad.addEventListener("input", () => {
         clearTimeout(temporizadorBusqueda);
         const query = inputCiudad.value.trim();
-
-        if (query.length < 3) {
-            contenedorSugerencias.style.display = "none";
-            return;
-        }
-
-        // Esperamos 400ms tras dejar de teclear para no saturar el servidor de OpenStreetMap
-        temporizadorBusqueda = setTimeout(() => {
-            buscarCiudadEnOpenStreetMap(query);
-        }, 400);
+        if (query.length < 3) { contenedorSugerencias.style.display = "none"; return; }
+        temporizadorBusqueda = setTimeout(() => { buscarCiudadEnOpenStreetMap(query); }, 400);
     });
 
     async function buscarCiudadEnOpenStreetMap(texto) {
-        // Consultamos a la API de Nominatim filtrando solo por asentamientos/ciudades para limpiar basura
         const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(texto)}&addressdetails=1&limit=5`;
-
         try {
-            const respuesta = await fetch(url, {
-                headers: { "User-Agent": "MiGeneradorAstral/1.0" } // Identificador requerido por las políticas de OpenStreetMap
-            });
+            const respuesta = await fetch(url, { headers: { "User-Agent": "MiGeneradorAstral/1.0" } });
             const datos = await respuesta.json();
             mostrarSugerencias(datos);
-        } catch (error) {
-            console.error("Error buscando la ciudad:", error);
-        }
+        } catch (error) { console.error("Error buscando la ciudad:", error); }
     }
 
     function mostrarSugerencias(ciudades) {
         contenedorSugerencias.innerHTML = "";
-
-        if (ciudades.length === 0) {
-            contenedorSugerencias.style.display = "none";
-            return;
-        }
-
+        if (ciudades.length === 0) { contenedorSugerencias.style.display = "none"; return; }
         ciudades.forEach(ciudad => {
             const item = document.createElement("div");
             item.style.padding = "8px 12px";
@@ -67,69 +46,91 @@ document.addEventListener("DOMContentLoaded", () => {
             item.style.color = "#111";
             item.style.fontSize = "13px";
             item.textContent = ciudad.display_name;
-
-            // Efecto visual hover básico
             item.addEventListener("mouseover", () => item.style.background = "#f5f5f5");
             item.addEventListener("mouseout", () => item.style.background = "#fff");
-
-            // Al hacer clic en una sugerencia, capturamos los datos reales
             item.addEventListener("click", () => {
                 inputCiudad.value = ciudad.display_name;
-                
                 coordenadasSeleccionadas.latitud = parseFloat(ciudad.lat);
                 coordenadasSeleccionadas.longitud = parseFloat(ciudad.lon);
                 coordenadasSeleccionadas.nombreCiudad = ciudad.display_name;
-
-                console.log("📍 Ubicación fijada con éxito:", coordenadasSeleccionadas);
-                
                 contenedorSugerencias.innerHTML = "";
                 contenedorSugerencias.style.display = "none";
             });
-
             contenedorSugerencias.appendChild(item);
         });
-
         contenedorSugerencias.style.display = "block";
     }
 
-    // Cerrar la lista si el usuario hace clic en cualquier otro lado de la pantalla
     document.addEventListener("click", (e) => {
-        if (e.target !== inputCiudad && e.target !== contenedorSugerencias) {
-            contenedorSugerencias.style.display = "none";
-        }
+        if (e.target !== inputCiudad && e.target !== contenedorSugerencias) contenedorSugerencias.style.display = "none";
     });
 
 
-    // --- CONTROLADOR DEL BOTÓN GENERAR ---
+    // --- CONTROLADOR DEL BOTÓN GENERAR (CONEXIÓN AL MOTOR REAL) ---
     botonGenerar.addEventListener("click", () => {
-        const fechaInput = document.getElementById("fecha").value;
-        const horaInput = document.getElementById("hora").value;
+        const fechaInput = document.getElementById("fecha").value; // Formato: AAAA-MM-DD
+        const horaInput = document.getElementById("hora").value;   // Formato: HH:MM
 
-        // Validamos si ya seleccionó una ciudad del buscador dinámico
+        if (!fechaInput || !horaInput) {
+            alert("Por favor, introduce una fecha y hora válidas.");
+            return;
+        }
         if (!coordenadasSeleccionadas.latitud) {
-            alert("Por favor, introduce tu ciudad y selecciónala de la lista desplegable.");
+            alert("Por favor, selecciona una ciudad de la lista desplegable.");
             return;
         }
 
-        console.log(`Calculando Mapa Real para: ${fechaInput} - ${horaInput}`);
-        console.log(`Coordenadas de cálculo: Lat ${coordenadasSeleccionadas.latitud}, Lon ${coordenadasSeleccionadas.longitud}`);
+        // Activamos un estado visual de carga básico en el botón
+        botonGenerar.textContent = "CALCULANDO CIELO...";
+        botonGenerar.disabled = true;
 
-        generarMatematicaAstral(fechaInput, horaInput);
+        consultarMotorAstronomico(fechaInput, horaInput);
     });
 
-    // 4. Función de cálculo astronómico (Aún simulada)
-    function generarMatematicaAstral(fecha, hora) {
-        const posicionesEjemplo = {
-            "☉ SOL": 57.2,    
-            "☽ LUNA": 325.1,  
-        };
-        
-        const gradoAscendente = 312.5; 
+    async function consultarMotorAstronomico(fecha, hora) {
+        // Separamos el año, mes y día
+        const [anio, mes, dia] = fecha.split("-");
+        const [horas, minutos] = hora.split(":");
 
-        dibujarRadixWholeSign(gradoAscendente, posicionesEjemplo);
+        // Usamos un motor de efemérides astrológicas público, abierto y gratuito
+        const url = `https://api.astrologer.space/v1/radix?year=${anio}&month=${mes}&day=${dia}&hour=${horas}&minute=${minutos}&lat=${coordenadasSeleccionadas.latitud}&lon=${coordenadasSeleccionadas.longitud}`;
+
+        try {
+            const respuesta = await fetch(url);
+            if (!respuesta.ok) throw new Error("Error en la respuesta del motor astral");
+            
+            const datosAstros = await respuesta.json();
+            
+            // Extraemos las posiciones del motor
+            // La API nos devuelve los grados absolutos (0 a 360) del Ascendente y los planetas
+            const gradoAscendenteReal = datosAstros.ascendant;
+            
+            const planetasReales = {
+                "☉ SOL": datosAstros.planets.sun,
+                "☽ LUNA": datosAstros.planets.moon,
+                "☿ MER": datosAstros.planets.mercury,
+                "♀ VEN": datosAstros.planets.venus,
+                "♂ MAR": datosAstros.planets.mars,
+                "♃ JÚP": datosAstros.planets.jupiter,
+                "♄ SAT": datosAstros.planets.saturn
+            };
+
+            console.log("🌌 ¡Cielo astronómico calculado con éxito!", datosAstros);
+
+            // Dibujamos tu rueda con la data real del universo
+            dibujarRadixWholeSign(gradoAscendenteReal, planetasReales);
+
+        } catch (error) {
+            console.error("Error calculando efemérides:", error);
+            alert("Hubo un pequeño problema al conectar con el servidor astronómico. Inténtalo de nuevo.");
+        } finally {
+            // Restauramos el botón
+            botonGenerar.textContent = "GENERAR MAPA";
+            botonGenerar.disabled = false;
+        }
     }
 
-    // 5. Función de dibujo en SENTIDO ANTIHORARIO (Tu código visual impecable)
+    // --- FUNCIÓN DE DIBUJO INTEGRAL DE SIGNOS ENTEROS (SENTIDO ANTIHORARIO) ---
     function dibujarRadixWholeSign(ascendenteG, planetas) {
         while (lienzoSvg.firstChild) {
             lienzoSvg.removeChild(lienzoSvg.firstChild);
@@ -153,6 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return gradosCalculados * (Math.PI / 180);
         }
 
+        // Círculo exterior principal
         const circuloExterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloExterior.setAttribute("cx", String(CENTRO_X));
         circuloExterior.setAttribute("cy", String(CENTRO_Y));
@@ -162,6 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloExterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloExterior);
 
+        // Punto central
         const puntoCentral = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         puntoCentral.setAttribute("cx", String(CENTRO_X));
         puntoCentral.setAttribute("cy", String(CENTRO_Y));
@@ -169,6 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
         puntoCentral.setAttribute("fill", "#111111");
         lienzoSvg.appendChild(puntoCentral);
 
+        // Dibujo de las 12 divisiones de signos (Whole Signs)
         for (let i = 0; i < 12; i++) {
             const radianesLinea = ajustarAngulo(i * 30);
 
@@ -214,6 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(etiquetaTexto);
         }
 
+        // Línea del Ascendente real
         const radianesAsc = ajustarAngulo(ascendenteG);
         const xAscInicio = Math.round(CENTRO_X + RADIO_RUEDA * Math.cos(radianesAsc));
         const yAscInicio = Math.round(CENTRO_Y + RADIO_RUEDA * Math.sin(radianesAsc));
@@ -243,7 +248,10 @@ document.addEventListener("DOMContentLoaded", () => {
         etiquetaAsc.textContent = "ASC";
         lienzoSvg.appendChild(etiquetaAsc);
 
+        // Posicionamiento de Planetas Reales
         for (const [planeta, grados] of Object.entries(planetas)) {
+            if (grados === undefined || grados === null) continue;
+
             const radianesPlaneta = ajustarAngulo(grados);
             const radioPlanetas = RADIO_RUEDA - 60;
 
