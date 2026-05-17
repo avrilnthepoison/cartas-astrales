@@ -1,28 +1,127 @@
-// 1. Esperamos a que la página cargue por completo
 document.addEventListener("DOMContentLoaded", () => {
     
     const botonGenerar = document.getElementById("btn-generar");
     const lienzoSvg = document.getElementById("carta-astral");
+    
+    // Elementos nuevos para la geocodificación
+    const inputCiudad = document.getElementById("ciudad");
+    const contenedorSugerencias = document.getElementById("sugerencias-ciudad");
 
     const CENTRO_X = 300;
     const CENTRO_Y = 300;
     const RADIO_RUEDA = 230; 
 
+    // Variables globales para almacenar la ubicación seleccionada por el usuario
+    let coordenadasSeleccionadas = {
+        latitud: null,
+        longitud: null,
+        nombreCiudad: ""
+    };
+
+    // --- MÓDULO DE AUTOCOMPLETADO DE CIUDADES ---
+    let temporizadorBusqueda;
+
+    inputCiudad.addEventListener("input", () => {
+        clearTimeout(temporizadorBusqueda);
+        const query = inputCiudad.value.trim();
+
+        if (query.length < 3) {
+            contenedorSugerencias.style.display = "none";
+            return;
+        }
+
+        // Esperamos 400ms tras dejar de teclear para no saturar el servidor de OpenStreetMap
+        temporizadorBusqueda = setTimeout(() => {
+            buscarCiudadEnOpenStreetMap(query);
+        }, 400);
+    });
+
+    async function buscarCiudadEnOpenStreetMap(texto) {
+        // Consultamos a la API de Nominatim filtrando solo por asentamientos/ciudades para limpiar basura
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(texto)}&addressdetails=1&limit=5`;
+
+        try {
+            const respuesta = await fetch(url, {
+                headers: { "User-Agent": "MiGeneradorAstral/1.0" } // Identificador requerido por las políticas de OpenStreetMap
+            });
+            const datos = await respuesta.json();
+            mostrarSugerencias(datos);
+        } catch (error) {
+            console.error("Error buscando la ciudad:", error);
+        }
+    }
+
+    function mostrarSugerencias(ciudades) {
+        contenedorSugerencias.innerHTML = "";
+
+        if (ciudades.length === 0) {
+            contenedorSugerencias.style.display = "none";
+            return;
+        }
+
+        ciudades.forEach(ciudad => {
+            const item = document.createElement("div");
+            item.style.padding = "8px 12px";
+            item.style.cursor = "pointer";
+            item.style.borderBottom = "1px solid #eee";
+            item.style.color = "#111";
+            item.style.fontSize = "13px";
+            item.textContent = ciudad.display_name;
+
+            // Efecto visual hover básico
+            item.addEventListener("mouseover", () => item.style.background = "#f5f5f5");
+            item.addEventListener("mouseout", () => item.style.background = "#fff");
+
+            // Al hacer clic en una sugerencia, capturamos los datos reales
+            item.addEventListener("click", () => {
+                inputCiudad.value = ciudad.display_name;
+                
+                coordenadasSeleccionadas.latitud = parseFloat(ciudad.lat);
+                coordenadasSeleccionadas.longitud = parseFloat(ciudad.lon);
+                coordenadasSeleccionadas.nombreCiudad = ciudad.display_name;
+
+                console.log("📍 Ubicación fijada con éxito:", coordenadasSeleccionadas);
+                
+                contenedorSugerencias.innerHTML = "";
+                contenedorSugerencias.style.display = "none";
+            });
+
+            contenedorSugerencias.appendChild(item);
+        });
+
+        contenedorSugerencias.style.display = "block";
+    }
+
+    // Cerrar la lista si el usuario hace clic en cualquier otro lado de la pantalla
+    document.addEventListener("click", (e) => {
+        if (e.target !== inputCiudad && e.target !== contenedorSugerencias) {
+            contenedorSugerencias.style.display = "none";
+        }
+    });
+
+
+    // --- CONTROLADOR DEL BOTÓN GENERAR ---
     botonGenerar.addEventListener("click", () => {
         const fechaInput = document.getElementById("fecha").value;
         const horaInput = document.getElementById("hora").value;
-        const ciudadInput = document.getElementById("ciudad").value;
+
+        // Validamos si ya seleccionó una ciudad del buscador dinámico
+        if (!coordenadasSeleccionadas.latitud) {
+            alert("Por favor, introduce tu ciudad y selecciónala de la lista desplegable.");
+            return;
+        }
+
+        console.log(`Calculando Mapa Real para: ${fechaInput} - ${horaInput}`);
+        console.log(`Coordenadas de cálculo: Lat ${coordenadasSeleccionadas.latitud}, Lon ${coordenadasSeleccionadas.longitud}`);
 
         generarMatematicaAstral(fechaInput, horaInput);
     });
 
-    // 4. Función que procesará los grados astronómicos
+    // 4. Función de cálculo astronómico (Aún simulada)
     function generarMatematicaAstral(fecha, hora) {
-        // DATOS DE PRUEBA: Simulemos un Ascendente en ACUARIO (a los 312.5° absolutos)
-        // En Whole Sign, la Casa 1 arranca a los 0° de Acuario (grado 300 absoluto).
         const posicionesEjemplo = {
-            "☉ SOL": 57.2,    // 27.2° de Tauro
-            "☽ LUNA": 325.1,  // 25.1° de Acuario
+            "☉ SOL": 57.2,    
+            "☽ LUNA": 325.1,  
         };
         
         const gradoAscendente = 312.5; 
@@ -30,9 +129,8 @@ document.addEventListener("DOMContentLoaded", () => {
         dibujarRadixWholeSign(gradoAscendente, posicionesEjemplo);
     }
 
-    // 5. Función de dibujo corregida a SENTIDO ANTIHORARIO
+    // 5. Función de dibujo en SENTIDO ANTIHORARIO (Tu código visual impecable)
     function dibujarRadixWholeSign(ascendenteG, planetas) {
-        // Limpiamos el contenedor
         while (lienzoSvg.firstChild) {
             lienzoSvg.removeChild(lienzoSvg.firstChild);
         }
@@ -46,21 +144,15 @@ document.addEventListener("DOMContentLoaded", () => {
             "SAGITARIO", "CAPRICORNIO", "ACUARIO", "PISCIS"
         ];
 
-        // --- CÁLCULO DEL GIRO DINÁMICO (Sentido Antihorario) ---
         const indiceSignoAsc = Math.floor(ascendenteG / 30); 
-        const inicioSignoAscG = indiceSignoAsc * 30; // 300° para Acuario
-        
-        // Para que avance en sentido antihorario y la Casa 1 comience fija a la izquierda (180°),
-        // sumamos el inicio del signo a los 180°.
+        const inicioSignoAscG = indiceSignoAsc * 30; 
         const desfaceG = 180 + inicioSignoAscG;
 
-        // Función matemática clave: RESTAMOS los grados originales para obligar al sentido antihorario
         function ajustarAngulo(gradosOriginales) {
             const gradosCalculados = desfaceG - gradosOriginales;
             return gradosCalculados * (Math.PI / 180);
         }
 
-        // 1. Círculo exterior principal
         const circuloExterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloExterior.setAttribute("cx", String(CENTRO_X));
         circuloExterior.setAttribute("cy", String(CENTRO_Y));
@@ -70,7 +162,6 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloExterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloExterior);
 
-        // 2. Punto central
         const puntoCentral = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         puntoCentral.setAttribute("cx", String(CENTRO_X));
         puntoCentral.setAttribute("cy", String(CENTRO_Y));
@@ -78,10 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
         puntoCentral.setAttribute("fill", "#111111");
         lienzoSvg.appendChild(puntoCentral);
 
-        // 3. Dibujamos las divisiones y nombres de los Signos en secuencia correcta
         for (let i = 0; i < 12; i++) {
-            
-            // --- LÍNEAS DIVISORIAS ---
             const radianesLinea = ajustarAngulo(i * 30);
 
             const x1 = Math.round(CENTRO_X + RADIO_RUEDA * Math.cos(radianesLinea));
@@ -98,9 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaDivisoria.setAttribute("stroke-width", "1");
             lienzoSvg.appendChild(lineaDivisoria);
 
-            // --- GUÍAS CURVAS INVISIBLES PARA TEXTO ANTIHORARIO ---
             const rTexto = RADIO_RUEDA + 12; 
-            // Invertimos el inicio y fin en el arco para que el texto no se dibuje al revés o de cabeza
             const xStart = CENTRO_X + rTexto * Math.cos(ajustarAngulo((i + 1) * 30));
             const yStart = CENTRO_Y + rTexto * Math.sin(ajustarAngulo((i + 1) * 30));
             const xEnd = CENTRO_X + rTexto * Math.cos(ajustarAngulo(i * 30));
@@ -128,7 +214,6 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(etiquetaTexto);
         }
 
-        // --- 4. MARCA DEL ASCENDENTE EN SU GRADO EXACTO (Dentro de Casa 1) ---
         const radianesAsc = ajustarAngulo(ascendenteG);
         const xAscInicio = Math.round(CENTRO_X + RADIO_RUEDA * Math.cos(radianesAsc));
         const yAscInicio = Math.round(CENTRO_Y + RADIO_RUEDA * Math.sin(radianesAsc));
@@ -144,7 +229,6 @@ document.addEventListener("DOMContentLoaded", () => {
         lineaAsc.setAttribute("stroke-width", "1.5"); 
         lienzoSvg.appendChild(lineaAsc);
 
-        // Texto flotante para marcar el Ascendente
         const xAscTexto = Math.round(CENTRO_X + (RADIO_RUEDA - 48) * Math.cos(radianesAsc));
         const yAscTexto = Math.round(CENTRO_Y + (RADIO_RUEDA - 48) * Math.sin(radianesAsc)) + 4;
         
@@ -159,7 +243,6 @@ document.addEventListener("DOMContentLoaded", () => {
         etiquetaAsc.textContent = "ASC";
         lienzoSvg.appendChild(etiquetaAsc);
 
-        // --- 5. PLANETAS CORREGIDOS EN SENTIDO ANTIHORARIO ---
         for (const [planeta, grados] of Object.entries(planetas)) {
             const radianesPlaneta = ajustarAngulo(grados);
             const radioPlanetas = RADIO_RUEDA - 60;

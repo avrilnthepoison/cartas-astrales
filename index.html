@@ -29,7 +29,8 @@
             </div>
             <div class="input-group">
                 <label for="ciudad">Ciudad de Nacimiento</label>
-                <input type="text" id="ciudad" placeholder="Ej. Caracas, Venezuela">
+                <input type="text" id="ciudad" placeholder="Ej. Caracas, Venezuela" autocomplete="off">
+                <div id="sugerencias-ciudad" style="position: absolute; width: 100%; max-height: 200px; overflow-y: auto; background: #fff; border: 1px solid #ccc; z-index: 1000; display: none;"></div>
             </div>
             <button id="btn-generar">Generar Mapa</button>
         </section>
