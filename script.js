@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Centro del lienzo y dimensiones fijas
     const CENTRO_X = 300;
     const CENTRO_Y = 300;
-    const RADIO_RUEDA = 240; // Redujimos un poco el radio del círculo para dejar espacio a los nombres afuera
+    const RADIO_RUEDA = 230; // Ajustamos un pelo el radio para balancear el espaciado exterior
 
     // 3. Escuchamos el clic del botón
     botonGenerar.addEventListener("click", () => {
@@ -34,15 +34,17 @@ document.addEventListener("DOMContentLoaded", () => {
         dibujarEstructuraRadix(posicionesEjemplo);
     }
 
-    // 5. Función de dibujo con los signos incluidos
+    // 5. Función de dibujo con curvas de texto perfectas
     function dibujarEstructuraRadix(datos) {
         // Limpiamos el contenedor por completo
         while (lienzoSvg.firstChild) {
             lienzoSvg.removeChild(lienzoSvg.firstChild);
         }
 
-        // Array con los nombres de los signos en orden tradicional (Empezando por Aries)
-        // Puedes cambiar los nombres por abreviaciones (ARI, TAU) o glifos más adelante si prefieres
+        // Definimos una sección interna <defs> para guardar las rutas invisibles del texto
+        const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+        lienzoSvg.appendChild(defs);
+
         const nombresSignos = [
             "ARIES", "TAURO", "GÉMINIS", "CÁNCER", 
             "LEO", "VIRGO", "LIBRA", "ESCORPIO", 
@@ -67,8 +69,9 @@ document.addEventListener("DOMContentLoaded", () => {
         puntoCentral.setAttribute("fill", "#111111");
         lienzoSvg.appendChild(puntoCentral);
 
-        // 3. Dibujamos las 12 divisiones (Ticks) y los nombres de los signos
+        // 3. Dibujamos las 12 divisiones y los textos curvos
         for (let i = 0; i < 12; i++) {
+            
             // --- PARTE A: LAS LÍNEAS DIVISORIAS ---
             const gradosLinea = i * 30;
             const radianesLinea = gradosLinea * (Math.PI / 180);
@@ -87,27 +90,44 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaDivisoria.setAttribute("stroke-width", "1");
             lienzoSvg.appendChild(lineaDivisoria);
 
-            // --- PARTE B: LOS NOMBRES DE LOS SIGNOS ---
-            // El texto debe ir en el centro de la porción (Grado actual + 15 grados)
-            const gradosTexto = (i * 30) + 15;
-            const radianesTexto = gradosTexto * (Math.PI / 180);
+            // --- PARTE B: LAS GUÍAS CURVAS INVISIBLES ---
+            // Definimos el inicio y fin del arco para cada signo individual
+            const startAngle = i * 30;
+            const endAngle = (i + 1) * 30;
+            const rTexto = RADIO_RUEDA + 12; // Radio donde flotará el texto
 
-            // Calculamos la posición flotando un poco hacia afuera (RADIO_RUEDA + 20 píxeles)
-            const xTexto = Math.round(CENTRO_X + (RADIO_RUEDA + 20) * Math.cos(radianesTexto));
-            // Sumamos 5 píxeles en el eje Y para equilibrar visualmente la altura de la tipografía
-            const yTexto = Math.round(CENTRO_Y + (RADIO_RUEDA + 20) * Math.sin(radianesTexto)) + 5;
+            // Fórmulas matemáticas para trazar un arco perfecto en formato SVG
+            const radStart = startAngle * (Math.PI / 180);
+            const radEnd = endAngle * (Math.PI / 180);
+            
+            const xStart = CENTRO_X + rTexto * Math.cos(radStart);
+            const yStart = CENTRO_Y + rTexto * Math.sin(radStart);
+            const xEnd = CENTRO_X + rTexto * Math.cos(radEnd);
+            const yEnd = CENTRO_Y + rTexto * Math.sin(radEnd);
 
-            // Creamos el elemento de texto en el SVG
+            // Creamos la ruta (path) del arco
+            const rutaArco = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            rutaArco.setAttribute("id", `arco-signo-${i}`);
+            // "M" se mueve al inicio, "A" dibuja el arco hacia el final
+            rutaArco.setAttribute("d", `M ${xStart} ${yStart} A ${rTexto} ${rTexto} 0 0 1 ${xEnd} ${yEnd}`);
+            rutaArco.setAttribute("fill", "none");
+            defs.appendChild(rutaArco);
+
+            // --- PARTE C: ACOPLAR EL TEXTO AL ARCO ---
             const etiquetaTexto = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            etiquetaTexto.setAttribute("x", String(xTexto));
-            etiquetaTexto.setAttribute("y", String(yTexto));
             etiquetaTexto.setAttribute("font-family", "'Cormorant Garamond', serif");
-            etiquetaTexto.setAttribute("font-size", "10"); // Tamaño pequeño y delicado
-            etiquetaTexto.setAttribute("letter-spacing", "1"); // Espaciado entre letras elegante
-            etiquetaTexto.setAttribute("text-anchor", "middle"); // Centra el texto exactamente en la coordenada
+            etiquetaTexto.setAttribute("font-size", "10");
+            etiquetaTexto.setAttribute("letter-spacing", "1.5");
             etiquetaTexto.setAttribute("fill", "#111111");
-            etiquetaTexto.textContent = nombresSignos[i];
 
+            // Creamos el eslabón mágico textPath que amarra el texto a la ruta invisible
+            const textPath = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
+            textPath.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", `#arco-signo-${i}`);
+            textPath.setAttribute("startOffset", "50%"); // Esto alinea el texto al centro exacto del arco
+            textPath.setAttribute("text-anchor", "middle"); // Asegura que el centrado sea simétrico
+            textPath.textContent = nombresSignos[i];
+
+            etiquetaTexto.appendChild(textPath);
             lienzoSvg.appendChild(etiquetaTexto);
         }
     }
