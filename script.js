@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const CENTRO_Y = 300;
     const RADIO_RUEDA = 230; 
 
-    // Almacén de ubicación
     let coordenadasSeleccionadas = {
         latitud: null,
         longitud: null,
@@ -66,10 +65,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
-    // --- CONTROLADOR DEL BOTÓN GENERAR (CONEXIÓN AL MOTOR REAL) ---
+    // --- CONTROLADOR DEL BOTÓN GENERAR (MOTOR LOCAL INTEGRADO) ---
     botonGenerar.addEventListener("click", () => {
-        const fechaInput = document.getElementById("fecha").value; // Formato: AAAA-MM-DD
-        const horaInput = document.getElementById("hora").value;   // Formato: HH:MM
+        const fechaInput = document.getElementById("fecha").value; 
+        const horaInput = document.getElementById("hora").value;   
 
         if (!fechaInput || !horaInput) {
             alert("Por favor, introduce una fecha y hora válidas.");
@@ -80,57 +79,45 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Activamos un estado visual de carga básico en el botón
-        botonGenerar.textContent = "CALCULANDO CIELO...";
-        botonGenerar.disabled = true;
+        // Dividimos el tiempo
+        const [anio, mes, dia] = fechaInput.split("-").map(Number);
+        const [horas, minutos] = horaInput.split(":").map(Number);
 
-        consultarMotorAstronomico(fechaInput, horaInput);
-    });
-
-    async function consultarMotorAstronomico(fecha, hora) {
-        // Separamos el año, mes y día
-        const [anio, mes, dia] = fecha.split("-");
-        const [horas, minutos] = hora.split(":");
-
-        // Usamos un motor de efemérides astrológicas público, abierto y gratuito
-        const url = `https://api.astrologer.space/v1/radix?year=${anio}&month=${mes}&day=${dia}&hour=${horas}&minute=${minutos}&lat=${coordenadasSeleccionadas.latitud}&lon=${coordenadasSeleccionadas.longitud}`;
+        // Intentamos estimar la zona horaria según la longitud (Aprox estándar mundial)
+        // Venezuela suele ser -4, España +1, etc.
+        const timezoneEstimado = Math.round(coordenadasSeleccionadas.longitud / 15);
 
         try {
-            const respuesta = await fetch(url);
-            if (!respuesta.ok) throw new Error("Error en la respuesta del motor astral");
-            
-            const datosAstros = await respuesta.json();
-            
-            // Extraemos las posiciones del motor
-            // La API nos devuelve los grados absolutos (0 a 360) del Ascendente y los planetas
-            const gradoAscendenteReal = datosAstros.ascendant;
+            // Inicializamos el motor de cálculo local que inyectamos en el HTML
+            // Pasamos: Año, Mes, Día, Hora, Minutos, Timezone, Latitud, Longitud
+            const fechaAstral = new astrology.AstroDate(anio, mes, dia, horas, minutos, timezoneEstimado);
+            const calculadora = new astrology.Radix(fechaAstral, coordenadasSeleccionadas.latitud, coordenadasSeleccionadas.longitud);
+
+            // Extraemos los grados absolutos (0° a 360°) directo de la memoria de tu pestaña
+            const gradoAscendenteReal = calculadora.ascendant;
             
             const planetasReales = {
-                "☉ SOL": datosAstros.planets.sun,
-                "☽ LUNA": datosAstros.planets.moon,
-                "☿ MER": datosAstros.planets.mercury,
-                "♀ VEN": datosAstros.planets.venus,
-                "♂ MAR": datosAstros.planets.mars,
-                "♃ JÚP": datosAstros.planets.jupiter,
-                "♄ SAT": datosAstros.planets.saturn
+                "☉ SOL": calculadora.planets.sun,
+                "☽ LUNA": calculadora.planets.moon,
+                "☿ MER": calculadora.planets.mercury,
+                "♀ VEN": calculadora.planets.venus,
+                "♂ MAR": calculadora.planets.mars,
+                "♃ JÚP": calculadora.planets.jupiter,
+                "♄ SAT": calculadora.planets.saturn
             };
 
-            console.log("🌌 ¡Cielo astronómico calculado con éxito!", datosAstros);
+            console.log("🌌 ¡Cielo local calculado instantáneamente!", { gradoAscendenteReal, planetasReales });
 
-            // Dibujamos tu rueda con la data real del universo
+            // Dibujamos con tus funciones visuales exactas en sentido antihorario
             dibujarRadixWholeSign(gradoAscendenteReal, planetasReales);
 
         } catch (error) {
-            console.error("Error calculando efemérides:", error);
-            alert("Hubo un pequeño problema al conectar con el servidor astronómico. Inténtalo de nuevo.");
-        } finally {
-            // Restauramos el botón
-            botonGenerar.textContent = "GENERAR MAPA";
-            botonGenerar.disabled = false;
+            console.error("Error en el motor local:", error);
+            alert("Hubo un error matemático al procesar la carta natal.");
         }
-    }
+    });
 
-    // --- FUNCIÓN DE DIBUJO INTEGRAL DE SIGNOS ENTEROS (SENTIDO ANTIHORARIO) ---
+    // --- TU FUNCIÓN DE DIBUJO INTEGRAL DE SIGNOS ENTEROS (SENTIDO ANTIHORARIO) ---
     function dibujarRadixWholeSign(ascendenteG, planetas) {
         while (lienzoSvg.firstChild) {
             lienzoSvg.removeChild(lienzoSvg.firstChild);

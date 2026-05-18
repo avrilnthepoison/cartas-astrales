@@ -27,10 +27,10 @@
                 <label for="hora">Hora</label>
                 <input type="time" id="hora" value="12:00">
             </div>
-            <div class="input-group">
+            <div class="input-group" style="position: relative;">
                 <label for="ciudad">Ciudad de Nacimiento</label>
                 <input type="text" id="ciudad" placeholder="Ej. Caracas, Venezuela" autocomplete="off">
-                <div id="sugerencias-ciudad" style="position: absolute; width: 100%; max-height: 200px; overflow-y: auto; background: #fff; border: 1px solid #ccc; z-index: 1000; display: none;"></div>
+                <div id="sugerencias-ciudad" style="position: absolute; left: 0; top: 100%; width: 100%; max-height: 200px; overflow-y: auto; background: #ffffff; border: 1px solid #111111; z-index: 1000; display: none;"></div>
             </div>
             <button id="btn-generar">Generar Mapa</button>
         </section>
@@ -44,7 +44,7 @@
         </section>
     </main>
 
-   <script src="https://cdn.jsdelivr.net/npm/astrology-js@1.0.0/dist/astrology.min.js"></script>
+    <script src="https://unpkg.com/astrology-js@1.0.3/dist/astrology.v1.min.js"></script>
 
     <script src="script.js"></script>
 </body>
