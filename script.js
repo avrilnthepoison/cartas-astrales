@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
-    // --- CONTROLADOR DEL BOTÓN GENERAR (MOTOR LOCAL INTEGRADO) ---
+    // --- CONTROLADOR DEL BOTÓN GENERAR (MOTOR LOCAL DE ALTA FIDELIDAD) ---
     botonGenerar.addEventListener("click", () => {
         const fechaInput = document.getElementById("fecha").value; 
         const horaInput = document.getElementById("hora").value;   
@@ -79,23 +79,39 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Dividimos el tiempo
-        const [anio, mes, dia] = fechaInput.split("-").map(Number);
-        const [horas, minutos] = horaInput.split(":").map(Number);
+        // Bloqueamos el botón visualmente para proteger el hilo de ejecución
+        botonGenerar.textContent = "CALCULANDO...";
+        botonGenerar.disabled = true;
 
-        // Intentamos estimar la zona horaria según la longitud (Aprox estándar mundial)
-        // Venezuela suele ser -4, España +1, etc.
+        // Separamos y forzamos a números enteros en base 10
+        const [anio, mes, dia] = fechaInput.split("-").map(num => parseInt(num, 10));
+        const [horas, minutos] = horaInput.split(":").map(num => parseInt(num, 10));
+
+        // Estimación estándar del huso horario basada en longitud geográfica
         const timezoneEstimado = Math.round(coordenadasSeleccionadas.longitud / 15);
 
-        try {
-            // Inicializamos el motor de cálculo local que inyectamos en el HTML
-            // Pasamos: Año, Mes, Día, Hora, Minutos, Timezone, Latitud, Longitud
-            const fechaAstral = new astrology.AstroDate(anio, mes, dia, horas, minutos, timezoneEstimado);
-            const calculadora = new astrology.Radix(fechaAstral, coordenadasSeleccionadas.latitud, coordenadasSeleccionadas.longitud);
+        console.log(`Datos procesados para el motor: Fecha=${dia}/${mes}/${anio}, Hora=${horas}:${minutos}, TZ=${timezoneEstimado}, Lat=${coordenadasSeleccionadas.latitud}, Lon=${coordenadasSeleccionadas.longitud}`);
 
-            // Extraemos los grados absolutos (0° a 360°) directo de la memoria de tu pestaña
+        try {
+            // Validamos que el constructor global de la librería inyectada en el HTML esté disponible
+            if (typeof astrology === "undefined" || !astrology.AstroDate || !astrology.Radix) {
+                throw new Error("La librería matemática de astrología no se encuentra en el entorno global de la página.");
+            }
+
+            // 1. Creamos el objeto de fecha usando la sintaxis nativa exacta del motor
+            const fechaAstral = new astrology.AstroDate(anio, mes, dia, horas, minutos, timezoneEstimado);
+            
+            // 2. Ejecutamos el cálculo del Radix limitando la precisión de coordenadas a 4 decimales
+            const calculadora = new astrology.Radix(
+                fechaAstral, 
+                parseFloat(coordenadasSeleccionadas.latitud.toFixed(4)), 
+                parseFloat(coordenadasSeleccionadas.longitud.toFixed(4))
+            );
+
+            // 3. Extraemos el Ascendente real calculado (0 - 360)
             const gradoAscendenteReal = calculadora.ascendant;
             
+            // 4. Mapeamos las coordenadas de los astros septenarios clásicos
             const planetasReales = {
                 "☉ SOL": calculadora.planets.sun,
                 "☽ LUNA": calculadora.planets.moon,
@@ -106,14 +122,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 "♄ SAT": calculadora.planets.saturn
             };
 
-            console.log("🌌 ¡Cielo local calculado instantáneamente!", { gradoAscendenteReal, planetasReales });
+            console.log("🌌 ¡Cielo local calculado con éxito!", { gradoAscendenteReal, planetasReales });
 
             // Dibujamos con tus funciones visuales exactas en sentido antihorario
             dibujarRadixWholeSign(gradoAscendenteReal, planetasReales);
 
         } catch (error) {
-            console.error("Error en el motor local:", error);
-            alert("Hubo un error matemático al procesar la carta natal.");
+            console.error("Detalle del error en el motor local:", error);
+            alert(`Hubo un problema con el motor: ${error.message}`);
+        } finally {
+            // Restauramos el botón pase lo que pase
+            botonGenerar.textContent = "GENERAR MAPA";
+            botonGenerar.disabled = false;
         }
     });
 
@@ -195,7 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
             etiquetaTexto.setAttribute("letter-spacing", "1.5");
             etiquetaTexto.setAttribute("fill", "#111111");
 
-            const textPath = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
+            const textPath = document.createElementNS("http://www.w3.org/1999/xlink", "textPath");
             textPath.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", `#arco-signo-${i}`);
             textPath.setAttribute("startOffset", "50%"); 
             textPath.setAttribute("text-anchor", "middle"); 
