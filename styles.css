@@ -11,25 +11,23 @@ body {
     font-family: 'Inter', sans-serif;
     background-color: #ffffff;
     color: #111111;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 40px 20px;
+    padding: 40px;
 }
 
 .contenedor-principal {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1400px; /* Mantiene el espacio amplio para que la rueda luzca grande */
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     gap: 30px;
 }
 
-/* Encabezado Principal */
+/* Encabezado Principal a la Izquierda */
 .header-astral {
     border-bottom: 1px solid #111111;
     padding-bottom: 16px;
+    text-align: left; /* Garantiza el título en su esquina original */
 }
 
 .header-astral h1 {
@@ -48,7 +46,7 @@ body {
     color: #666666;
 }
 
-/* Layout de Doble Columna (Panel de datos vs Gráfico SVG) */
+/* Layout de Dos Columnas */
 .interfaz-columnas {
     display: grid;
     grid-template-columns: 450px 1fr;
@@ -57,7 +55,7 @@ body {
 }
 
 /* ==========================================
-   COLUMNA IZQUIERDA: PANEL DE INGRESO DE DATOS
+   COLUMNA IZQUIERDA: PANEL DE FORMULARIO
    ========================================== */
 .panel-formulario {
     display: flex;
@@ -84,7 +82,7 @@ body {
     margin-bottom: 4px;
 }
 
-/* Contenedores de Filas y Elementos */
+/* Filas de alineación perfectas */
 .fila-punto, .fila-planeta {
     display: flex;
     align-items: center;
@@ -92,14 +90,14 @@ body {
     gap: 12px;
 }
 
-/* Nombres de los Astros (Modificado para homogeneizar el texto) */
+/* Nombres de los Astros (CORREGIDO Y CONFIGURADO EXACTAMENTE) */
 .nombre-planeta {
     flex: 1;
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 1px;
     color: #111111;
-    text-transform: uppercase; /* Fuerza a todos los astros a ser mayúsculas iguales */
+    text-transform: uppercase; /* Hace que todos midan e hilen visualmente igual */
 }
 
 .campos-posicion {
@@ -114,14 +112,13 @@ body {
     color: #111111;
 }
 
-/* Bloque contenedor específico para la lista extendida de planetas */
 .bloque-planetas {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-/* Inputs Numéricos y Selectores Dropdown */
+/* Inputs y Selectores Estilizados y Compactos */
 input[type="number"], select {
     font-family: 'Inter', sans-serif;
     font-size: 13px;
@@ -144,7 +141,7 @@ select {
 }
 
 /* ==========================================
-   BOTONES DE ACCIÓN (GENERAR Y BORRAR)
+   BOTONES DE ACCIÓN
    ========================================== */
 .contenedor-botones {
     display: flex;
@@ -153,7 +150,6 @@ select {
     margin-top: 8px;
 }
 
-/* Botón de Acción Principal (Pintar Rueda) */
 #btn-generar {
     display: block;
     width: 100%;
@@ -174,7 +170,6 @@ select {
     background-color: #333333;
 }
 
-/* Botón de Acción Secundario (Restablecer a cero) */
 #btn-borrar {
     display: block;
     width: 100%;
@@ -196,7 +191,7 @@ select {
 }
 
 /* ==========================================
-   COLUMNA DERECHA: RENDERIZADOR GRÁFICO SVG
+   COLUMNA DERECHA: PANEL GRÁFICO (RE-AJUSTADO)
    ========================================== */
 .panel-visualizacion {
     display: flex;
@@ -206,7 +201,6 @@ select {
     padding: 10px;
 }
 
-/* Lienzo SVG */
 #carta-astral {
     background-color: #ffffff;
     display: block;
