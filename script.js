@@ -18,10 +18,63 @@ document.addEventListener("DOMContentLoaded", () => {
         return g + (m / 60);
     }
 
-    // === FUNCIÓN PARA CARGAR VALORES DESDE LOCALSTORAGE ===
+    // === NUEVO: FUNCIÓN CENTRALIZADA PARA PROCESAR Y DIBUJAR ===
+    function procesarYGenerarCarta() {
+        // --- 1. PROCESAR ASCENDENTE ---
+        const ascG = parseInt(document.getElementById("asc-grado").value, 10) || 0;
+        const ascM = parseInt(document.getElementById("asc-minuto").value, 10) || 0;
+        const ascSigno = parseInt(document.getElementById("asc-signo").value, 10);
+        
+        const valorAscDecimal = transformarADecimal(ascG, ascM);
+        const gradoAscAbsoluto = (ascSigno * 30) + valorAscDecimal;
+
+        // --- 2. PROCESAR MEDIO CIELO (M.C.) ---
+        const mcG = parseInt(document.getElementById("mc-grado").value, 10) || 0;
+        const mcM = parseInt(document.getElementById("mc-minuto").value, 10) || 0;
+        const mcSigno = parseInt(document.getElementById("mc-signo").value, 10);
+        
+        const valorMcDecimal = transformarADecimal(mcG, mcM);
+        const gradoMcAbsoluto = (mcSigno * 30) + valorMcDecimal;
+
+        // --- 3. PROCESAR PLANETAS ---
+        const planetasIngresados = {};
+        const filasPlanetas = document.querySelectorAll(".fila-planeta");
+
+        // Estructura para respaldar en LocalStorage al mismo tiempo
+        const estructuraAGuardar = {
+            ascendente: { g: ascG, m: ascM, signo: ascSigno },
+            medioCielo: { g: mcG, m: mcM, signo: mcSigno },
+            planetas: {}
+        };
+
+        filasPlanetas.forEach(fila => {
+            const nombreAstro = fila.getAttribute("data-astro");
+            const g = parseInt(fila.querySelector(".p-grado").value, 10) || 0;
+            const m = parseInt(fila.querySelector(".p-minuto").value, 10) || 0;
+            const signoIndice = parseInt(fila.querySelector(".p-signo").value, 10);
+
+            const posicionDecimal = transformarADecimal(g, m);
+            const posicionAbsoluta = (signoIndice * 30) + posicionDecimal;
+            
+            planetasIngresados[nombreAstro] = posicionAbsoluta;
+            estructuraAGuardar.planetas[nombreAstro] = { g: g, m: m, signo: signoIndice };
+        });
+
+        // Guardar físicamente la instantánea en el navegador
+        localStorage.setItem("datosRadixManual", JSON.stringify(estructuraAGuardar));
+
+        // Dibujar el gráfico final
+        dibujarRadixManual(gradoAscAbsoluto, gradoMcAbsoluto, planetasIngresados);
+    }
+
+    // === FUNCIÓN PARA RESTAURAR VALORES DESDE LOCALSTORAGE ===
     function cargarValoresGuardados() {
         const datosGuardados = localStorage.getItem("datosRadixManual");
-        if (!datosGuardados) return; // Si no hay historial, no hace nada
+        if (!datosGuardados) {
+            // Si es la primera vez que abre la app, dibuja con lo que haya por defecto en el HTML
+            procesarYGenerarCarta();
+            return;
+        }
 
         try {
             const datos = JSON.parse(datosGuardados);
@@ -55,66 +108,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             }
             
-            // Renderizado automático inicial con los datos recuperados
-            setTimeout(() => botonGenerar.click(), 100);
+            // Dibujar directamente usando los datos que acabamos de inyectar en las casillas
+            procesarYGenerarCarta();
 
         } catch (e) {
             console.error("Error al restaurar el historial de navegación:", e);
+            procesarYGenerarCarta();
         }
     }
 
-    // Ejecutar la restauración de datos de inmediato al cargar la página
+    // Escuchador del botón físico
+    botonGenerar.addEventListener("click", procesarYGenerarCarta);
+
+    // Ejecutar la restauración automática al cargar la ventana
     cargarValoresGuardados();
 
-    botonGenerar.addEventListener("click", () => {
-        // --- 1. PROCESAR ASCENDENTE ---
-        const ascG = parseInt(document.getElementById("asc-grado").value, 10) || 0;
-        const ascM = parseInt(document.getElementById("asc-minuto").value, 10) || 0;
-        const ascSigno = parseInt(document.getElementById("asc-signo").value, 10);
-        
-        const valorAscDecimal = transformarADecimal(ascG, ascM);
-        const gradoAscAbsoluto = (ascSigno * 30) + valorAscDecimal;
-
-        // --- 2. PROCESAR MEDIO CIELO (M.C.) ---
-        const mcG = parseInt(document.getElementById("mc-grado").value, 10) || 0;
-        const mcM = parseInt(document.getElementById("mc-minuto").value, 10) || 0;
-        const mcSigno = parseInt(document.getElementById("mc-signo").value, 10);
-        
-        const valorMcDecimal = transformarADecimal(mcG, mcM);
-        const gradoMcAbsoluto = (mcSigno * 30) + valorMcDecimal;
-
-        // === ESTRUCTURA PARA RESPALDAR EN LOCALSTORAGE ===
-        const estructuraAGuardar = {
-            ascendente: { g: ascG, m: ascM, signo: ascSigno },
-            medioCielo: { g: mcG, m: mcM, signo: mcSigno },
-            planetas: {}
-        };
-
-        // --- 3. PROCESAR PLANETAS ---
-        const planetasIngresados = {};
-        const filasPlanetas = document.querySelectorAll(".fila-planeta");
-
-        filasPlanetas.forEach(fila => {
-            const nombreAstro = fila.getAttribute("data-astro");
-            const g = parseInt(fila.querySelector(".p-grado").value, 10) || 0;
-            const m = parseInt(fila.querySelector(".p-minuto").value, 10) || 0;
-            const signoIndice = parseInt(fila.querySelector(".p-signo").value, 10);
-
-            const posicionDecimal = transformarADecimal(g, m);
-            const posicionAbsoluta = (signoIndice * 30) + posicionDecimal;
-            
-            planetasIngresados[nombreAstro] = posicionAbsoluta;
-
-            // Almacenar el estado de este planeta en nuestro objeto de respaldo
-            estructuraAGuardar.planetas[nombreAstro] = { g: g, m: m, signo: signoIndice };
-        });
-
-        // Guardar físicamente la instantánea en el navegador
-        localStorage.setItem("datosRadixManual", JSON.stringify(estructuraAGuardar));
-
-        // Dibujar el gráfico final
-        dibujarRadixManual(gradoAscAbsoluto, gradoMcAbsoluto, planetasIngresados);
-    });
 
     function dibujarRadixManual(ascendenteAbs, mcAbs, planetas) {
         while (lienzoSvg.firstChild) {
@@ -202,7 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const etiquetaTexto = document.createElementNS("http://www.w3.org/2000/svg", "text");
             
-            const trayectoTexto = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
+            const trayectoTexto = document.createElementNS("http://www.w3.org/1999/xlink", "textPath");
             trayectoTexto.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", `#${idTrayecto}`);
             trayectoTexto.setAttribute("startOffset", "50%");      
             trayectoTexto.setAttribute("text-anchor", "middle");    
