@@ -95,11 +95,12 @@ document.addEventListener("DOMContentLoaded", () => {
         puntoCentral.setAttribute("fill", "#111111");
         lienzoSvg.appendChild(puntoCentral);
 
-        // --- CINTURÓN ZODIACAL ---
+        // --- CINTURÓN ZODIACAL (CON TEXTOS CURVOS) ---
         for (let i = 0; i < 12; i++) {
             const gradoLinea = i * 30;
             const radLinea = ajustarAngulo(gradoLinea);
 
+            // Líneas divisorias de los signos
             const x1 = Math.round(CENTRO_X + RADIO_RUEDA * Math.cos(radLinea));
             const y1 = Math.round(CENTRO_Y + RADIO_RUEDA * Math.sin(radLinea));
             const x2 = Math.round(CENTRO_X + (RADIO_RUEDA - 25) * Math.cos(radLinea));
@@ -114,23 +115,47 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaDivisoria.setAttribute("stroke-width", "1");
             lienzoSvg.appendChild(lineaDivisoria);
 
-            // Nombres de los signos centrados en el anillo
-            const gradoCentroSigno = gradoLinea + 15;
-            const radTexto = ajustarAngulo(gradoCentroSigno);
-            const radioTextoSigno = RADIO_RUEDA - 12.5;
+            // CREACIÓN DEL ARCO INVISIBLE PARA CURVAR EL TEXTO
+            // Calculamos el inicio y el fin del arco para este signo en específico
+            const gradoInicioArco = gradoLinea;
+            const gradoFinArco = gradoLinea + 30;
+            
+            const radInicio = ajustarAngulo(gradoInicioArco);
+            const radFin = ajustarAngulo(gradoFinArco);
+            
+            // Radio medio del cinturón para que el texto quede perfectamente centrado verticalmente
+            const radioTrayectoTexto = RADIO_RUEDA - 16; 
 
-            const xTexto = Math.round(CENTRO_X + radioTextoSigno * Math.cos(radTexto));
-            const yTexto = Math.round(CENTRO_Y + radioTextoSigno * Math.sin(radTexto)) + 4;
+            const sx = (CENTRO_X + radioTrayectoTexto * Math.cos(radInicio)).toFixed(2);
+            const sy = (CENTRO_Y + radioTrayectoTexto * Math.sin(radInicio)).toFixed(2);
+            const ex = (CENTRO_X + radioTrayectoTexto * Math.cos(radFin)).toFixed(2);
+            const ey = (CENTRO_Y + radioTrayectoTexto * Math.sin(radFin)).toFixed(2);
 
+            // Definimos el ID único para el trayecto del signo
+            const idTrayecto = `trayecto-signo-${i}`;
+
+            // Dependiendo de la dirección matemática del renderizado, invertimos el orden 
+            // de los puntos para que el texto no se dibuje de cabeza.
+            const d = `M ${ex},${ey} A ${radioTrayectoTexto},${radioTrayectoTexto} 0 0,1 ${sx},${sy}`;
+
+            const rutaDefinicion = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            rutaDefinicion.setAttribute("id", idTrayecto);
+            rutaDefinicion.setAttribute("d", d);
+            rutaDefinicion.setAttribute("fill", "none");
+            rutaDefinicion.setAttribute("stroke", "none"); // Completamente invisible
+            lienzoSvg.appendChild(rutaDefinicion);
+
+            // Contenedor de texto principal
             const etiquetaTexto = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            etiquetaTexto.setAttribute("x", String(xTexto));
-            etiquetaTexto.setAttribute("y", String(yTexto));
-            etiquetaTexto.setAttribute("font-family", "'Cormorant Garamond', serif");
-            etiquetaTexto.setAttribute("font-size", "10");
-            etiquetaTexto.setAttribute("font-weight", "400");
-            etiquetaTexto.setAttribute("text-anchor", "middle");
-            etiquetaTexto.setAttribute("fill", "#111111");
-            etiquetaTexto.textContent = nombresSignos[i];
+            
+            // El elemento textPath que vincula el texto con la ruta curva anterior
+            const trayectoTexto = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
+            trayectoTexto.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", `#${idTrayecto}`);
+            trayectoTexto.setAttribute("startOffset", "50%");      // Lo posiciona en el centro del arco
+            trayectoTexto.setAttribute("text-anchor", "middle");    // Fuerza a que se alinee desde su centro
+            trayectoTexto.textContent = nombresSignos[i];
+            
+            etiquetaTexto.appendChild(trayectoTexto);
             lienzoSvg.appendChild(etiquetaTexto);
         }
 
