@@ -31,14 +31,14 @@ body {
 .header-astral h1 {
     font-family: 'Inter', sans-serif;
     font-size: 30px;
-    font-weight: 300;
+    font-weight: 600;
     letter-spacing: 4px;
     margin: 0 0 8px 0;
     text-transform: uppercase;
 }
 
 .header-astral .subtitulo {
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 3px;
     text-transform: uppercase;
     color: #666666;
@@ -54,7 +54,7 @@ body {
 /* Columna Izquierda: Formulario */
 .seccion-formulario {
     display: table-cell;
-    width: 55%;
+    width: 40%;
     padding-right: 5%;
     vertical-align: top;
 }
@@ -62,7 +62,7 @@ body {
 /* Columna Derecha: Gráfico */
 .seccion-mapa {
     display: table-cell;
-    width: 45%;
+    width: 60%;
     vertical-align: top;
 }
 
@@ -78,7 +78,7 @@ body {
    3. COMPONENTES DEL FORMULARIO
    ========================================================================== */
 .bloque-formulario {
-    border: 1px solid #111111;
+    border: none;
     padding: 25px;
     margin-bottom: 30px;
     background-color: #ffffff;
@@ -111,8 +111,8 @@ body {
     width: 30%;
     vertical-align: middle;
     font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 10px;
+    font-weight: 600;
     letter-spacing: 1px;
 }
 
@@ -144,7 +144,7 @@ select {
     width: 150px;
 }
 
-/* Botón de Acción Principal */
+/* Botón de Generar Gráfico */
 #btn-generar {
     display: block;
     width: 100%;
@@ -165,6 +165,29 @@ select {
     background-color: #333333;
 }
 
+/* Botón para Restablecer */
+#btn-borrar {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    background-color: #ffffff;
+    color: #111111;
+    border: 1px solid #111111;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#btn-borrar:hover {
+    background-color: #333333;
+    color: #ffffff;
+}
+
 /* ==========================================================================
    4. ESTILOS DEL GRÁFICO SVG (RADIX)
    ========================================================================== */
@@ -177,8 +200,8 @@ select {
 /* Forzar tipografía Inter en todo el contenido de texto interno del SVG */
 #carta-astral text {
     font-family: 'Inter', sans-serif !important;
-    font-size: 8px; /* Un pelín más pequeña porque Inter es ligeramente más ancha */
-    font-weight: 400;
+    font-size: 10px;
+    font-weight: 600;
     letter-spacing: 1.2px;
     fill: #111111;
 }
