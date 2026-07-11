@@ -14,7 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
         "SAGITARIO", "CAPRICORNIO", "ACUARIO", "PISCIS"
     ];
 
-    // Función matemática limpia: simplificada solo a Grados y Minutos
     function transformarADecimal(g, m) {
         return g + (m / 60);
     }
@@ -38,7 +37,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const planetasIngresados = {};
         const filasPlanetas = document.querySelectorAll(".fila-planeta");
 
-        // Estructura para respaldar en LocalStorage reteniendo los valores textuales de los campos
         const estructuraAGuardar = {
             ascendente: { g: document.getElementById("asc-grado").value, m: document.getElementById("asc-minuto").value, signo: ascSigno },
             medioCielo: { g: document.getElementById("mc-grado").value, m: document.getElementById("mc-minuto").value, signo: mcSigno },
@@ -61,19 +59,16 @@ document.addEventListener("DOMContentLoaded", () => {
             estructuraAGuardar.planetas[nombreAstro] = { g: gInput, m: mInput, signo: signoIndice };
         });
 
-        // Guardar instantánea del usuario en la memoria local
         localStorage.setItem("datosRadixManual", JSON.stringify(estructuraAGuardar));
 
-        // Dibujar gráfico final
-        dibujarRadixManual(gradoAscAbsoluto, gradoMcAbsoluto, planetasIngresados);
+        // Enviar bandera "true" indicando que SÍ se deben pintar los ejes y planetas
+        dibujarRadixManual(gradoAscAbsoluto, gradoMcAbsoluto, planetasIngresados, true);
     }
 
-    // FUNCIÓN PARA BORRAR LA MEMORIA Y VOLVER COMPLETAMENTE A CERO
+    // FUNCIÓN PARA BORRAR LA MEMORIA Y DEJAR EL GRÁFICO BASE LIMPIO (SIN PLANETAS/EJES)
     function restablecerTodoACero() {
-        // Eliminar historial del almacenamiento del navegador
         localStorage.removeItem("datosRadixManual");
 
-        // Vaciar inputs del Ascendente y M.C.
         document.getElementById("asc-grado").value = "";
         document.getElementById("asc-minuto").value = "";
         document.getElementById("asc-signo").value = "0";
@@ -82,7 +77,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("mc-minuto").value = "";
         document.getElementById("mc-signo").value = "0";
 
-        // Vaciar inputs de todas las filas de planetas
         const filasPlanetas = document.querySelectorAll(".fila-planeta");
         filasPlanetas.forEach(fila => {
             fila.querySelector(".p-grado").value = "";
@@ -90,35 +84,34 @@ document.addEventListener("DOMContentLoaded", () => {
             fila.querySelector(".p-signo").value = "0";
         });
 
-        // Limpiar el lienzo SVG por completo para dejarlo vacío
-        while (lienzoSvg.firstChild) {
-            lienzoSvg.removeChild(lienzoSvg.firstChild);
-        }
+        // NUEVO: En vez de dejar el SVG en blanco, dibuja la rueda vacía por defecto (Ascendente en 0)
+        dibujarRadixManual(0, 0, {}, false);
     }
 
-    // FUNCIÓN PARA DETECTAR Y RELLENAR VALORES ANTERIORES TRAS UN REFRESH (F5)
     function cargarValoresGuardados() {
         const datosGuardados = localStorage.getItem("datosRadixManual");
-        if (!datosGuardados) return; // Si no hay caché, se queda vacío con sus placeholders respetando el HTML limpio
+        
+        // CORRECCIÓN: Si no hay caché, dibuja la rueda vacía inmediatamente al abrir la web
+        if (!datosGuardados) {
+            dibujarRadixManual(0, 0, {}, false);
+            return;
+        }
 
         try {
             const datos = JSON.parse(datosGuardados);
 
-            // Cargar datos guardados del Ascendente
             if (datos.ascendente) {
                 document.getElementById("asc-grado").value = datos.ascendente.g;
                 document.getElementById("asc-minuto").value = datos.ascendente.m;
                 document.getElementById("asc-signo").value = datos.ascendente.signo;
             }
 
-            // Cargar datos guardados del Medio Cielo
             if (datos.medioCielo) {
                 document.getElementById("mc-grado").value = datos.medioCielo.g;
                 document.getElementById("mc-minuto").value = datos.medioCielo.m;
                 document.getElementById("mc-signo").value = datos.medioCielo.signo;
             }
 
-            // Cargar datos guardados de los Planetas
             if (datos.planetas) {
                 const filasPlanetas = document.querySelectorAll(".fila-planeta");
                 filasPlanetas.forEach(fila => {
@@ -133,23 +126,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             }
             
-            // Re-renderizar el Radix de forma automática al detectar el historial
             procesarYGenerarCarta();
 
         } catch (e) {
             console.error("Error al restaurar los datos de sesión:", e);
+            dibujarRadixManual(0, 0, {}, false);
         }
     }
 
-    // Asignación de eventos a los botones físicos
     botonGenerar.addEventListener("click", procesarYGenerarCarta);
     botonBorrar.addEventListener("click", restablecerTodoACero);
 
-    // Intentar cargar la sesión del usuario al cargar la ventana
     cargarValoresGuardados();
 
 
-    function dibujarRadixManual(ascendenteAbs, mcAbs, planetas) {
+    // MODIFICADO: Ahora acepta el parámetro 'mostrarContenido' (booleano)
+    function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
         while (lienzoSvg.firstChild) {
             lienzoSvg.removeChild(lienzoSvg.firstChild);
         }
@@ -243,86 +235,90 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(etiquetaTexto);
         }
 
-        // --- EJE DEL ASCENDENTE ---
-        const radAsc = ajustarAngulo(ascendenteAbs);
-        const xAsc1 = Math.round(CENTRO_X + (RADIO_RUEDA - 25) * Math.cos(radAsc));
-        const yAsc1 = Math.round(CENTRO_Y + (RADIO_RUEDA - 25) * Math.sin(radAsc));
-        const xAsc2 = Math.round(CENTRO_X + (RADIO_RUEDA - 60) * Math.cos(radAsc));
-        const yAsc2 = Math.round(CENTRO_Y + (RADIO_RUEDA - 60) * Math.sin(radAsc));
+        // CONDICIONAL: Solo si 'mostrarContenido' es verdadero pintamos los trazos calculados
+        if (mostrarContenido) {
+            
+            // --- EJE DEL ASCENDENTE ---
+            const radAsc = ajustarAngulo(ascendenteAbs);
+            const xAsc1 = Math.round(CENTRO_X + (RADIO_RUEDA - 25) * Math.cos(radAsc));
+            const yAsc1 = Math.round(CENTRO_Y + (RADIO_RUEDA - 25) * Math.sin(radAsc));
+            const xAsc2 = Math.round(CENTRO_X + (RADIO_RUEDA - 60) * Math.cos(radAsc));
+            const yAsc2 = Math.round(CENTRO_Y + (RADIO_RUEDA - 60) * Math.sin(radAsc));
 
-        const lineaAsc = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        lineaAsc.setAttribute("x1", String(xAsc1));
-        lineaAsc.setAttribute("y1", String(yAsc1));
-        lineaAsc.setAttribute("x2", String(xAsc2));
-        lineaAsc.setAttribute("y2", String(yAsc2));
-        lineaAsc.setAttribute("stroke", "#111111");
-        lineaAsc.setAttribute("stroke-width", "2"); 
-        lienzoSvg.appendChild(lineaAsc);
+            const lineaAsc = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            lineaAsc.setAttribute("x1", String(xAsc1));
+            lineaAsc.setAttribute("y1", String(yAsc1));
+            lineaAsc.setAttribute("x2", String(xAsc2));
+            lineaAsc.setAttribute("y2", String(yAsc2));
+            lineaAsc.setAttribute("stroke", "#111111");
+            lineaAsc.setAttribute("stroke-width", "2"); 
+            lienzoSvg.appendChild(lineaAsc);
 
-        const xAscTxt = Math.round(CENTRO_X + (RADIO_RUEDA - 75) * Math.cos(radAsc));
-        const yAscTxt = Math.round(CENTRO_Y + (RADIO_RUEDA - 75) * Math.sin(radAsc)) + 4;
+            const xAscTxt = Math.round(CENTRO_X + (RADIO_RUEDA - 75) * Math.cos(radAsc));
+            const yAscTxt = Math.round(CENTRO_Y + (RADIO_RUEDA - 75) * Math.sin(radAsc)) + 4;
 
-        const txtAsc = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        txtAsc.setAttribute("x", String(xAscTxt));
-        txtAsc.setAttribute("y", String(yAscTxt));
-        txtAsc.setAttribute("font-family", "'Inter', sans-serif");
-        txtAsc.setAttribute("font-size", "10");
-        txtAsc.setAttribute("font-weight", "600");
-        txtAsc.setAttribute("text-anchor", "middle");
-        txtAsc.setAttribute("fill", "#111111");
-        txtAsc.textContent = "ASC";
-        lienzoSvg.appendChild(txtAsc);
+            const txtAsc = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            txtAsc.setAttribute("x", String(xAscTxt));
+            txtAsc.setAttribute("y", String(yAscTxt));
+            txtAsc.setAttribute("font-family", "'Inter', sans-serif");
+            txtAsc.setAttribute("font-size", "10");
+            txtAsc.setAttribute("font-weight", "600");
+            txtAsc.setAttribute("text-anchor", "middle");
+            txtAsc.setAttribute("fill", "#111111");
+            txtAsc.textContent = "ASC";
+            lienzoSvg.appendChild(txtAsc);
 
-        // --- EJE DEL MEDIO CIELO (M.C.) ---
-        const radMc = ajustarAngulo(mcAbs);
-        const xMc1 = Math.round(CENTRO_X + (RADIO_RUEDA - 25) * Math.cos(radMc));
-        const yMc1 = Math.round(CENTRO_Y + (RADIO_RUEDA - 25) * Math.sin(radMc));
-        const xMc2 = Math.round(CENTRO_X + (RADIO_RUEDA - 60) * Math.cos(radMc));
-        const yMc2 = Math.round(CENTRO_Y + (RADIO_RUEDA - 60) * Math.sin(radMc));
+            // --- EJE DEL MEDIO CIELO (M.C.) ---
+            const radMc = ajustarAngulo(mcAbs);
+            const xMc1 = Math.round(CENTRO_X + (RADIO_RUEDA - 25) * Math.cos(radMc));
+            const yMc1 = Math.round(CENTRO_Y + (RADIO_RUEDA - 25) * Math.sin(radMc));
+            const xMc2 = Math.round(CENTRO_X + (RADIO_RUEDA - 60) * Math.cos(radMc));
+            const yMc2 = Math.round(CENTRO_Y + (RADIO_RUEDA - 60) * Math.sin(radMc));
 
-        const lineaMc = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        lineaMc.setAttribute("x1", String(xMc1));
-        lineaMc.setAttribute("y1", String(yMc1));
-        lineaMc.setAttribute("x2", String(xMc2));
-        lineaMc.setAttribute("y2", String(yMc2));
-        lineaMc.setAttribute("stroke", "#111111");
-        lineaMc.setAttribute("stroke-width", "1.5");
-        lineaMc.setAttribute("stroke-dasharray", "3,3"); 
-        lienzoSvg.appendChild(lineaMc);
+            const lineaMc = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            lineaMc.setAttribute("x1", String(xMc1));
+            lineaMc.setAttribute("y1", String(yMc1));
+            lineaMc.setAttribute("x2", String(xMc2));
+            lineaMc.setAttribute("y2", String(yMc2));
+            lineaMc.setAttribute("stroke", "#111111");
+            lineaMc.setAttribute("stroke-width", "1.5");
+            lineaMc.setAttribute("stroke-dasharray", "3,3"); 
+            lienzoSvg.appendChild(lineaMc);
 
-        const xMcTxt = Math.round(CENTRO_X + (RADIO_RUEDA - 75) * Math.cos(radMc));
-        const yMcTxt = Math.round(CENTRO_Y + (RADIO_RUEDA - 75) * Math.sin(radMc)) + 4;
+            const xMcTxt = Math.round(CENTRO_X + (RADIO_RUEDA - 75) * Math.cos(radMc));
+            const yMcTxt = Math.round(CENTRO_Y + (RADIO_RUEDA - 75) * Math.sin(radMc)) + 4;
 
-        const txtMc = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        txtMc.setAttribute("x", String(xMcTxt));
-        txtMc.setAttribute("y", String(yMcTxt));
-        txtMc.setAttribute("font-family", "'Inter', sans-serif");
-        txtMc.setAttribute("font-size", "11");
-        txtMc.setAttribute("font-weight", "600");
-        txtMc.setAttribute("text-anchor", "middle");
-        txtMc.setAttribute("fill", "#111111");
-        txtMc.textContent = "M.C.";
-        lienzoSvg.appendChild(txtMc);
+            const txtMc = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            txtMc.setAttribute("x", String(xMcTxt));
+            txtMc.setAttribute("y", String(yMcTxt));
+            txtMc.setAttribute("font-family", "'Inter', sans-serif");
+            txtMc.setAttribute("font-size", "11");
+            txtMc.setAttribute("font-weight", "600");
+            txtMc.setAttribute("text-anchor", "middle");
+            txtMc.setAttribute("fill", "#111111");
+            txtMc.textContent = "M.C.";
+            lienzoSvg.appendChild(txtMc);
 
-        // --- PLANETAS ---
-        for (const [planeta, gradosAbsolutos] of Object.entries(planetas)) {
-            const radPlaneta = ajustarAngulo(gradosAbsolutos);
-            const radioPlanetas = RADIO_RUEDA - 50; 
+            // --- PLANETAS ---
+            for (const [planeta, gradosAbsolutos] of Object.entries(planetas)) {
+                const radPlaneta = ajustarAngulo(gradosAbsolutos);
+                const radioPlanetas = RADIO_RUEDA - 50; 
 
-            const xPlaneta = Math.round(CENTRO_X + radioPlanetas * Math.cos(radPlaneta));
-            const yPlaneta = Math.round(CENTRO_Y + radioPlanetas * Math.sin(radPlaneta)) + 4;
+                const xPlaneta = Math.round(CENTRO_X + radioPlanetas * Math.cos(radPlaneta));
+                const yPlaneta = Math.round(CENTRO_Y + radioPlanetas * Math.sin(radPlaneta)) + 4;
 
-            const etiquetaPlaneta = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            etiquetaPlaneta.setAttribute("x", String(xPlaneta));
-            etiquetaPlaneta.setAttribute("y", String(yPlaneta));
-            etiquetaPlaneta.setAttribute("font-family", "'Inter', sans-serif");
-            etiquetaPlaneta.setAttribute("font-size", "10");
-            etiquetaPlaneta.setAttribute("font-weight", "300");
-            etiquetaPlaneta.setAttribute("text-anchor", "middle");
-            etiquetaPlaneta.setAttribute("fill", "#111111");
-            etiquetaPlaneta.textContent = planeta;
+                const etiquetaPlaneta = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                etiquetaPlaneta.setAttribute("x", String(xPlaneta));
+                etiquetaPlaneta.setAttribute("y", String(yPlaneta));
+                etiquetaPlaneta.setAttribute("font-family", "'Inter', sans-serif");
+                etiquetaPlaneta.setAttribute("font-size", "10");
+                etiquetaPlaneta.setAttribute("font-weight", "300");
+                etiquetaPlaneta.setAttribute("text-anchor", "middle");
+                etiquetaPlaneta.setAttribute("fill", "#111111");
+                etiquetaPlaneta.textContent = planeta;
 
-            lienzoSvg.appendChild(etiquetaPlaneta);
+                lienzoSvg.appendChild(etiquetaPlaneta);
+            }
         }
     }
 });
