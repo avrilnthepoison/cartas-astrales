@@ -16,18 +16,17 @@ body {
 
 .contenedor-principal {
     width: 100%;
-    max-width: 1400px; /* Mantiene el espacio amplio para que la rueda luzca grande */
+    max-width: 1200px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     gap: 30px;
 }
 
-/* Encabezado Principal a la Izquierda */
+/* Encabezado Principal */
 .header-astral {
     border-bottom: 1px solid #111111;
     padding-bottom: 16px;
-    text-align: left; /* Garantiza el título en su esquina original */
 }
 
 .header-astral h1 {
@@ -46,7 +45,7 @@ body {
     color: #666666;
 }
 
-/* Layout de Dos Columnas */
+/* Layout de Doble Columna (Panel de datos vs Gráfico SVG) */
 .interfaz-columnas {
     display: grid;
     grid-template-columns: 450px 1fr;
@@ -55,24 +54,23 @@ body {
 }
 
 /* ==========================================
-   COLUMNA IZQUIERDA: PANEL DE FORMULARIO
+   COLUMNA IZQUIERDA: PANEL DE INGRESO DE DATOS
    ========================================== */
-.panel-formulario {
+.seccion-formulario {
     display: flex;
     flex-direction: column;
     gap: 24px;
-    background-color: #ffffff;
-    border: 1px solid #111111;
-    padding: 24px;
 }
 
-.seccion-datos {
+.bloque-formulario {
+    border: 1px solid #111111;
+    padding: 24px;
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-.titulo-seccion {
+.bloque-formulario h3 {
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 1.5px;
@@ -82,22 +80,20 @@ body {
     margin-bottom: 4px;
 }
 
-/* Filas de alineación perfectas */
-.fila-punto, .fila-planeta {
+/* Contenedores de Filas y Elementos */
+.fila-eje, .fila-planeta {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
 }
 
-/* Nombres de los Astros (CORREGIDO Y CONFIGURADO EXACTAMENTE) */
-.nombre-planeta {
-    flex: 1;
+/* Nombres de los Astros (Sol, Luna, Mercurio...) */
+.nombre-eje, .nombre-astro, .nombre-planeta {
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 1px;
     color: #111111;
-    text-transform: uppercase; /* Hace que todos midan e hilen visualmente igual */
 }
 
 .campos-posicion {
@@ -105,20 +101,7 @@ body {
     align-items: center;
 }
 
-.separador {
-    font-size: 14px;
-    font-weight: 400;
-    margin-right: 8px;
-    color: #111111;
-}
-
-.bloque-planetas {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-/* Inputs y Selectores Estilizados y Compactos */
+/* Inputs Numéricos y Selectores Dropdown */
 input[type="number"], select {
     font-family: 'Inter', sans-serif;
     font-size: 13px;
@@ -141,15 +124,8 @@ select {
 }
 
 /* ==========================================
-   BOTONES DE ACCIÓN
+   BOTÓN DE ACCIÓN PRINCIPAL (PINTAR RUEDA)
    ========================================== */
-.contenedor-botones {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 8px;
-}
-
 #btn-generar {
     display: block;
     width: 100%;
@@ -170,40 +146,27 @@ select {
     background-color: #333333;
 }
 
-#btn-borrar {
-    display: block;
-    width: 100%;
-    background-color: #ffffff;
-    color: #111111;
-    border: 1px solid #111111;
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 16px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-#btn-borrar:hover {
-    background-color: #f5f5f5;
-}
-
 /* ==========================================
-   COLUMNA DERECHA: PANEL GRÁFICO (RE-AJUSTADO)
+   COLUMNA DERECHA: RENDERIZADOR GRÁFICO SVG
    ========================================== */
-.panel-visualizacion {
+.seccion-mapa {
+    width: 100%;
+}
+
+.contenedor-sticky-mapa {
+    position: sticky;
+    top: 40px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #ffffff;
-    padding: 10px;
 }
 
+/* Lienzo SVG */
 #carta-astral {
     background-color: #ffffff;
-    display: block;
-    max-width: 100%;
+    border: 1px solid #111111;
+    width: 100%;
+    max-width: 600px;
     height: auto;
+    aspect-ratio: 1 / 1;
 }
