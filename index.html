@@ -1,125 +1,113 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Generador Astral Minimalista</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-
-    <main class="contenedor-principal">
+<main class="contenedor-principal">
         <header class="header-astral">
             <h1>Carta Astral</h1>
             <p class="subtitulo">Renderizador Manual de Radix Traditional</p>
         </header>
 
-        <section class="seccion-formulario">
-            <div class="bloque-formulario">
-                <h3>Ejes Principales</h3>
-                
-                <div class="fila-eje">
-                    <span class="nombre-eje">ASCENDENTE</span>
-                    <div class="campos-posicion">
-                        <input type="number" id="asc-grado" min="0" max="29" value="23" placeholder="G°">
-                        <input type="number" id="asc-minuto" min="0" max="59" value="0" placeholder="M'">
-                        <input type="number" id="asc-segundo" min="0" max="59" value="0" placeholder="S''">
-                        <select id="asc-signo">
-                            <option value="0">Aries</option><option value="1">Tauro</option><option value="2">Géminis</option><option value="3">Cáncer</option><option value="4">Leo</option><option value="5">Virgo</option><option value="6">Libra</option><option value="7">Escorpio</option><option value="8">Sagitario</option><option value="9">Capricornio</option><option value="10" selected>Acuario</option><option value="11">Piscis</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="fila-eje">
-                    <span class="nombre-eje">MEDIO CIELO</span>
-                    <div class="campos-posicion">
-                        <input type="number" id="mc-grado" min="0" max="29" value="10" placeholder="G°">
-                        <input type="number" id="mc-minuto" min="0" max="59" value="0" placeholder="M'">
-                        <input type="number" id="mc-segundo" min="0" max="59" value="0" placeholder="S''">
-                        <select id="mc-signo">
-                            <option value="0">Aries</option><option value="1">Tauro</option><option value="2">Géminis</option><option value="3">Cáncer</option><option value="4">Leo</option><option value="5">Virgo</option><option value="6">Libra</option><option value="7" selected>Escorpio</option><option value="8">Sagitario</option><option value="9">Capricornio</option><option value="10">Acuario</option><option value="11">Piscis</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bloque-formulario">
-                <h3>Posiciones de los Astros</h3>
-                <div id="contenedor-planetas">
+        <div class="interfaz-columnas">
+            
+            <section class="seccion-formulario">
+                <div class="bloque-formulario">
+                    <h3>Ejes Principales</h3>
                     
-                    <div class="fila-planeta" data-astro="☉ SOL">
-                        <span class="nombre-astro">☉ SOL</span>
+                    <div class="fila-eje">
+                        <span class="nombre-eje">ASCENDENTE</span>
                         <div class="campos-posicion">
-                            <input type="number" class="p-grado" min="0" max="29" value="15"><input type="number" class="p-minuto" min="0" max="59" value="0"><input type="number" class="p-segundo" min="0" max="59" value="0">
-                            <select class="p-signo"><option value="0">Aries</option><option value="1" selected>Tauro</option><option value="2">Géminis</option><option value="3">Cáncer</option><option value="4">Leo</option><option value="5">Virgo</option><option value="6">Libra</option><option value="7">Escorpio</option><option value="8">Sagitario</option><option value="9">Capricornio</option><option value="10">Acuario</option><option value="11">Piscis</option></select>
+                            <input type="number" id="asc-grado" min="0" max="29" value="23" placeholder="G°">
+                            <input type="number" id="asc-minuto" min="0" max="59" value="0" placeholder="M'">
+                            <input type="number" id="asc-segundo" min="0" max="59" value="0" placeholder="S''">
+                            <select id="asc-signo">
+                                <option value="0">Aries</option><option value="1">Tauro</option><option value="2">Géminis</option><option value="3">Cáncer</option><option value="4">Leo</option><option value="5">Virgo</option><option value="6">Libra</option><option value="7">Escorpio</option><option value="8">Sagitario</option><option value="9">Capricornio</option><option value="10" selected>Acuario</option><option value="11">Piscis</option>
+                            </select>
                         </div>
                     </div>
 
-                    <div class="fila-planeta" data-astro="☽ LUNA">
-                        <span class="nombre-astro">☽ LUNA</span>
+                    <div class="fila-eje">
+                        <span class="nombre-eje">MEDIO CIELO</span>
                         <div class="campos-posicion">
-                            <input type="number" class="p-grado" min="0" max="29" value="20"><input type="number" class="p-minuto" min="0" max="59" value="0"><input type="number" class="p-segundo" min="0" max="59" value="0">
-                            <select class="p-signo"><option value="0">Aries</option><option value="1">Tauro</option><option value="2">Géminis</option><option value="3">Cáncer</option><option value="4">Leo</option><option value="5">Virgo</option><option value="6">Libra</option><option value="7">Escorpio</option><option value="8">Sagitario</option><option value="9">Capricornio</option><option value="10" selected>Acuario</option><option value="11">Piscis</option></select>
+                            <input type="number" id="mc-grado" min="0" max="29" value="10" placeholder="G°">
+                            <input type="number" id="mc-minuto" min="0" max="59" value="0" placeholder="M'">
+                            <input type="number" id="mc-segundo" min="0" max="59" value="0" placeholder="S''">
+                            <select id="mc-signo">
+                                <option value="0">Aries</option><option value="1">Tauro</option><option value="2">Géminis</option><option value="3">Cáncer</option><option value="4">Leo</option><option value="5">Virgo</option><option value="6">Libra</option><option value="7" selected>Escorpio</option><option value="8">Sagitario</option><option value="9">Capricornio</option><option value="10">Acuario</option><option value="11">Piscis</option>
+                            </select>
                         </div>
                     </div>
-
-                    <div class="fila-planeta" data-astro="☿ MER">
-                        <span class="nombre-astro">☿ MER</span>
-                        <div class="campos-posicion">
-                            <input type="number" class="p-grado" min="0" max="29" value="10"><input type="number" class="p-minuto" min="0" max="59" value="0"><input type="number" class="p-segundo" min="0" max="59" value="0">
-                            <select class="p-signo"><option value="0">Aries</option><option value="1" selected>Tauro</option><option value="2">Géminis</option><option value="3">Cáncer</option><option value="4">Leo</option><option value="5">Virgo</option><option value="6">Libra</option><option value="7">Escorpio</option><option value="8">Sagitario</option><option value="9">Capricornio</option><option value="10">Acuario</option><option value="11">Piscis</option></select>
-                        </div>
-                    </div>
-
-                    <div class="fila-planeta" data-astro="♀ VEN">
-                        <span class="nombre-astro">♀ VEN</span>
-                        <div class="campos-posicion">
-                            <input type="number" class="p-grado" min="0" max="29" value="5"><input type="number" class="p-minuto" min="0" max="59" value="0"><input type="number" class="p-segundo" min="0" max="59" value="0">
-                            <select class="p-signo"><option value="0">Aries</option><option value="1">Tauro</option><option value="2" selected>Géminis</option><option value="3">Cáncer</option><option value="4">Leo</option><option value="5">Virgo</option><option value="6">Libra</option><option value="7">Escorpio</option><option value="8">Sagitario</option><option value="9">Capricornio</option><option value="10">Acuario</option><option value="11">Piscis</option></select>
-                        </div>
-                    </div>
-
-                    <div class="fila-planeta" data-astro="♂ MAR">
-                        <span class="nombre-astro">♂ MAR</span>
-                        <div class="campos-posicion">
-                            <input type="number" class="p-grado" min="0" max="29" value="0"><input type="number" class="p-minuto" min="0" max="59" value="0"><input type="number" class="p-segundo" min="0" max="59" value="0">
-                            <select class="p-signo"><option value="0" selected>Aries</option><option value="1">Tauro</option><option value="2">Géminis</option><option value="3">Cáncer</option><option value="4">Leo</option><option value="5">Virgo</option><option value="6">Libra</option><option value="7">Escorpio</option><option value="8">Sagitario</option><option value="9">Capricornio</option><option value="10">Acuario</option><option value="11">Piscis</option></select>
-                        </div>
-                    </div>
-
-                    <div class="fila-planeta" data-astro="♃ JÚP">
-                        <span class="nombre-astro">♃ JÚP</span>
-                        <div class="campos-posicion">
-                            <input type="number" class="p-grado" min="0" max="29" value="12"><input type="number" class="p-minuto" min="0" max="59" value="0"><input type="number" class="p-segundo" min="0" max="59" value="0">
-                            <select class="p-signo"><option value="0">Aries</option><option value="1">Tauro</option><option value="2">Géminis</option><option value="3" selected>Cáncer</option><option value="4">Leo</option><option value="5">Virgo</option><option value="6">Libra</option><option value="7">Escorpio</option><option value="8">Sagitario</option><option value="9">Capricornio</option><option value="10">Acuario</option><option value="11">Piscis</option></select>
-                        </div>
-                    </div>
-
-                    <div class="fila-planeta" data-astro="♄ SAT">
-                        <span class="nombre-astro">♄ SAT</span>
-                        <div class="campos-posicion">
-                            <input type="number" class="p-grado" min="0" max="29" value="28"><input type="number" class="p-minuto" min="0" max="59" value="0"><input type="number" class="p-segundo" min="0" max="59" value="0">
-                            <select class="p-signo"><option value="0">Aries</option><option value="1">Tauro</option><option value="2">Géminis</option><option value="3">Cáncer</option><option value="4">Leo</option><option value="5">Virgo</option><option value="6">Libra</option><option value="7">Escorpio</option><option value="8">Sagitario</option><option value="9" selected>Capricornio</option><option value="10">Acuario</option><option value="11">Piscis</option></select>
-                        </div>
-                    </div>
-
                 </div>
-            </div>
 
-            <button id="btn-generar">Dibujar Carta Astral</button>
-        </section>
+                <div class="bloque-formulario">
+                    <h3>Posiciones de los Astros</h3>
+                    <div id="contenedor-planetas">
+                        
+                        <div class="fila-planeta" data-astro="☉ SOL">
+                            <span class="nombre-astro">☉ SOL</span>
+                            <div class="campos-posicion">
+                                <input type="number" class="p-grado" min="0" max="29" value="15"><input type="number" class="p-minuto" min="0" max="59" value="0"><input type="number" class="p-segundo" min="0" max="59" value="0">
+                                <select class="p-signo"><option value="0">Aries</option><option value="1" selected>Tauro</option><option value="2">Géminis</option><option value="3">Cáncer</option><option value="4">Leo</option><option value="5">Virgo</option><option value="6">Libra</option><option value="7">Escorpio</option><option value="8">Sagitario</option><option value="9">Capricornio</option><option value="10">Acuario</option><option value="11">Piscis</option></select>
+                            </div>
+                        </div>
 
-        <section class="seccion-mapa">
-            <svg id="carta-astral" viewBox="0 0 600 600" width="100%" height="100%">
-                <circle cx="300" cy="300" r="230" stroke="#111111" stroke-width="1" fill="none" />
-                <circle cx="300" cy="300" r="5" fill="#111111" />
-            </svg>
-        </section>
+                        <div class="fila-planeta" data-astro="☽ LUNA">
+                            <span class="nombre-astro">☽ LUNA</span>
+                            <div class="campos-posicion">
+                                <input type="number" class="p-grado" min="0" max="29" value="20"><input type="number" class="p-minuto" min="0" max="59" value="0"><input type="number" class="p-segundo" min="0" max="59" value="0">
+                                <select class="p-signo"><option value="0">Aries</option><option value="1">Tauro</option><option value="2">Géminis</option><option value="3">Cáncer</option><option value="4">Leo</option><option value="5">Virgo</option><option value="6">Libra</option><option value="7">Escorpio</option><option value="8">Sagitario</option><option value="9">Capricornio</option><option value="10" selected>Acuario</option><option value="11">Piscis</option></select>
+                            </div>
+                        </div>
+
+                        <div class="fila-planeta" data-astro="☿ MER">
+                            <span class="nombre-astro">☿ MER</span>
+                            <div class="campos-posicion">
+                                <input type="number" class="p-grado" min="0" max="29" value="10"><input type="number" class="p-minuto" min="0" max="59" value="0"><input type="number" class="p-segundo" min="0" max="59" value="0">
+                                <select class="p-signo"><option value="0">Aries</option><option value="1" selected>Tauro</option><option value="2">Géminis</option><option value="3">Cáncer</option><option value="4">Leo</option><option value="5">Virgo</option><option value="6">Libra</option><option value="7">Escorpio</option><option value="8">Sagitario</option><option value="9">Capricornio</option><option value="10">Acuario</option><option value="11">Piscis</option></select>
+                            </div>
+                        </div>
+
+                        <div class="fila-planeta" data-astro="♀ VEN">
+                            <span class="nombre-astro">♀ VEN</span>
+                            <div class="campos-posicion">
+                                <input type="number" class="p-grado" min="0" max="29" value="5"><input type="number" class="p-minuto" min="0" max="59" value="0"><input type="number" class="p-segundo" min="0" max="59" value="0">
+                                <select class="p-signo"><option value="0">Aries</option><option value="1">Tauro</option><option value="2" selected>Géminis</option><option value="3">Cáncer</option><option value="4">Leo</option><option value="5">Virgo</option><option value="6">Libra</option><option value="7">Escorpio</option><option value="8">Sagitario</option><option value="9">Capricornio</option><option value="10">Acuario</option><option value="11">Piscis</option></select>
+                            </div>
+                        </div>
+
+                        <div class="fila-planeta" data-astro="♂ MAR">
+                            <span class="nombre-astro">♂ MAR</span>
+                            <div class="campos-posicion">
+                                <input type="number" class="p-grado" min="0" max="29" value="0"><input type="number" class="p-minuto" min="0" max="59" value="0"><input type="number" class="p-segundo" min="0" max="59" value="0">
+                                <select class="p-signo"><option value="0" selected>Aries</option><option value="1">Tauro</option><option value="2">Géminis</option><option value="3">Cáncer</option><option value="4">Leo</option><option value="5">Virgo</option><option value="6">Libra</option><option value="7">Escorpio</option><option value="8">Sagitario</option><option value="9">Capricornio</option><option value="10">Acuario</option><option value="11">Piscis</option></select>
+                            </div>
+                        </div>
+
+                        <div class="fila-planeta" data-astro="♃ JÚP">
+                            <span class="nombre-astro">♃ JÚP</span>
+                            <div class="campos-posicion">
+                                <input type="number" class="p-grado" min="0" max="29" value="12"><input type="number" class="p-minuto" min="0" max="59" value="0"><input type="number" class="p-segundo" min="0" max="59" value="0">
+                                <select class="p-signo"><option value="0">Aries</option><option value="1">Tauro</option><option value="2">Géminis</option><option value="3" selected>Cáncer</option><option value="4">Leo</option><option value="5">Virgo</option><option value="6">Libra</option><option value="7">Escorpio</option><option value="8">Sagitario</option><option value="9">Capricornio</option><option value="10">Acuario</option><option value="11">Piscis</option></select>
+                            </div>
+                        </div>
+
+                        <div class="fila-planeta" data-astro="♄ SAT">
+                            <span class="nombre-astro">♄ SAT</span>
+                            <div class="campos-posicion">
+                                <input type="number" class="p-grado" min="0" max="29" value="28"><input type="number" class="p-minuto" min="0" max="59" value="0"><input type="number" class="p-segundo" min="0" max="59" value="0">
+                                <select class="p-signo"><option value="0">Aries</option><option value="1">Tauro</option><option value="2">Géminis</option><option value="3">Cáncer</option><option value="4">Leo</option><option value="5">Virgo</option><option value="6">Libra</option><option value="7">Escorpio</option><option value="8">Sagitario</option><option value="9" selected>Capricornio</option><option value="10">Acuario</option><option value="11">Piscis</option></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="btn-generar">Dibujar Carta Astral</button>
+            </section>
+
+            <section class="seccion-mapa">
+                <div class="contenedor-sticky-mapa">
+                    <svg id="carta-astral" viewBox="0 0 600 600" width="100%" height="100%">
+                        <circle cx="300" cy="300" r="230" stroke="#111111" stroke-width="1" fill="none" />
+                        <circle cx="300" cy="300" r="5" fill="#111111" />
+                    </svg>
+                </div>
+            </section>
+
+        </div>
     </main>
-
-    <script src="script.js"></script>
-</body>
-</html>

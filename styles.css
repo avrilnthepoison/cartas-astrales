@@ -7,9 +7,6 @@ body {
 }
 
 .contenedor-principal {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     max-width: 1200px;
     margin: 0 auto;
     padding: 40px 20px;
@@ -36,11 +33,17 @@ body {
     margin-top: 5px;
 }
 
-/* --- FORMULARIO --- */
+/* --- NUEVA ESTRUCTURA EN DOS COLUMNAS --- */
+.interfaz-columnas {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Divide el espacio en dos partes iguales */
+    gap: 50px;                      /* Espacio de separación entre las dos columnas */
+    align-items: start;
+}
+
+/* --- COLUMNA IZQUIERDA: FORMULARIO --- */
 .seccion-formulario {
     width: 100%;
-    max-width: 550px;
-    margin-bottom: 50px;
 }
 
 .bloque-formulario {
@@ -90,14 +93,9 @@ body {
     font-size: 0.85rem;
     background: transparent;
     color: #111111;
-    width: 50px;
+    width: 48px;
     text-align: center;
     box-sizing: border-box;
-}
-
-/* El primer input de grados puede ser ligeramente más ancho si se desea */
-.campos-posicion input[type="number"]:first-child {
-    width: 55px;
 }
 
 .campos-posicion select {
@@ -107,11 +105,10 @@ body {
     font-size: 0.85rem;
     background: transparent;
     color: #111111;
-    width: 130px;
+    width: 125px;
     box-sizing: border-box;
 }
 
-/* --- BOTÓN --- */
 #btn-generar {
     width: 100%;
     background-color: #111111;
@@ -131,16 +128,34 @@ body {
     background-color: #333333;
 }
 
-/* --- SVG --- */
+/* --- COLUMNA DERECHA: EFECTO STICKY PARA EL MAPA --- */
 .seccion-mapa {
     width: 100%;
-    max-width: 600px;
+}
+
+.contenedor-sticky-mapa {
+    position: sticky;
+    top: 40px; /* Se queda clavado a 40px del tope superior de la pantalla al hacer scroll */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 #carta-astral {
-    max-width: 600px;
-    max-height: 600px;
+    width: 100%;
+    max-width: 550px;
+    height: auto;
+    aspect-ratio: 1 / 1;
+}
+
+/* --- RESPONSIVE: Si la pantalla es pequeña (celulares), vuelve a una sola columna --- */
+@media (max-width: 850px) {
+    .interfaz-columnas {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    .contenedor-sticky-mapa {
+        position: relative;
+        top: 0;
+    }
 }
