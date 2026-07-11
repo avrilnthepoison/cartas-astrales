@@ -212,7 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const txtMc = document.createElementNS("http://www.w3.org/2000/svg", "text");
         txtMc.setAttribute("x", String(xMcTxt));
         txtMc.setAttribute("y", String(yMcTxt));
-        txtMc.setAttribute("font-family", "'Cormorant Garamond', serif");
+        txtMc.setAttribute("font-family", "'Inter', sans-serif");
         txtMc.setAttribute("font-size", "11");
         txtMc.setAttribute("font-weight", "600");
         txtMc.setAttribute("text-anchor", "middle");

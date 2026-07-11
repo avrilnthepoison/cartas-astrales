@@ -1,4 +1,6 @@
-/* 1. VARIABLES Y CONFIGURACIÓN GLOBAL */
+/* ==========================================================================
+   1. VARIABLES Y CONFIGURACIÓN GLOBAL
+   ========================================================================== */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -6,13 +8,15 @@
 body {
     background-color: #ffffff;
     color: #111111;
-    font-family: 'Open Sauce Sans', 'Inter', sans-serif;
+    font-family: 'Inter', sans-serif;
     margin: 0;
     padding: 0;
     line-height: 1.5;
 }
 
-/* 2. ESTRUCTURA DE LA INTERFAZ (DOS COLUMNAS) */
+/* ==========================================================================
+   2. ESTRUCTURA DE LA INTERFAZ (DOS COLUMNAS)
+   ========================================================================== */
 .contenedor-principal {
     max-width: 1300px;
     margin: 0 auto;
@@ -25,10 +29,10 @@ body {
 }
 
 .header-astral h1 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 36px;
+    font-family: 'Inter', sans-serif;
+    font-size: 30px;
     font-weight: 300;
-    letter-spacing: 2px;
+    letter-spacing: 4px;
     margin: 0 0 8px 0;
     text-transform: uppercase;
 }
@@ -70,7 +74,9 @@ body {
     margin: 0 auto;
 }
 
-/* 3. COMPONENTES DEL FORMULARIO */
+/* ==========================================================================
+   3. COMPONENTES DEL FORMULARIO
+   ========================================================================== */
 .bloque-formulario {
     border: 1px solid #111111;
     padding: 25px;
@@ -79,9 +85,11 @@ body {
 }
 
 .bloque-formulario h3 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 20px;
-    font-weight: 400;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
     margin: 0 0 20px 0;
     border-bottom: 1px solid #eaeaea;
     padding-bottom: 8px;
@@ -102,8 +110,9 @@ body {
     display: table-cell;
     width: 30%;
     vertical-align: middle;
+    font-family: 'Inter', sans-serif;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 1px;
 }
 
@@ -115,7 +124,7 @@ body {
 
 /* Inputs y Selects */
 input[type="number"], select {
-    font-family: 'Open Sauce Sans', 'Inter', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 13px;
     color: #111111;
     border: 1px solid #111111;
@@ -142,7 +151,7 @@ select {
     background-color: #111111;
     color: #ffffff;
     border: none;
-    font-family: 'Open Sauce Sans', 'Inter', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 2px;
@@ -156,23 +165,25 @@ select {
     background-color: #333333;
 }
 
-/* 4. ESTILOS DEL GRÁFICO SVG (RADIX) */
+/* ==========================================================================
+   4. ESTILOS DEL GRÁFICO SVG (RADIX)
+   ========================================================================== */
 #carta-astral {
     display: block;
     width: 100%;
     height: auto;
 }
 
-/* Forzar tipografía minimalista en todo el SVG */
+/* Forzar tipografía Inter en todo el contenido de texto interno del SVG */
 #carta-astral text {
-    font-family: 'Open Sauce Sans', 'Inter', sans-serif !important;
-    font-size: 8.5px;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 8px; /* Un pelín más pequeña porque Inter es ligeramente más ancha */
     font-weight: 400;
-    letter-spacing: 1.5px;
+    letter-spacing: 1.2px;
     fill: #111111;
 }
 
-/* Ajuste específico para que las líneas y círculos mantengan su finura */
+/* Ajuste específico para que las líneas mantengan su finura */
 #carta-astral circle, 
 #carta-astral line {
     shape-rendering: geometricPrecision;
