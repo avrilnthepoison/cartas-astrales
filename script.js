@@ -14,11 +14,12 @@ document.addEventListener("DOMContentLoaded", () => {
         "SAGITARIO", "CAPRICORNIO", "ACUARIO", "PISCIS"
     ];
 
+    // Función matemática limpia: simplificada solo a Grados y Minutos
     function transformarADecimal(g, m) {
         return g + (m / 60);
     }
 
-    // FUNCIÓN CENTRAL PARA PROCESAR FORMULARIO Y GUARDAR
+    // FUNCIÓN CENTRAL PARA PROCESAR FORMULARIO Y GUARDAR EN MEMORIA
     function procesarYGenerarCarta() {
         const ascG = parseInt(document.getElementById("asc-grado").value, 10) || 0;
         const ascM = parseInt(document.getElementById("asc-minuto").value, 10) || 0;
@@ -37,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const planetasIngresados = {};
         const filasPlanetas = document.querySelectorAll(".fila-planeta");
 
+        // Estructura para respaldar en LocalStorage reteniendo los valores textuales de los campos
         const estructuraAGuardar = {
             ascendente: { g: document.getElementById("asc-grado").value, m: document.getElementById("asc-minuto").value, signo: ascSigno },
             medioCielo: { g: document.getElementById("mc-grado").value, m: document.getElementById("mc-minuto").value, signo: mcSigno },
@@ -59,19 +61,19 @@ document.addEventListener("DOMContentLoaded", () => {
             estructuraAGuardar.planetas[nombreAstro] = { g: gInput, m: mInput, signo: signoIndice };
         });
 
-        // Guardar instantánea del usuario en memoria del navegador
+        // Guardar instantánea del usuario en la memoria local
         localStorage.setItem("datosRadixManual", JSON.stringify(estructuraAGuardar));
 
-        // Dibujar gráfico
+        // Dibujar gráfico final
         dibujarRadixManual(gradoAscAbsoluto, gradoMcAbsoluto, planetasIngresados);
     }
 
-    // FUNCIÓN PARA REESTABLECER Y LIMPIAR TODO
+    // FUNCIÓN PARA BORRAR LA MEMORIA Y VOLVER COMPLETAMENTE A CERO
     function restablecerTodoACero() {
-        // Eliminar del almacenamiento local
+        // Eliminar historial del almacenamiento del navegador
         localStorage.removeItem("datosRadixManual");
 
-        // Vaciar inputs de los ejes
+        // Vaciar inputs del Ascendente y M.C.
         document.getElementById("asc-grado").value = "";
         document.getElementById("asc-minuto").value = "";
         document.getElementById("asc-signo").value = "0";
@@ -80,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("mc-minuto").value = "";
         document.getElementById("mc-signo").value = "0";
 
-        // Vaciar inputs de los planetas
+        // Vaciar inputs de todas las filas de planetas
         const filasPlanetas = document.querySelectorAll(".fila-planeta");
         filasPlanetas.forEach(fila => {
             fila.querySelector(".p-grado").value = "";
@@ -88,32 +90,35 @@ document.addEventListener("DOMContentLoaded", () => {
             fila.querySelector(".p-signo").value = "0";
         });
 
-        // Limpiar el gráfico SVG por completo
+        // Limpiar el lienzo SVG por completo para dejarlo vacío
         while (lienzoSvg.firstChild) {
             lienzoSvg.removeChild(lienzoSvg.firstChild);
         }
     }
 
-    // FUNCIÓN PARA RESTAURAR VALORES GUARDADOS AL DAR REFRESH (F5)
+    // FUNCIÓN PARA DETECTAR Y RELLENAR VALORES ANTERIORES TRAS UN REFRESH (F5)
     function cargarValoresGuardados() {
         const datosGuardados = localStorage.getItem("datosRadixManual");
-        if (!datosGuardados) return; // Si no hay historial, se queda vacío y limpio
+        if (!datosGuardados) return; // Si no hay caché, se queda vacío con sus placeholders respetando el HTML limpio
 
         try {
             const datos = JSON.parse(datosGuardados);
 
+            // Cargar datos guardados del Ascendente
             if (datos.ascendente) {
                 document.getElementById("asc-grado").value = datos.ascendente.g;
                 document.getElementById("asc-minuto").value = datos.ascendente.m;
                 document.getElementById("asc-signo").value = datos.ascendente.signo;
             }
 
+            // Cargar datos guardados del Medio Cielo
             if (datos.medioCielo) {
                 document.getElementById("mc-grado").value = datos.medioCielo.g;
                 document.getElementById("mc-minuto").value = datos.medioCielo.m;
                 document.getElementById("mc-signo").value = datos.medioCielo.signo;
             }
 
+            // Cargar datos guardados de los Planetas
             if (datos.planetas) {
                 const filasPlanetas = document.querySelectorAll(".fila-planeta");
                 filasPlanetas.forEach(fila => {
@@ -128,19 +133,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             }
             
-            // Re-dibujar automáticamente lo que recuperó
+            // Re-renderizar el Radix de forma automática al detectar el historial
             procesarYGenerarCarta();
 
         } catch (e) {
-            console.error("Error al restaurar los datos:", e);
+            console.error("Error al restaurar los datos de sesión:", e);
         }
     }
 
-    // Eventos
+    // Asignación de eventos a los botones físicos
     botonGenerar.addEventListener("click", procesarYGenerarCarta);
     botonBorrar.addEventListener("click", restablecerTodoACero);
 
-    // Cargar historial al iniciar
+    // Intentar cargar la sesión del usuario al cargar la ventana
     cargarValoresGuardados();
 
 
