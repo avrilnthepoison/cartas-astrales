@@ -7,73 +7,73 @@ document.addEventListener("DOMContentLoaded", () => {
     const CENTRO_Y = 300;
     const RADIO_RUEDA = 230; 
 
-    // Nombres de los signos tradicionales correlacionados con sus índices (0-11)
     const nombresSignos = [
         "ARIES", "TAURO", "GÉMINIS", "CÁNCER", 
         "LEO", "VIRGO", "LIBRA", "ESCORPIO", 
         "SAGITARIO", "CAPRICORNIO", "ACUARIO", "PISCIS"
     ];
 
-    // --- MANEJADOR DE EVENTO PRINCIPAL ---
+    // Función auxiliar para convertir Grados, Minutos y Segundos a un valor puramente decimal
+    function transformarADecimal(g, m, s) {
+        return g + (m / 60) + (s / 3600);
+    }
+
     botonGenerar.addEventListener("click", () => {
-        // 1. Recopilar datos manuales del Ascendente
-        const ascGrado = parseInt(document.getElementById("asc-grado").value, 10) || 0;
-        const ascSignoIndice = parseInt(document.getElementById("asc-signo").value, 10);
+        // --- 1. PROCESAR ASCENDENTE ---
+        const ascG = parseInt(document.getElementById("asc-grado").value, 10) || 0;
+        const ascM = parseInt(document.getElementById("asc-minuto").value, 10) || 0;
+        const ascS = parseInt(document.getElementById("asc-segundo").value, 10) || 0;
+        const ascSigno = parseInt(document.getElementById("asc-signo").value, 10);
+        
+        const valorAscDecimal = transformarADecimal(ascG, ascM, ascS);
+        const gradoAscAbsoluto = (ascSigno * 30) + valorAscDecimal;
 
-        // Validaciones básicas de rangos astrológicos tradicionales
-        if (ascGrado < 0 || ascGrado > 29) {
-            alert("Los grados de los signos deben estar comprendidos entre 0 y 29.");
-            return;
-        }
+        // --- 2. PROCESAR MEDIO CIELO (M.C.) ---
+        const mcG = parseInt(document.getElementById("mc-grado").value, 10) || 0;
+        const mcM = parseInt(document.getElementById("mc-minuto").value, 10) || 0;
+        const mcS = parseInt(document.getElementById("mc-segundo").value, 10) || 0;
+        const mcSigno = parseInt(document.getElementById("mc-signo").value, 10);
+        
+        const valorMcDecimal = transformarADecimal(mcG, mcM, mcS);
+        const gradoMcAbsoluto = (mcSigno * 30) + valorMcDecimal;
 
-        // Posición absoluta del ASC en la rueda de 360°
-        const gradoAscendenteAbsoluto = (ascSignoIndice * 30) + ascGrado;
-
-        // 2. Recopilar datos de cada una de las luminarias y planetas
+        // --- 3. PROCESAR PLANETAS ---
         const planetasIngresados = {};
         const filasPlanetas = document.querySelectorAll(".fila-planeta");
 
         filasPlanetas.forEach(fila => {
             const nombreAstro = fila.getAttribute("data-astro");
-            const gradoInput = parseInt(fila.querySelector(".p-grado").value, 10) || 0;
+            const g = parseInt(fila.querySelector(".p-grado").value, 10) || 0;
+            const m = parseInt(fila.querySelector(".p-minuto").value, 10) || 0;
+            const s = parseInt(fila.querySelector(".p-segundo").value, 10) || 0;
             const signoIndice = parseInt(fila.querySelector(".p-signo").value, 10);
 
-            if (gradoInput >= 0 && gradoInput <= 29) {
-                // Conversión matemática exacta a coordenadas de 360°
-                const posicionAbsoluta = (signoIndice * 30) + gradoInput;
-                planetasIngresados[nombreAstro] = posicionAbsoluta;
-            }
+            const posicionDecimal = transformarADecimal(g, m, s);
+            const posicionAbsoluta = (signoIndice * 30) + posicionDecimal;
+            
+            planetasIngresados[nombreAstro] = posicionAbsoluta;
         });
 
-        console.log("📊 Datos manuales procesados con éxito:", { gradoAscendenteAbsoluto, planetasIngresados });
-
-        // 3. Renderizar el dibujo nativo sin dependencias
-        dibujarRadixManual(gradoAscendenteAbsoluto, planetasIngresados);
+        // Dibujar el Radix con toda la data matemática unificada
+        dibujarRadixManual(gradoAscAbsoluto, gradoMcAbsoluto, planetasIngresados);
     });
 
-    // --- FUNCIÓN DE DIBUJO ESTRUCTURAL EN SENTIDO ANTIHORARIO ---
-    function dibujarRadixManual(ascendenteAbs, planetas) {
-        // Limpiamos los elementos previos del SVG
+    function dibujarRadixManual(ascendenteAbs, mcAbs, planetas) {
+        // Limpiar el contenedor gráfico
         while (lienzoSvg.firstChild) {
             lienzoSvg.removeChild(lienzoSvg.firstChild);
         }
 
-        const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-        lienzoSvg.appendChild(defs);
-
-        // Cálculo del desface estructural para fijar el Ascendente horizontalmente a la izquierda (180°)
-        // Como trabajamos en Signos Enteros (Whole Signs), alineamos el inicio del signo cúspide
+        // Sistema de Signos Enteros: calculamos el desfase respecto al horizonte izquierdo (180°)
         const indiceSignoCuspide = Math.floor(ascendenteAbs / 30);
         const inicioSignoCuspideG = indiceSignoCuspide * 30;
         const desfaceG = 180 + inicioSignoCuspideG;
 
-        // Función matemática para convertir grados zodiacales directos a radianes en pantalla en sentido antihorario
         function ajustarAngulo(gradosOriginales) {
-            const gradosCalculados = desfaceG - gradosOriginales;
-            return gradosCalculados * (Math.PI / 180);
+            return (desfaceG - gradosOriginales) * (Math.PI / 180);
         }
 
-        // Círculo exterior principal del Radix
+        // Círculo base externo
         const circuloExterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloExterior.setAttribute("cx", String(CENTRO_X));
         circuloExterior.setAttribute("cy", String(CENTRO_Y));
@@ -83,7 +83,17 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloExterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloExterior);
 
-        // Punto central geométrico
+        // Círculo interior para delimitar el cinturón zodiacal
+        const circuloInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circuloInterior.setAttribute("cx", String(CENTRO_X));
+        circuloInterior.setAttribute("cy", String(CENTRO_Y));
+        circuloInterior.setAttribute("r", String(RADIO_RUEDA - 25));
+        circuloInterior.setAttribute("stroke", "#111111");
+        circuloInterior.setAttribute("stroke-width", "1");
+        circuloInterior.setAttribute("fill", "none");
+        lienzoSvg.appendChild(circuloInterior);
+
+        // Centro
         const puntoCentral = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         puntoCentral.setAttribute("cx", String(CENTRO_X));
         puntoCentral.setAttribute("cy", String(CENTRO_Y));
@@ -91,14 +101,16 @@ document.addEventListener("DOMContentLoaded", () => {
         puntoCentral.setAttribute("fill", "#111111");
         lienzoSvg.appendChild(puntoCentral);
 
-        // Dibujar las 12 cúspides de los Signos Enteros (Cada 30°)
+        // --- DIBUJAR DIVISIONES Y NOMBRES DE LOS SIGNOS ---
         for (let i = 0; i < 12; i++) {
-            const radianesLinea = ajustarAngulo(i * 30);
+            const gradoLinea = i * 30;
+            const radLinea = ajustarAngulo(gradoLinea);
 
-            const x1 = Math.round(CENTRO_X + RADIO_RUEDA * Math.cos(radianesLinea));
-            const y1 = Math.round(CENTRO_Y + RADIO_RUEDA * Math.sin(radianesLinea));
-            const x2 = Math.round(CENTRO_X + (RADIO_RUEDA - 12) * Math.cos(radianesLinea));
-            const y2 = Math.round(CENTRO_Y + (RADIO_RUEDA - 12) * Math.sin(radianesLinea));
+            // Líneas divisorias del cinturón
+            const x1 = Math.round(CENTRO_X + RADIO_RUEDA * Math.cos(radLinea));
+            const y1 = Math.round(CENTRO_Y + RADIO_RUEDA * Math.sin(radLinea));
+            const x2 = Math.round(CENTRO_X + (RADIO_RUEDA - 25) * Math.cos(radLinea));
+            const y2 = Math.round(CENTRO_Y + (RADIO_RUEDA - 25) * Math.sin(radLinea));
 
             const lineaDivisoria = document.createElementNS("http://www.w3.org/2000/svg", "line");
             lineaDivisoria.setAttribute("x1", String(x1));
@@ -109,72 +121,94 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaDivisoria.setAttribute("stroke-width", "1");
             lienzoSvg.appendChild(lineaDivisoria);
 
-            // Generación de arcos y textos tipográficos (Cormorant Garamond) para el cinturón del zodíaco
-            const rTexto = RADIO_RUEDA + 12; 
-            const xStart = CENTRO_X + rTexto * Math.cos(ajustarAngulo((i + 1) * 30));
-            const yStart = CENTRO_Y + rTexto * Math.sin(ajustarAngulo((i + 1) * 30));
-            const xEnd = CENTRO_X + rTexto * Math.cos(ajustarAngulo(i * 30));
-            const yEnd = CENTRO_Y + rTexto * Math.sin(ajustarAngulo(i * 30));
+            // Posicionamiento de los nombres justo en el punto medio de cada sector de 30°
+            const gradoCentroSigno = gradoLinea + 15;
+            const radTexto = ajustarAngulo(gradoCentroSigno);
+            const radioTextoSigno = RADIO_RUEDA - 12.5; // Centrado exacto en el anillo de ancho 25
 
-            const rutaArco = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            rutaArco.setAttribute("id", `arco-signo-${i}`);
-            rutaArco.setAttribute("d", `M ${xStart} ${yStart} A ${rTexto} ${rTexto} 0 0 1 ${xEnd} ${yEnd}`);
-            rutaArco.setAttribute("fill", "none");
-            defs.appendChild(rutaArco);
+            const xTexto = Math.round(CENTRO_X + radioTextoSigno * Math.cos(radTexto));
+            const yTexto = Math.round(CENTRO_Y + radioTextoSigno * Math.sin(radTexto)) + 4; // Ajuste vertical menor
 
             const etiquetaTexto = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            etiquetaTexto.setAttribute("x", String(xTexto));
+            etiquetaTexto.setAttribute("y", String(yTexto));
             etiquetaTexto.setAttribute("font-family", "'Cormorant Garamond', serif");
             etiquetaTexto.setAttribute("font-size", "10");
-            etiquetaTexto.setAttribute("letter-spacing", "1.5");
+            etiquetaTexto.setAttribute("font-weight", "400");
+            etiquetaTexto.setAttribute("text-anchor", "middle");
             etiquetaTexto.setAttribute("fill", "#111111");
-
-            const textPath = document.createElementNS("http://www.w3.org/1999/xlink", "textPath");
-            textPath.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", `#arco-signo-${i}`);
-            textPath.setAttribute("startOffset", "50%"); 
-            textPath.setAttribute("text-anchor", "middle"); 
-            textPath.textContent = nombresSignos[i];
-
-            etiquetaTexto.appendChild(textPath);
+            etiquetaTexto.textContent = nombresSignos[i];
             lienzoSvg.appendChild(etiquetaTexto);
         }
 
-        // Trazado de la flecha/línea exacta del Ascendente Manual
-        const radianesAsc = ajustarAngulo(ascendenteAbs);
-        const xAscInicio = Math.round(CENTRO_X + RADIO_RUEDA * Math.cos(radianesAsc));
-        const yAscInicio = Math.round(CENTRO_Y + RADIO_RUEDA * Math.sin(radianesAsc));
-        const xAscFin = Math.round(CENTRO_X + (RADIO_RUEDA - 35) * Math.cos(radianesAsc));
-        const yAscFin = Math.round(CENTRO_Y + (RADIO_RUEDA - 35) * Math.sin(radianesAsc));
+        // --- TRAZAR EJE DEL ASCENDENTE (Línea más gruesa) ---
+        const radAsc = ajustarAngulo(ascendenteAbs);
+        const xAsc1 = Math.round(CENTRO_X + (RADIO_RUEDA - 25) * Math.cos(radAsc));
+        const yAsc1 = Math.round(CENTRO_Y + (RADIO_RUEDA - 25) * Math.sin(radAsc));
+        const xAsc2 = Math.round(CENTRO_X + (RADIO_RUEDA - 60) * Math.cos(radAsc));
+        const yAsc2 = Math.round(CENTRO_Y + (RADIO_RUEDA - 60) * Math.sin(radAsc));
 
         const lineaAsc = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        lineaAsc.setAttribute("x1", String(xAscInicio));
-        lineaAsc.setAttribute("y1", String(yAscInicio));
-        lineaAsc.setAttribute("x2", String(xAscFin));
-        lineaAsc.setAttribute("y2", String(yAscFin));
+        lineaAsc.setAttribute("x1", String(xAsc1));
+        lineaAsc.setAttribute("y1", String(yAsc1));
+        lineaAsc.setAttribute("x2", String(xAsc2));
+        lineaAsc.setAttribute("y2", String(yAsc2));
         lineaAsc.setAttribute("stroke", "#111111");
-        lineaAsc.setAttribute("stroke-width", "1.5"); 
+        lineaAsc.setAttribute("stroke-width", "2"); 
         lienzoSvg.appendChild(lineaAsc);
 
-        const xAscTexto = Math.round(CENTRO_X + (RADIO_RUEDA - 48) * Math.cos(radianesAsc));
-        const yAscTexto = Math.round(CENTRO_Y + (RADIO_RUEDA - 48) * Math.sin(radianesAsc)) + 4;
-        
-        const etiquetaAsc = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        etiquetaAsc.setAttribute("x", String(xAscTexto));
-        etiquetaAsc.setAttribute("y", String(yAscTexto));
-        etiquetaAsc.setAttribute("font-family", "'Inter', sans-serif");
-        etiquetaAsc.setAttribute("font-size", "9");
-        etiquetaAsc.setAttribute("font-weight", "600");
-        etiquetaAsc.setAttribute("text-anchor", "middle");
-        etiquetaAsc.setAttribute("fill", "#111111");
-        etiquetaAsc.textContent = "ASC";
-        lienzoSvg.appendChild(etiquetaAsc);
+        const xAscTxt = Math.round(CENTRO_X + (RADIO_RUEDA - 75) * Math.cos(radAsc));
+        const yAscTxt = Math.round(CENTRO_Y + (RADIO_RUEDA - 75) * Math.sin(radAsc)) + 4;
 
-        // Posicionamiento de los Astros Clásicos en el mapa geométrico
+        const txtAsc = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        txtAsc.setAttribute("x", String(xAscTxt));
+        txtAsc.setAttribute("y", String(yAscTxt));
+        txtAsc.setAttribute("font-family", "'Inter', sans-serif");
+        txtAsc.setAttribute("font-size", "10");
+        txtAsc.setAttribute("font-weight", "600");
+        txtAsc.setAttribute("text-anchor", "middle");
+        txtAsc.setAttribute("fill", "#111111");
+        txtAsc.textContent = "ASC";
+        lienzoSvg.appendChild(txtAsc);
+
+        // --- TRAZAR EJE DEL MEDIO CIELO (M.C.) ---
+        const radMc = ajustarAngulo(mcAbs);
+        const xMc1 = Math.round(CENTRO_X + (RADIO_RUEDA - 25) * Math.cos(radMc));
+        const yMc1 = Math.round(CENTRO_Y + (RADIO_RUEDA - 25) * Math.sin(radMc));
+        const xMc2 = Math.round(CENTRO_X + (RADIO_RUEDA - 60) * Math.cos(radMc));
+        const yMc2 = Math.round(CENTRO_Y + (RADIO_RUEDA - 60) * Math.sin(radMc));
+
+        const lineaMc = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        lineaMc.setAttribute("x1", String(xMc1));
+        lineaMc.setAttribute("y1", String(yMc1));
+        lineaMc.setAttribute("x2", String(xMc2));
+        lineaMc.setAttribute("y2", String(yMc2));
+        lineaMc.setAttribute("stroke", "#111111");
+        lineaMc.setAttribute("stroke-width", "1.5");
+        lineaMc.setAttribute("stroke-dasharray", "3,3"); // Línea discontinua elegante para diferenciar del ASC
+        lienzoSvg.appendChild(lineaMc);
+
+        const xMcTxt = Math.round(CENTRO_X + (RADIO_RUEDA - 75) * Math.cos(radMc));
+        const yMcTxt = Math.round(CENTRO_Y + (RADIO_RUEDA - 75) * Math.sin(radMc)) + 4;
+
+        const txtMc = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        txtMc.setAttribute("x", String(xMcTxt));
+        txtMc.setAttribute("y", String(yMcTxt));
+        txtMc.setAttribute("font-family", "'Cormorant Garamond', serif");
+        txtMc.setAttribute("font-size", "11");
+        txtMc.setAttribute("font-weight", "600");
+        txtMc.setAttribute("text-anchor", "middle");
+        txtMc.setAttribute("fill", "#111111");
+        txtMc.textContent = "M.C.";
+        lienzoSvg.appendChild(txtMc);
+
+        // --- RENDERIZAR PLANETAS ---
         for (const [planeta, gradosAbsolutos] of Object.entries(planetas)) {
-            const radianesPlaneta = ajustarAngulo(gradosAbsolutos);
-            const radioPlanetas = RADIO_RUEDA - 60; // Espaciado elegante hacia el interior
+            const radPlaneta = ajustarAngulo(gradosAbsolutos);
+            const radioPlanetas = RADIO_RUEDA - 50; 
 
-            const xPlaneta = Math.round(CENTRO_X + radioPlanetas * Math.cos(radianesPlaneta));
-            const yPlaneta = Math.round(CENTRO_Y + radioPlanetas * Math.sin(radianesPlaneta)) + 4;
+            const xPlaneta = Math.round(CENTRO_X + radioPlanetas * Math.cos(radPlaneta));
+            const yPlaneta = Math.round(CENTRO_Y + radioPlanetas * Math.sin(radPlaneta)) + 4;
 
             const etiquetaPlaneta = document.createElementNS("http://www.w3.org/2000/svg", "text");
             etiquetaPlaneta.setAttribute("x", String(xPlaneta));

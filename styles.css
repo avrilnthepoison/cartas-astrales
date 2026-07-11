@@ -1,4 +1,3 @@
-/* --- ESTILOS GENERALES Y ESTRUCTURA --- */
 body {
     background-color: #ffffff;
     color: #111111;
@@ -37,10 +36,10 @@ body {
     margin-top: 5px;
 }
 
-/* --- FORMULARIO PANEL DE CONTROL --- */
+/* --- FORMULARIO --- */
 .seccion-formulario {
     width: 100%;
-    max-width: 500px;
+    max-width: 550px;
     margin-bottom: 50px;
 }
 
@@ -57,61 +56,62 @@ body {
     font-weight: 400;
     margin-top: 0;
     margin-bottom: 15px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #111111;
     padding-bottom: 5px;
 }
 
-.fila-inputs, .fila-planeta {
+.fila-eje, .fila-planeta {
     display: flex;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 12px;
-}
-
-.fila-planeta {
     justify-content: space-between;
-    padding: 4px 0;
+    margin-bottom: 14px;
+    padding: 2px 0;
 }
 
-.nombre-astro {
-    font-size: 0.85rem;
+.nombre-eje, .nombre-astro {
+    font-size: 0.8rem;
     font-weight: 600;
-    width: 70px;
+    letter-spacing: 0.5px;
+    width: 100px;
 }
 
-.input-group {
+.campos-posicion {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 6px;
     flex: 1;
+    justify-content: flex-end;
 }
 
-label {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 5px;
-}
-
-input[type="number"], select {
+.campos-posicion input[type="number"] {
     border: 1px solid #111111;
-    padding: 8px 10px;
+    padding: 6px;
     font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     background: transparent;
     color: #111111;
-    outline: none;
+    width: 50px;
+    text-align: center;
     box-sizing: border-box;
 }
 
-input[type="number"] {
-    width: 80px;
+/* El primer input de grados puede ser ligeramente más ancho si se desea */
+.campos-posicion input[type="number"]:first-child {
+    width: 55px;
 }
 
-select {
-    flex: 1;
+.campos-posicion select {
+    border: 1px solid #111111;
+    padding: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    background: transparent;
+    color: #111111;
+    width: 130px;
+    box-sizing: border-box;
 }
 
-/* --- BOTÓN DE ACCIÓN --- */
+/* --- BOTÓN --- */
 #btn-generar {
     width: 100%;
     background-color: #111111;
@@ -131,7 +131,7 @@ select {
     background-color: #333333;
 }
 
-/* --- ÁREA DEL SVG --- */
+/* --- SVG --- */
 .seccion-mapa {
     width: 100%;
     max-width: 600px;
