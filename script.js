@@ -61,11 +61,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         localStorage.setItem("datosRadixManual", JSON.stringify(estructuraAGuardar));
 
-        // Enviar bandera "true" indicando que SÍ se deben pintar los ejes y planetas
         dibujarRadixManual(gradoAscAbsoluto, gradoMcAbsoluto, planetasIngresados, true);
     }
 
-    // FUNCIÓN PARA BORRAR LA MEMORIA Y DEJAR EL GRÁFICO BASE LIMPIO (SIN PLANETAS/EJES)
+    // FUNCIÓN PARA BORRAR LA MEMORIA Y VOLVER AL ESTADO VACÍO (SÓLO RUEDA BASE)
     function restablecerTodoACero() {
         localStorage.removeItem("datosRadixManual");
 
@@ -84,14 +83,13 @@ document.addEventListener("DOMContentLoaded", () => {
             fila.querySelector(".p-signo").value = "0";
         });
 
-        // NUEVO: En vez de dejar el SVG en blanco, dibuja la rueda vacía por defecto (Ascendente en 0)
         dibujarRadixManual(0, 0, {}, false);
     }
 
+    // FUNCIÓN PARA RECOGER HISTORIAL TRAS UN REFRESCO (F5)
     function cargarValoresGuardados() {
         const datosGuardados = localStorage.getItem("datosRadixManual");
         
-        // CORRECCIÓN: Si no hay caché, dibuja la rueda vacía inmediatamente al abrir la web
         if (!datosGuardados) {
             dibujarRadixManual(0, 0, {}, false);
             return;
@@ -140,8 +138,9 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarValoresGuardados();
 
 
-    // MODIFICADO: Ahora acepta el parámetro 'mostrarContenido' (booleano)
+    // FUNCIÓN CENTRAL GRÁFICA CON ORDEN DE CAPAS Y REFERENCIAS CORREGIDAS
     function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
+        // Limpieza absoluta del lienzo previo
         while (lienzoSvg.firstChild) {
             lienzoSvg.removeChild(lienzoSvg.firstChild);
         }
@@ -154,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return (desfaceG - gradosOriginales) * (Math.PI / 180);
         }
 
-        // Círculo base externo
+        // CAPA 1: Círculo exterior e interior del anillo zodiacal
         const circuloExterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloExterior.setAttribute("cx", String(CENTRO_X));
         circuloExterior.setAttribute("cy", String(CENTRO_Y));
@@ -164,7 +163,6 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloExterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloExterior);
 
-        // Círculo interior
         const circuloInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloInterior.setAttribute("cx", String(CENTRO_X));
         circuloInterior.setAttribute("cy", String(CENTRO_Y));
@@ -174,7 +172,6 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloInterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloInterior);
 
-        // Centro
         const puntoCentral = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         puntoCentral.setAttribute("cx", String(CENTRO_X));
         puntoCentral.setAttribute("cy", String(CENTRO_Y));
@@ -182,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
         puntoCentral.setAttribute("fill", "#111111");
         lienzoSvg.appendChild(puntoCentral);
 
-        // --- CINTURÓN ZODIACAL ---
+        // CAPA 2: Líneas divisorias de los 12 signos (las rayas de 30° en 30°)
         for (let i = 0; i < 12; i++) {
             const gradoLinea = i * 30;
             const radLinea = ajustarAngulo(gradoLinea);
@@ -200,45 +197,11 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaDivisoria.setAttribute("stroke", "#111111");
             lineaDivisoria.setAttribute("stroke-width", "1");
             lienzoSvg.appendChild(lineaDivisoria);
-
-            // Trayecto de texto curvo
-            const gradoInicioArco = gradoLinea;
-            const gradoFinArco = gradoLinea + 30;
-            
-            const radInicio = ajustarAngulo(gradoInicioArco);
-            const radFin = ajustarAngulo(gradoFinArco);
-            const radioTrayectoTexto = RADIO_RUEDA - 16; 
-
-            const sx = (CENTRO_X + radioTrayectoTexto * Math.cos(radInicio)).toFixed(2);
-            const sy = (CENTRO_Y + radioTrayectoTexto * Math.sin(radInicio)).toFixed(2);
-            const ex = (CENTRO_X + radioTrayectoTexto * Math.cos(radFin)).toFixed(2);
-            const ey = (CENTRO_Y + radioTrayectoTexto * Math.sin(radFin)).toFixed(2);
-
-            const idTrayecto = `trayecto-signo-${i}`;
-            const d = `M ${ex},${ey} A ${radioTrayectoTexto},${radioTrayectoTexto} 0 0,1 ${sx},${sy}`;
-
-            const rutaDefinicion = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            rutaDefinicion.setAttribute("id", idTrayecto);
-            rutaDefinicion.setAttribute("d", d);
-            rutaDefinicion.setAttribute("fill", "none");
-            rutaDefinicion.setAttribute("stroke", "none"); 
-            lienzoSvg.appendChild(rutaDefinicion);
-
-            const etiquetaTexto = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            const trayectoTexto = document.createElementNS("http://www.w3.org/1999/xlink", "textPath");
-            trayectoTexto.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", `#${idTrayecto}`);
-            trayectoTexto.setAttribute("startOffset", "50%");      
-            trayectoTexto.setAttribute("text-anchor", "middle");    
-            trayectoTexto.textContent = nombresSignos[i];
-            
-            etiquetaTexto.appendChild(trayectoTexto);
-            lienzoSvg.appendChild(etiquetaTexto);
         }
 
-        // CONDICIONAL: Solo si 'mostrarContenido' es verdadero pintamos los trazos calculados
+        // CAPA 3: Ejes y nombres de planetas (Se pintan debajo del texto perimetral)
         if (mostrarContenido) {
-            
-            // --- EJE DEL ASCENDENTE ---
+            // Eje del Ascendente
             const radAsc = ajustarAngulo(ascendenteAbs);
             const xAsc1 = Math.round(CENTRO_X + (RADIO_RUEDA - 25) * Math.cos(radAsc));
             const yAsc1 = Math.round(CENTRO_Y + (RADIO_RUEDA - 25) * Math.sin(radAsc));
@@ -268,7 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
             txtAsc.textContent = "ASC";
             lienzoSvg.appendChild(txtAsc);
 
-            // --- EJE DEL MEDIO CIELO (M.C.) ---
+            // Eje del Medio Cielo (M.C.)
             const radMc = ajustarAngulo(mcAbs);
             const xMc1 = Math.round(CENTRO_X + (RADIO_RUEDA - 25) * Math.cos(radMc));
             const yMc1 = Math.round(CENTRO_Y + (RADIO_RUEDA - 25) * Math.sin(radMc));
@@ -299,7 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
             txtMc.textContent = "M.C.";
             lienzoSvg.appendChild(txtMc);
 
-            // --- PLANETAS ---
+            // Planetas
             for (const [planeta, gradosAbsolutos] of Object.entries(planetas)) {
                 const radPlaneta = ajustarAngulo(gradosAbsolutos);
                 const radioPlanetas = RADIO_RUEDA - 50; 
@@ -319,6 +282,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 lienzoSvg.appendChild(etiquetaPlaneta);
             }
+        }
+
+        // CAPA 4 (SUPERIOR TOTAL): Textos curvados de los Signos con referencias estándar href
+        for (let i = 0; i < 12; i++) {
+            const gradoLinea = i * 30;
+            const gradoInicioArco = gradoLinea;
+            const gradoFinArco = gradoLinea + 30;
+            
+            const radInicio = ajustarAngulo(gradoInicioArco);
+            const radFin = ajustarAngulo(gradoFinArco);
+            const radioTrayectoTexto = RADIO_RUEDA - 16; 
+
+            const sx = (CENTRO_X + radioTrayectoTexto * Math.cos(radInicio)).toFixed(2);
+            const sy = (CENTRO_Y + radioTrayectoTexto * Math.sin(radInicio)).toFixed(2);
+            const ex = (CENTRO_X + radioTrayectoTexto * Math.cos(radFin)).toFixed(2);
+            const ey = (CENTRO_Y + radioTrayectoTexto * Math.sin(radFin)).toFixed(2);
+
+            const idTrayecto = `trayecto-signo-${i}`;
+            const d = `M ${ex},${ey} A ${radioTrayectoTexto},${radioTrayectoTexto} 0 0,1 ${sx},${sy}`;
+
+            // Crear y agregar la ruta de guía invisible al lienzo justo antes de usarla
+            const rutaDefinicion = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            rutaDefinicion.setAttribute("id", idTrayecto);
+            rutaDefinicion.setAttribute("d", d);
+            rutaDefinicion.setAttribute("fill", "none");
+            rutaDefinicion.setAttribute("stroke", "none"); 
+            lienzoSvg.appendChild(rutaDefinicion);
+
+            // Crear el bloque de texto y vincularlo usando el atributo href moderno estándar
+            const etiquetaTexto = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            etiquetaTexto.setAttribute("font-family", "'Inter', sans-serif");
+            etiquetaTexto.setAttribute("font-size", "10");
+            etiquetaTexto.setAttribute("font-weight", "600");
+            etiquetaTexto.setAttribute("fill", "#111111");
+
+            const trayectoTexto = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
+            trayectoTexto.setAttribute("href", `#${idTrayecto}`); // Vinculación directa nativa
+            trayectoTexto.setAttribute("startOffset", "50%");      
+            trayectoTexto.setAttribute("text-anchor", "middle");    
+            trayectoTexto.textContent = nombresSignos[i];
+            
+            etiquetaTexto.appendChild(trayectoTexto);
+            lienzoSvg.appendChild(etiquetaTexto);
         }
     }
 });
