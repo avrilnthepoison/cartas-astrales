@@ -18,6 +18,54 @@ document.addEventListener("DOMContentLoaded", () => {
         return g + (m / 60);
     }
 
+    // === FUNCIÓN PARA CARGAR VALORES DESDE LOCALSTORAGE ===
+    function cargarValoresGuardados() {
+        const datosGuardados = localStorage.getItem("datosRadixManual");
+        if (!datosGuardados) return; // Si no hay historial, no hace nada
+
+        try {
+            const datos = JSON.parse(datosGuardados);
+
+            // Cargar datos del Ascendente
+            if (datos.ascendente) {
+                document.getElementById("asc-grado").value = datos.ascendente.g;
+                document.getElementById("asc-minuto").value = datos.ascendente.m;
+                document.getElementById("asc-signo").value = datos.ascendente.signo;
+            }
+
+            // Cargar datos del Medio Cielo
+            if (datos.medioCielo) {
+                document.getElementById("mc-grado").value = datos.medioCielo.g;
+                document.getElementById("mc-minuto").value = datos.medioCielo.m;
+                document.getElementById("mc-signo").value = datos.medioCielo.signo;
+            }
+
+            // Cargar datos de los Planetas
+            if (datos.planetas) {
+                const filasPlanetas = document.querySelectorAll(".fila-planeta");
+                filasPlanetas.forEach(fila => {
+                    const nombreAstro = fila.getAttribute("data-astro");
+                    const datosAstro = datos.planetas[nombreAstro];
+                    
+                    if (datosAstro) {
+                        fila.querySelector(".p-grado").value = datosAstro.g;
+                        fila.querySelector(".p-minuto").value = datosAstro.m;
+                        fila.querySelector(".p-signo").value = datosAstro.signo;
+                    }
+                });
+            }
+            
+            // Renderizado automático inicial con los datos recuperados
+            setTimeout(() => botonGenerar.click(), 100);
+
+        } catch (e) {
+            console.error("Error al restaurar el historial de navegación:", e);
+        }
+    }
+
+    // Ejecutar la restauración de datos de inmediato al cargar la página
+    cargarValoresGuardados();
+
     botonGenerar.addEventListener("click", () => {
         // --- 1. PROCESAR ASCENDENTE ---
         const ascG = parseInt(document.getElementById("asc-grado").value, 10) || 0;
@@ -35,6 +83,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const valorMcDecimal = transformarADecimal(mcG, mcM);
         const gradoMcAbsoluto = (mcSigno * 30) + valorMcDecimal;
 
+        // === ESTRUCTURA PARA RESPALDAR EN LOCALSTORAGE ===
+        const estructuraAGuardar = {
+            ascendente: { g: ascG, m: ascM, signo: ascSigno },
+            medioCielo: { g: mcG, m: mcM, signo: mcSigno },
+            planetas: {}
+        };
+
         // --- 3. PROCESAR PLANETAS ---
         const planetasIngresados = {};
         const filasPlanetas = document.querySelectorAll(".fila-planeta");
@@ -49,8 +104,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const posicionAbsoluta = (signoIndice * 30) + posicionDecimal;
             
             planetasIngresados[nombreAstro] = posicionAbsoluta;
+
+            // Almacenar el estado de este planeta en nuestro objeto de respaldo
+            estructuraAGuardar.planetas[nombreAstro] = { g: g, m: m, signo: signoIndice };
         });
 
+        // Guardar físicamente la instantánea en el navegador
+        localStorage.setItem("datosRadixManual", JSON.stringify(estructuraAGuardar));
+
+        // Dibujar el gráfico final
         dibujarRadixManual(gradoAscAbsoluto, gradoMcAbsoluto, planetasIngresados);
     });
 
@@ -100,7 +162,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const gradoLinea = i * 30;
             const radLinea = ajustarAngulo(gradoLinea);
 
-            // Líneas divisorias de los signos
             const x1 = Math.round(CENTRO_X + RADIO_RUEDA * Math.cos(radLinea));
             const y1 = Math.round(CENTRO_Y + RADIO_RUEDA * Math.sin(radLinea));
             const x2 = Math.round(CENTRO_X + (RADIO_RUEDA - 25) * Math.cos(radLinea));
@@ -116,14 +177,12 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(lineaDivisoria);
 
             // CREACIÓN DEL ARCO INVISIBLE PARA CURVAR EL TEXTO
-            // Calculamos el inicio y el fin del arco para este signo en específico
             const gradoInicioArco = gradoLinea;
             const gradoFinArco = gradoLinea + 30;
             
             const radInicio = ajustarAngulo(gradoInicioArco);
             const radFin = ajustarAngulo(gradoFinArco);
             
-            // Radio medio del cinturón para que el texto quede perfectamente centrado verticalmente
             const radioTrayectoTexto = RADIO_RUEDA - 16; 
 
             const sx = (CENTRO_X + radioTrayectoTexto * Math.cos(radInicio)).toFixed(2);
@@ -131,28 +190,22 @@ document.addEventListener("DOMContentLoaded", () => {
             const ex = (CENTRO_X + radioTrayectoTexto * Math.cos(radFin)).toFixed(2);
             const ey = (CENTRO_Y + radioTrayectoTexto * Math.sin(radFin)).toFixed(2);
 
-            // Definimos el ID único para el trayecto del signo
             const idTrayecto = `trayecto-signo-${i}`;
-
-            // Dependiendo de la dirección matemática del renderizado, invertimos el orden 
-            // de los puntos para que el texto no se dibuje de cabeza.
             const d = `M ${ex},${ey} A ${radioTrayectoTexto},${radioTrayectoTexto} 0 0,1 ${sx},${sy}`;
 
             const rutaDefinicion = document.createElementNS("http://www.w3.org/2000/svg", "path");
             rutaDefinicion.setAttribute("id", idTrayecto);
             rutaDefinicion.setAttribute("d", d);
             rutaDefinicion.setAttribute("fill", "none");
-            rutaDefinicion.setAttribute("stroke", "none"); // Completamente invisible
+            rutaDefinicion.setAttribute("stroke", "none"); 
             lienzoSvg.appendChild(rutaDefinicion);
 
-            // Contenedor de texto principal
             const etiquetaTexto = document.createElementNS("http://www.w3.org/2000/svg", "text");
             
-            // El elemento textPath que vincula el texto con la ruta curva anterior
             const trayectoTexto = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
             trayectoTexto.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", `#${idTrayecto}`);
-            trayectoTexto.setAttribute("startOffset", "50%");      // Lo posiciona en el centro del arco
-            trayectoTexto.setAttribute("text-anchor", "middle");    // Fuerza a que se alinee desde su centro
+            trayectoTexto.setAttribute("startOffset", "50%");      
+            trayectoTexto.setAttribute("text-anchor", "middle");    
             trayectoTexto.textContent = nombresSignos[i];
             
             etiquetaTexto.appendChild(trayectoTexto);
