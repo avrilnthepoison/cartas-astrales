@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     
     const botonGenerar = document.getElementById("btn-generar");
+    const botonBorrar = document.getElementById("btn-borrar");
     const lienzoSvg = document.getElementById("carta-astral");
 
     const CENTRO_X = 300;
@@ -13,14 +14,12 @@ document.addEventListener("DOMContentLoaded", () => {
         "SAGITARIO", "CAPRICORNIO", "ACUARIO", "PISCIS"
     ];
 
-    // Función matemática limpia: simplificada solo a Grados y Minutos
     function transformarADecimal(g, m) {
         return g + (m / 60);
     }
 
-    // === NUEVO: FUNCIÓN CENTRALIZADA PARA PROCESAR Y DIBUJAR ===
+    // FUNCIÓN CENTRAL PARA PROCESAR FORMULARIO Y GUARDAR
     function procesarYGenerarCarta() {
-        // --- 1. PROCESAR ASCENDENTE ---
         const ascG = parseInt(document.getElementById("asc-grado").value, 10) || 0;
         const ascM = parseInt(document.getElementById("asc-minuto").value, 10) || 0;
         const ascSigno = parseInt(document.getElementById("asc-signo").value, 10);
@@ -28,7 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const valorAscDecimal = transformarADecimal(ascG, ascM);
         const gradoAscAbsoluto = (ascSigno * 30) + valorAscDecimal;
 
-        // --- 2. PROCESAR MEDIO CIELO (M.C.) ---
         const mcG = parseInt(document.getElementById("mc-grado").value, 10) || 0;
         const mcM = parseInt(document.getElementById("mc-minuto").value, 10) || 0;
         const mcSigno = parseInt(document.getElementById("mc-signo").value, 10);
@@ -36,64 +34,86 @@ document.addEventListener("DOMContentLoaded", () => {
         const valorMcDecimal = transformarADecimal(mcG, mcM);
         const gradoMcAbsoluto = (mcSigno * 30) + valorMcDecimal;
 
-        // --- 3. PROCESAR PLANETAS ---
         const planetasIngresados = {};
         const filasPlanetas = document.querySelectorAll(".fila-planeta");
 
-        // Estructura para respaldar en LocalStorage al mismo tiempo
         const estructuraAGuardar = {
-            ascendente: { g: ascG, m: ascM, signo: ascSigno },
-            medioCielo: { g: mcG, m: mcM, signo: mcSigno },
+            ascendente: { g: document.getElementById("asc-grado").value, m: document.getElementById("asc-minuto").value, signo: ascSigno },
+            medioCielo: { g: document.getElementById("mc-grado").value, m: document.getElementById("mc-minuto").value, signo: mcSigno },
             planetas: {}
         };
 
         filasPlanetas.forEach(fila => {
             const nombreAstro = fila.getAttribute("data-astro");
-            const g = parseInt(fila.querySelector(".p-grado").value, 10) || 0;
-            const m = parseInt(fila.querySelector(".p-minuto").value, 10) || 0;
+            const gInput = fila.querySelector(".p-grado").value;
+            const mInput = fila.querySelector(".p-minuto").value;
             const signoIndice = parseInt(fila.querySelector(".p-signo").value, 10);
+
+            const g = parseInt(gInput, 10) || 0;
+            const m = parseInt(mInput, 10) || 0;
 
             const posicionDecimal = transformarADecimal(g, m);
             const posicionAbsoluta = (signoIndice * 30) + posicionDecimal;
             
             planetasIngresados[nombreAstro] = posicionAbsoluta;
-            estructuraAGuardar.planetas[nombreAstro] = { g: g, m: m, signo: signoIndice };
+            estructuraAGuardar.planetas[nombreAstro] = { g: gInput, m: mInput, signo: signoIndice };
         });
 
-        // Guardar físicamente la instantánea en el navegador
+        // Guardar instantánea del usuario en memoria del navegador
         localStorage.setItem("datosRadixManual", JSON.stringify(estructuraAGuardar));
 
-        // Dibujar el gráfico final
+        // Dibujar gráfico
         dibujarRadixManual(gradoAscAbsoluto, gradoMcAbsoluto, planetasIngresados);
     }
 
-    // === FUNCIÓN PARA RESTAURAR VALORES DESDE LOCALSTORAGE ===
+    // FUNCIÓN PARA REESTABLECER Y LIMPIAR TODO
+    function restablecerTodoACero() {
+        // Eliminar del almacenamiento local
+        localStorage.removeItem("datosRadixManual");
+
+        // Vaciar inputs de los ejes
+        document.getElementById("asc-grado").value = "";
+        document.getElementById("asc-minuto").value = "";
+        document.getElementById("asc-signo").value = "0";
+
+        document.getElementById("mc-grado").value = "";
+        document.getElementById("mc-minuto").value = "";
+        document.getElementById("mc-signo").value = "0";
+
+        // Vaciar inputs de los planetas
+        const filasPlanetas = document.querySelectorAll(".fila-planeta");
+        filasPlanetas.forEach(fila => {
+            fila.querySelector(".p-grado").value = "";
+            fila.querySelector(".p-minuto").value = "";
+            fila.querySelector(".p-signo").value = "0";
+        });
+
+        // Limpiar el gráfico SVG por completo
+        while (lienzoSvg.firstChild) {
+            lienzoSvg.removeChild(lienzoSvg.firstChild);
+        }
+    }
+
+    // FUNCIÓN PARA RESTAURAR VALORES GUARDADOS AL DAR REFRESH (F5)
     function cargarValoresGuardados() {
         const datosGuardados = localStorage.getItem("datosRadixManual");
-        if (!datosGuardados) {
-            // Si es la primera vez que abre la app, dibuja con lo que haya por defecto en el HTML
-            procesarYGenerarCarta();
-            return;
-        }
+        if (!datosGuardados) return; // Si no hay historial, se queda vacío y limpio
 
         try {
             const datos = JSON.parse(datosGuardados);
 
-            // Cargar datos del Ascendente
             if (datos.ascendente) {
                 document.getElementById("asc-grado").value = datos.ascendente.g;
                 document.getElementById("asc-minuto").value = datos.ascendente.m;
                 document.getElementById("asc-signo").value = datos.ascendente.signo;
             }
 
-            // Cargar datos del Medio Cielo
             if (datos.medioCielo) {
                 document.getElementById("mc-grado").value = datos.medioCielo.g;
                 document.getElementById("mc-minuto").value = datos.medioCielo.m;
                 document.getElementById("mc-signo").value = datos.medioCielo.signo;
             }
 
-            // Cargar datos de los Planetas
             if (datos.planetas) {
                 const filasPlanetas = document.querySelectorAll(".fila-planeta");
                 filasPlanetas.forEach(fila => {
@@ -108,19 +128,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             }
             
-            // Dibujar directamente usando los datos que acabamos de inyectar en las casillas
+            // Re-dibujar automáticamente lo que recuperó
             procesarYGenerarCarta();
 
         } catch (e) {
-            console.error("Error al restaurar el historial de navegación:", e);
-            procesarYGenerarCarta();
+            console.error("Error al restaurar los datos:", e);
         }
     }
 
-    // Escuchador del botón físico
+    // Eventos
     botonGenerar.addEventListener("click", procesarYGenerarCarta);
+    botonBorrar.addEventListener("click", restablecerTodoACero);
 
-    // Ejecutar la restauración automática al cargar la ventana
+    // Cargar historial al iniciar
     cargarValoresGuardados();
 
 
@@ -165,7 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
         puntoCentral.setAttribute("fill", "#111111");
         lienzoSvg.appendChild(puntoCentral);
 
-        // --- CINTURÓN ZODIACAL (CON TEXTOS CURVOS) ---
+        // --- CINTURÓN ZODIACAL ---
         for (let i = 0; i < 12; i++) {
             const gradoLinea = i * 30;
             const radLinea = ajustarAngulo(gradoLinea);
@@ -184,13 +204,12 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaDivisoria.setAttribute("stroke-width", "1");
             lienzoSvg.appendChild(lineaDivisoria);
 
-            // CREACIÓN DEL ARCO INVISIBLE PARA CURVAR EL TEXTO
+            // Trayecto de texto curvo
             const gradoInicioArco = gradoLinea;
             const gradoFinArco = gradoLinea + 30;
             
             const radInicio = ajustarAngulo(gradoInicioArco);
             const radFin = ajustarAngulo(gradoFinArco);
-            
             const radioTrayectoTexto = RADIO_RUEDA - 16; 
 
             const sx = (CENTRO_X + radioTrayectoTexto * Math.cos(radInicio)).toFixed(2);
@@ -209,7 +228,6 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(rutaDefinicion);
 
             const etiquetaTexto = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            
             const trayectoTexto = document.createElementNS("http://www.w3.org/1999/xlink", "textPath");
             trayectoTexto.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", `#${idTrayecto}`);
             trayectoTexto.setAttribute("startOffset", "50%");      
