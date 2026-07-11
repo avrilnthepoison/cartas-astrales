@@ -1,107 +1,128 @@
-/* ==========================================
-   ESTILOS GENERALES Y CONFIGURACIÓN BASE
-   ========================================== */
-* {
+/* ==========================================================================
+   1. VARIABLES Y CONFIGURACIÓN GLOBAL
+   ========================================================================== */
+*, *::before, *::after {
     box-sizing: border-box;
-    margin: 0;
-    padding: 0;
 }
 
 body {
-    font-family: 'Inter', sans-serif;
     background-color: #ffffff;
     color: #111111;
-    padding: 40px;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
 }
 
+/* ==========================================================================
+   2. ESTRUCTURA DE LA INTERFAZ (DOS COLUMNAS)
+   ========================================================================== */
 .contenedor-principal {
-    width: 100%;
-    max-width: 1200px;
+    max-width: 1300px;
     margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
+    padding: 40px 20px;
 }
 
-/* Encabezado Principal */
 .header-astral {
-    border-bottom: 1px solid #111111;
-    padding-bottom: 16px;
+    text-align: center;
+    margin-bottom: 50px;
 }
 
 .header-astral h1 {
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
+    font-family: 'Inter', sans-serif;
+    font-size: 30px;
+    font-weight: 300;
+    letter-spacing: 4px;
+    margin: 0 0 8px 0;
     text-transform: uppercase;
-    margin-bottom: 4px;
 }
 
-.subtitulo {
-    font-size: 12px;
-    font-weight: 400;
-    letter-spacing: 1px;
+.header-astral .subtitulo {
+    font-size: 11px;
+    letter-spacing: 3px;
     text-transform: uppercase;
     color: #666666;
+    margin: 0;
 }
 
-/* Layout de Doble Columna (Panel de datos vs Gráfico SVG) */
 .interfaz-columnas {
-    display: grid;
-    grid-template-columns: 450px 1fr;
-    gap: 40px;
-    align-items: start;
+    display: table;
+    width: 100%;
+    table-layout: fixed;
 }
 
-/* ==========================================
-   COLUMNA IZQUIERDA: PANEL DE INGRESO DE DATOS
-   ========================================== */
+/* Columna Izquierda: Formulario */
 .seccion-formulario {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+    display: table-cell;
+    width: 55%;
+    padding-right: 5%;
+    vertical-align: top;
 }
 
+/* Columna Derecha: Gráfico */
+.seccion-mapa {
+    display: table-cell;
+    width: 45%;
+    vertical-align: top;
+}
+
+.contenedor-sticky-mapa {
+    position: sticky;
+    top: 40px;
+    width: 100%;
+    max-width: 550px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   3. COMPONENTES DEL FORMULARIO
+   ========================================================================== */
 .bloque-formulario {
     border: 1px solid #111111;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+    padding: 25px;
+    margin-bottom: 30px;
+    background-color: #ffffff;
 }
 
 .bloque-formulario h3 {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 0 0 20px 0;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 8px;
+}
+
+/* Filas de entrada */
+.fila-eje, .fila-planeta {
+    display: table;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.fila-planeta:last-child {
+    margin-bottom: 0;
+}
+
+.nombre-eje, .nombre-astro {
+    display: table-cell;
+    width: 30%;
+    vertical-align: middle;
+    font-family: 'Inter', sans-serif;
     font-size: 11px;
     font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    border-bottom: 1px solid #111111;
-    padding-bottom: 6px;
-    margin-bottom: 4px;
-}
-
-/* Contenedores de Filas y Elementos */
-.fila-eje, .fila-planeta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-}
-
-/* Nombres de los Astros (Sol, Luna, Mercurio...) */
-.nombre-eje, .nombre-astro, .nombre-planeta {
-    font-size: 11px;
-    font-weight: 600;
     letter-spacing: 1px;
-    color: #111111;
 }
 
 .campos-posicion {
-    display: flex;
-    align-items: center;
+    display: table-cell;
+    width: 70%;
+    text-align: right;
 }
 
-/* Inputs Numéricos y Selectores Dropdown */
+/* Inputs y Selects */
 input[type="number"], select {
     font-family: 'Inter', sans-serif;
     font-size: 13px;
@@ -123,9 +144,7 @@ select {
     width: 150px;
 }
 
-/* ==========================================
-   BOTÓN DE ACCIÓN PRINCIPAL (PINTAR RUEDA)
-   ========================================== */
+/* Botón de Acción Principal */
 #btn-generar {
     display: block;
     width: 100%;
@@ -146,27 +165,26 @@ select {
     background-color: #333333;
 }
 
-/* ==========================================
-   COLUMNA DERECHA: RENDERIZADOR GRÁFICO SVG
-   ========================================== */
-.seccion-mapa {
-    width: 100%;
-}
-
-.contenedor-sticky-mapa {
-    position: sticky;
-    top: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* Lienzo SVG */
+/* ==========================================================================
+   4. ESTILOS DEL GRÁFICO SVG (RADIX)
+   ========================================================================== */
 #carta-astral {
-    background-color: #ffffff;
-    border: 1px solid #111111;
+    display: block;
     width: 100%;
-    max-width: 600px;
     height: auto;
-    aspect-ratio: 1 / 1;
+}
+
+/* Forzar tipografía Inter en todo el contenido de texto interno del SVG */
+#carta-astral text {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 8px; /* Un pelín más pequeña porque Inter es ligeramente más ancha */
+    font-weight: 400;
+    letter-spacing: 1.2px;
+    fill: #111111;
+}
+
+/* Ajuste específico para que las líneas mantengan su finura */
+#carta-astral circle, 
+#carta-astral line {
+    shape-rendering: geometricPrecision;
 }
