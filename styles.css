@@ -1,120 +1,146 @@
-/* Reset básico de diseño */
-* {
+/* --- ESTILOS GENERALES Y ESTRUCTURA --- */
+body {
+    background-color: #ffffff;
+    color: #111111;
+    font-family: 'Inter', sans-serif;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    background-color: #fcfbf9; /* Un blanco roto/hueso muy sutil, no tan chillón como el blanco puro */
-    color: #1a1a1a;
-    font-family: 'Inter', sans-serif;
-    letter-spacing: 0.5px;
-    display: flex;
-    justify-content: center;
-    padding: 3rem 1rem;
 }
 
 .contenedor-principal {
-    max-width: 800px;
-    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
 }
 
-/* Estilo del título */
 .header-astral {
     text-align: center;
+    margin-bottom: 40px;
 }
 
 .header-astral h1 {
     font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
     font-weight: 300;
-    font-size: 2.8rem;
-    text-transform: uppercase;
-    letter-spacing: 4px;
-    margin-bottom: 0.5rem;
-}
-
-.header-astral .subtitulo {
-    font-size: 0.85rem;
-    text-transform: uppercase;
+    margin: 0;
     letter-spacing: 2px;
-    color: #707070;
 }
 
-/* Formulario minimalista horizontal */
+.subtitulo {
+    font-size: 0.9rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #666666;
+    margin-top: 5px;
+}
+
+/* --- FORMULARIO PANEL DE CONTROL --- */
 .seccion-formulario {
-    display: flex;
-    gap: 1.5rem;
-    align-items: flex-end;
-    flex-wrap: wrap;
-    justify-content: center;
-    border-bottom: 1px solid #e5e0db;
-    padding-bottom: 2rem;
     width: 100%;
+    max-width: 500px;
+    margin-bottom: 50px;
+}
+
+.bloque-formulario {
+    border: 1px solid #111111;
+    padding: 20px;
+    margin-bottom: 20px;
+    background: #ffffff;
+}
+
+.bloque-formulario h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+    margin-top: 0;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.fila-inputs, .fila-planeta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 12px;
+}
+
+.fila-planeta {
+    justify-content: space-between;
+    padding: 4px 0;
+}
+
+.nombre-astro {
+    font-size: 0.85rem;
+    font-weight: 600;
+    width: 70px;
 }
 
 .input-group {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    flex: 1;
 }
 
-.input-group label {
+label {
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: #555;
+    margin-bottom: 5px;
 }
 
-.input-group input {
-    background: transparent;
-    border: 1px solid #ccc;
-    padding: 0.5rem 0.8rem;
+input[type="number"], select {
+    border: 1px solid #111111;
+    padding: 8px 10px;
     font-family: 'Inter', sans-serif;
     font-size: 0.9rem;
+    background: transparent;
+    color: #111111;
     outline: none;
-    border-radius: 0; /* Bordes rectos y limpios */
-    transition: border-color 0.3s;
+    box-sizing: border-box;
 }
 
-.input-group input:focus {
-    border-color: #1a1a1a;
+input[type="number"] {
+    width: 80px;
 }
 
-/* Botón estilo bloque Co-Star */
+select {
+    flex: 1;
+}
+
+/* --- BOTÓN DE ACCIÓN --- */
 #btn-generar {
-    background-color: #1a1a1a;
-    color: #fcfbf9;
+    width: 100%;
+    background-color: #111111;
+    color: #ffffff;
     border: none;
-    padding: 0.6rem 1.5rem;
+    padding: 15px;
     font-family: 'Inter', sans-serif;
-    font-size: 0.8rem;
-    text-transform: uppercase;
+    font-size: 0.85rem;
+    font-weight: 600;
     letter-spacing: 2px;
+    text-transform: uppercase;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background 0.2s ease;
 }
 
 #btn-generar:hover {
-    background-color: #444444;
+    background-color: #333333;
 }
 
-/* Contenedor de la rueda */
+/* --- ÁREA DEL SVG --- */
 .seccion-mapa {
     width: 100%;
-    max-width: 550px;
-    aspect-ratio: 1 / 1;
+    max-width: 600px;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 1rem;
 }
 
 #carta-astral {
-    width: 100%;
-    height: 100%;
+    max-width: 600px;
+    max-height: 600px;
 }

@@ -2,143 +2,58 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const botonGenerar = document.getElementById("btn-generar");
     const lienzoSvg = document.getElementById("carta-astral");
-    
-    const inputCiudad = document.getElementById("ciudad");
-    const contenedorSugerencias = document.getElementById("sugerencias-ciudad");
 
     const CENTRO_X = 300;
     const CENTRO_Y = 300;
     const RADIO_RUEDA = 230; 
 
-    let coordenadasSeleccionadas = {
-        latitud: null,
-        longitud: null,
-        nombreCiudad: ""
-    };
+    // Nombres de los signos tradicionales correlacionados con sus índices (0-11)
+    const nombresSignos = [
+        "ARIES", "TAURO", "GÉMINIS", "CÁNCER", 
+        "LEO", "VIRGO", "LIBRA", "ESCORPIO", 
+        "SAGITARIO", "CAPRICORNIO", "ACUARIO", "PISCIS"
+    ];
 
-    // --- MÓDULO DE GEOLOCALIZACIÓN (OpenStreetMap) ---
-    let temporizadorBusqueda;
-    inputCiudad.addEventListener("input", () => {
-        clearTimeout(temporizadorBusqueda);
-        const query = inputCiudad.value.trim();
-        if (query.length < 3) { contenedorSugerencias.style.display = "none"; return; }
-        temporizadorBusqueda = setTimeout(() => { buscarCiudadEnOpenStreetMap(query); }, 400);
-    });
-
-    async function buscarCiudadEnOpenStreetMap(texto) {
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(texto)}&addressdetails=1&limit=5`;
-        try {
-            const respuesta = await fetch(url, { headers: { "User-Agent": "MiGeneradorAstral/1.0" } });
-            const datos = await respuesta.json();
-            mostrarSugerencias(datos);
-        } catch (error) { console.error("Error buscando la ciudad:", error); }
-    }
-
-    function mostrarSugerencias(ciudades) {
-        contenedorSugerencias.innerHTML = "";
-        if (ciudades.length === 0) { contenedorSugerencias.style.display = "none"; return; }
-        ciudades.forEach(ciudad => {
-            const item = document.createElement("div");
-            item.style.padding = "8px 12px";
-            item.style.cursor = "pointer";
-            item.style.borderBottom = "1px solid #eee";
-            item.style.color = "#111";
-            item.style.fontSize = "13px";
-            item.textContent = ciudad.display_name;
-            item.addEventListener("mouseover", () => item.style.background = "#f5f5f5");
-            item.addEventListener("mouseout", () => item.style.background = "#fff");
-            item.addEventListener("click", () => {
-                inputCiudad.value = ciudad.display_name;
-                coordenadasSeleccionadas.latitud = parseFloat(ciudad.lat);
-                coordenadasSeleccionadas.longitud = parseFloat(ciudad.lon);
-                coordenadasSeleccionadas.nombreCiudad = ciudad.display_name;
-                contenedorSugerencias.innerHTML = "";
-                contenedorSugerencias.style.display = "none";
-            });
-            contenedorSugerencias.appendChild(item);
-        });
-        contenedorSugerencias.style.display = "block";
-    }
-
-    document.addEventListener("click", (e) => {
-        if (e.target !== inputCiudad && e.target !== contenedorSugerencias) contenedorSugerencias.style.display = "none";
-    });
-
-
-    // --- CONTROLADOR DEL BOTÓN GENERAR (MOTOR LOCAL DE ALTA FIDELIDAD) ---
+    // --- MANEJADOR DE EVENTO PRINCIPAL ---
     botonGenerar.addEventListener("click", () => {
-        const fechaInput = document.getElementById("fecha").value; 
-        const horaInput = document.getElementById("hora").value;   
+        // 1. Recopilar datos manuales del Ascendente
+        const ascGrado = parseInt(document.getElementById("asc-grado").value, 10) || 0;
+        const ascSignoIndice = parseInt(document.getElementById("asc-signo").value, 10);
 
-        if (!fechaInput || !horaInput) {
-            alert("Por favor, introduce una fecha y hora válidas.");
+        // Validaciones básicas de rangos astrológicos tradicionales
+        if (ascGrado < 0 || ascGrado > 29) {
+            alert("Los grados de los signos deben estar comprendidos entre 0 y 29.");
             return;
         }
-        if (!coordenadasSeleccionadas.latitud) {
-            alert("Por favor, selecciona una ciudad de la lista desplegable.");
-            return;
-        }
 
-        // Bloqueamos el botón visualmente para proteger el hilo de ejecución
-        botonGenerar.textContent = "CALCULANDO...";
-        botonGenerar.disabled = true;
+        // Posición absoluta del ASC en la rueda de 360°
+        const gradoAscendenteAbsoluto = (ascSignoIndice * 30) + ascGrado;
 
-        // Separamos y forzamos a números enteros en base 10
-        const [anio, mes, dia] = fechaInput.split("-").map(num => parseInt(num, 10));
-        const [horas, minutos] = horaInput.split(":").map(num => parseInt(num, 10));
+        // 2. Recopilar datos de cada una de las luminarias y planetas
+        const planetasIngresados = {};
+        const filasPlanetas = document.querySelectorAll(".fila-planeta");
 
-        // Estimación estándar del huso horario basada en longitud geográfica
-        const timezoneEstimado = Math.round(coordenadasSeleccionadas.longitud / 15);
+        filasPlanetas.forEach(fila => {
+            const nombreAstro = fila.getAttribute("data-astro");
+            const gradoInput = parseInt(fila.querySelector(".p-grado").value, 10) || 0;
+            const signoIndice = parseInt(fila.querySelector(".p-signo").value, 10);
 
-        console.log(`Datos procesados para el motor: Fecha=${dia}/${mes}/${anio}, Hora=${horas}:${minutos}, TZ=${timezoneEstimado}, Lat=${coordenadasSeleccionadas.latitud}, Lon=${coordenadasSeleccionadas.longitud}`);
-
-        try {
-            // Validamos que el constructor global de la librería inyectada en el HTML esté disponible
-            if (typeof astrology === "undefined" || !astrology.AstroDate || !astrology.Radix) {
-                throw new Error("La librería matemática de astrología no se encuentra en el entorno global de la página.");
+            if (gradoInput >= 0 && gradoInput <= 29) {
+                // Conversión matemática exacta a coordenadas de 360°
+                const posicionAbsoluta = (signoIndice * 30) + gradoInput;
+                planetasIngresados[nombreAstro] = posicionAbsoluta;
             }
+        });
 
-            // 1. Creamos el objeto de fecha usando la sintaxis nativa exacta del motor
-            const fechaAstral = new astrology.AstroDate(anio, mes, dia, horas, minutos, timezoneEstimado);
-            
-            // 2. Ejecutamos el cálculo del Radix limitando la precisión de coordenadas a 4 decimales
-            const calculadora = new astrology.Radix(
-                fechaAstral, 
-                parseFloat(coordenadasSeleccionadas.latitud.toFixed(4)), 
-                parseFloat(coordenadasSeleccionadas.longitud.toFixed(4))
-            );
+        console.log("📊 Datos manuales procesados con éxito:", { gradoAscendenteAbsoluto, planetasIngresados });
 
-            // 3. Extraemos el Ascendente real calculado (0 - 360)
-            const gradoAscendenteReal = calculadora.ascendant;
-            
-            // 4. Mapeamos las coordenadas de los astros septenarios clásicos
-            const planetasReales = {
-                "☉ SOL": calculadora.planets.sun,
-                "☽ LUNA": calculadora.planets.moon,
-                "☿ MER": calculadora.planets.mercury,
-                "♀ VEN": calculadora.planets.venus,
-                "♂ MAR": calculadora.planets.mars,
-                "♃ JÚP": calculadora.planets.jupiter,
-                "♄ SAT": calculadora.planets.saturn
-            };
-
-            console.log("🌌 ¡Cielo local calculado con éxito!", { gradoAscendenteReal, planetasReales });
-
-            // Dibujamos con tus funciones visuales exactas en sentido antihorario
-            dibujarRadixWholeSign(gradoAscendenteReal, planetasReales);
-
-        } catch (error) {
-            console.error("Detalle del error en el motor local:", error);
-            alert(`Hubo un problema con el motor: ${error.message}`);
-        } finally {
-            // Restauramos el botón pase lo que pase
-            botonGenerar.textContent = "GENERAR MAPA";
-            botonGenerar.disabled = false;
-        }
+        // 3. Renderizar el dibujo nativo sin dependencias
+        dibujarRadixManual(gradoAscendenteAbsoluto, planetasIngresados);
     });
 
-    // --- TU FUNCIÓN DE DIBUJO INTEGRAL DE SIGNOS ENTEROS (SENTIDO ANTIHORARIO) ---
-    function dibujarRadixWholeSign(ascendenteG, planetas) {
+    // --- FUNCIÓN DE DIBUJO ESTRUCTURAL EN SENTIDO ANTIHORARIO ---
+    function dibujarRadixManual(ascendenteAbs, planetas) {
+        // Limpiamos los elementos previos del SVG
         while (lienzoSvg.firstChild) {
             lienzoSvg.removeChild(lienzoSvg.firstChild);
         }
@@ -146,22 +61,19 @@ document.addEventListener("DOMContentLoaded", () => {
         const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
         lienzoSvg.appendChild(defs);
 
-        const nombresSignos = [
-            "ARIES", "TAURO", "GÉMINIS", "CÁNCER", 
-            "LEO", "VIRGO", "LIBRA", "ESCORPIO", 
-            "SAGITARIO", "CAPRICORNIO", "ACUARIO", "PISCIS"
-        ];
+        // Cálculo del desface estructural para fijar el Ascendente horizontalmente a la izquierda (180°)
+        // Como trabajamos en Signos Enteros (Whole Signs), alineamos el inicio del signo cúspide
+        const indiceSignoCuspide = Math.floor(ascendenteAbs / 30);
+        const inicioSignoCuspideG = indiceSignoCuspide * 30;
+        const desfaceG = 180 + inicioSignoCuspideG;
 
-        const indiceSignoAsc = Math.floor(ascendenteG / 30); 
-        const inicioSignoAscG = indiceSignoAsc * 30; 
-        const desfaceG = 180 + inicioSignoAscG;
-
+        // Función matemática para convertir grados zodiacales directos a radianes en pantalla en sentido antihorario
         function ajustarAngulo(gradosOriginales) {
             const gradosCalculados = desfaceG - gradosOriginales;
             return gradosCalculados * (Math.PI / 180);
         }
 
-        // Círculo exterior principal
+        // Círculo exterior principal del Radix
         const circuloExterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloExterior.setAttribute("cx", String(CENTRO_X));
         circuloExterior.setAttribute("cy", String(CENTRO_Y));
@@ -171,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloExterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloExterior);
 
-        // Punto central
+        // Punto central geométrico
         const puntoCentral = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         puntoCentral.setAttribute("cx", String(CENTRO_X));
         puntoCentral.setAttribute("cy", String(CENTRO_Y));
@@ -179,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
         puntoCentral.setAttribute("fill", "#111111");
         lienzoSvg.appendChild(puntoCentral);
 
-        // Dibujo de las 12 divisiones de signos (Whole Signs)
+        // Dibujar las 12 cúspides de los Signos Enteros (Cada 30°)
         for (let i = 0; i < 12; i++) {
             const radianesLinea = ajustarAngulo(i * 30);
 
@@ -197,6 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaDivisoria.setAttribute("stroke-width", "1");
             lienzoSvg.appendChild(lineaDivisoria);
 
+            // Generación de arcos y textos tipográficos (Cormorant Garamond) para el cinturón del zodíaco
             const rTexto = RADIO_RUEDA + 12; 
             const xStart = CENTRO_X + rTexto * Math.cos(ajustarAngulo((i + 1) * 30));
             const yStart = CENTRO_Y + rTexto * Math.sin(ajustarAngulo((i + 1) * 30));
@@ -225,8 +138,8 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(etiquetaTexto);
         }
 
-        // Línea del Ascendente real
-        const radianesAsc = ajustarAngulo(ascendenteG);
+        // Trazado de la flecha/línea exacta del Ascendente Manual
+        const radianesAsc = ajustarAngulo(ascendenteAbs);
         const xAscInicio = Math.round(CENTRO_X + RADIO_RUEDA * Math.cos(radianesAsc));
         const yAscInicio = Math.round(CENTRO_Y + RADIO_RUEDA * Math.sin(radianesAsc));
         const xAscFin = Math.round(CENTRO_X + (RADIO_RUEDA - 35) * Math.cos(radianesAsc));
@@ -255,12 +168,10 @@ document.addEventListener("DOMContentLoaded", () => {
         etiquetaAsc.textContent = "ASC";
         lienzoSvg.appendChild(etiquetaAsc);
 
-        // Posicionamiento de Planetas Reales
-        for (const [planeta, grados] of Object.entries(planetas)) {
-            if (grados === undefined || grados === null) continue;
-
-            const radianesPlaneta = ajustarAngulo(grados);
-            const radioPlanetas = RADIO_RUEDA - 60;
+        // Posicionamiento de los Astros Clásicos en el mapa geométrico
+        for (const [planeta, gradosAbsolutos] of Object.entries(planetas)) {
+            const radianesPlaneta = ajustarAngulo(gradosAbsolutos);
+            const radioPlanetas = RADIO_RUEDA - 60; // Espaciado elegante hacia el interior
 
             const xPlaneta = Math.round(CENTRO_X + radioPlanetas * Math.cos(radianesPlaneta));
             const yPlaneta = Math.round(CENTRO_Y + radioPlanetas * Math.sin(radianesPlaneta)) + 4;
