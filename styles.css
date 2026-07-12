@@ -1,8 +1,7 @@
 /* ============================================
-   GLIESE - ESTILOS PARA CARTA ASTRAL
+   GLIESE · ESTILOS CARTA ASTRAL MANUAL
    ============================================ */
 
-/* ---------- RESET Y BASE ---------- */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -16,21 +15,18 @@ body {
     line-height: 1.5;
 }
 
-/* ---------- CONTENEDOR PRINCIPAL ---------- */
 .contenedor-principal {
     max-width: 1300px;
     margin: 0 auto;
     padding: 40px 20px;
 }
 
-/* ---------- HEADER ---------- */
 .header-astral {
     text-align: center;
     margin-bottom: 50px;
 }
 
 .header-astral h1 {
-    font-family: 'Inter', sans-serif;
     font-size: 30px;
     font-weight: 600;
     letter-spacing: 4px;
@@ -46,7 +42,7 @@ body {
     margin: 0;
 }
 
-/* ---------- INTERFAZ DE DOS COLUMNAS ---------- */
+/* ---------- DOS COLUMNAS ---------- */
 .interfaz-columnas {
     display: flex;
     gap: 40px;
@@ -54,8 +50,8 @@ body {
 }
 
 .seccion-formulario {
-    flex: 0 0 35%;
-    min-width: 280px;
+    flex: 0 0 38%;
+    min-width: 300px;
 }
 
 .seccion-mapa {
@@ -73,29 +69,26 @@ body {
 
 /* ---------- FORMULARIO ---------- */
 .bloque-formulario {
-    border: none;
-    padding: 25px;
-    margin-bottom: 30px;
+    padding: 20px 22px;
+    margin-bottom: 25px;
     background-color: #f5f4f2;
     border-radius: 12px;
 }
 
 .bloque-formulario h3 {
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    margin: 0 0 20px 0;
+    margin: 0 0 18px 0;
     border-bottom: 1px solid #cecece;
     padding-bottom: 8px;
 }
 
-.campo-dato {
-    margin-bottom: 16px;
+.campo-eje {
+    margin-bottom: 14px;
 }
-
-.campo-dato label {
+.campo-eje label {
     display: block;
     font-size: 11px;
     font-weight: 600;
@@ -104,95 +97,180 @@ body {
     margin-bottom: 4px;
     color: #444444;
 }
-
-.campo-dato input {
-    width: 100%;
-    padding: 10px 12px;
-    border: none;
-    border-radius: 12px;
-    background-color: #ffffff;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    outline: none;
-    transition: box-shadow 0.2s ease;
+.campos-posicion {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
 }
-
-.campo-dato input:focus {
+.campos-posicion input[type="number"] {
+    width: 60px;
+    padding: 8px 4px;
+    border: none;
+    border-radius: 10px;
+    background: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    text-align: center;
+    outline: none;
+}
+.campos-posicion input[type="number"]:focus {
+    box-shadow: 0 0 0 2px #11111120;
+}
+.campos-posicion select {
+    padding: 8px 4px;
+    border: none;
+    border-radius: 10px;
+    background: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    outline: none;
+    min-width: 90px;
+}
+.campos-posicion select:focus {
     box-shadow: 0 0 0 2px #11111120;
 }
 
-.campo-dato small {
-    display: block;
-    font-size: 10px;
-    color: #888888;
-    margin-top: 4px;
+/* Planetas */
+.fila-planeta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    padding: 4px 0;
+    border-bottom: 1px solid #e8e7e5;
+}
+.fila-planeta:last-child {
+    border-bottom: none;
+}
+.fila-planeta .check-mostrar {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.fila-planeta .nombre-astro {
+    font-size: 12px;
+    font-weight: 500;
+    min-width: 80px;
+    letter-spacing: 0.3px;
+}
+.fila-planeta .campos-posicion {
+    flex: 1;
+    justify-content: flex-end;
+}
+.fila-planeta .campos-posicion input[type="number"] {
+    width: 48px;
+    padding: 6px 2px;
+    font-size: 12px;
+}
+.fila-planeta .campos-posicion select {
+    padding: 6px 2px;
+    font-size: 11px;
+    min-width: 70px;
 }
 
-/* ---------- BOTONES ---------- */
-#btn-calcular {
+/* Opciones */
+.campo-opcion {
+    margin-bottom: 12px;
+}
+.campo-opcion label {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 500;
+    margin-right: 10px;
+}
+.campo-opcion select,
+.campo-opcion input[type="number"] {
+    padding: 8px 10px;
+    border: none;
+    border-radius: 10px;
+    background: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    outline: none;
+    width: auto;
+}
+.campo-opcion input[type="number"] {
+    width: 100px;
+}
+.campo-opcion input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+    cursor: pointer;
+}
+.campo-opcion small {
+    display: block;
+    font-size: 10px;
+    color: #888;
+    margin-top: 2px;
+}
+
+/* Botones */
+#btn-generar {
     display: block;
     width: 100%;
-    background-color: #111111;
+    background: #111111;
     border-radius: 12px;
     color: #ffffff;
     border: none;
-    font-family: 'Inter', sans-serif;
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 2px;
     text-transform: uppercase;
     padding: 16px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background 0.2s;
+}
+#btn-generar:hover {
+    background: #333333;
 }
 
-#btn-calcular:hover {
-    background-color: #333333;
-}
-
-#btn-borrar {
+#btn-restablecer {
     display: block;
     width: 100%;
     margin-top: 12px;
-    background-color: #f5f4f2;
+    background: #f5f4f2;
     border-radius: 12px;
     color: #111111;
     border: none;
-    font-family: 'Inter', sans-serif;
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 1px;
     text-transform: uppercase;
     padding: 12px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s;
 }
-
-#btn-borrar:hover {
-    background-color: #111111;
+#btn-restablecer:hover {
+    background: #111111;
     color: #ffffff;
 }
 
-/* ---------- SVG CARTA ASTRAL ---------- */
+/* SVG */
 #carta-astral {
     display: block;
     width: 100%;
     height: auto;
     aspect-ratio: 1/1;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
 }
-
 #carta-astral text {
     font-family: 'Inter', sans-serif !important;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    fill: #111111;
 }
-
 #carta-astral circle,
 #carta-astral line,
 #carta-astral path {
     shape-rendering: geometricPrecision;
+}
+
+/* Mensaje de error */
+#mensaje-error {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
 }
 
 /* ---------- RESPONSIVE ---------- */
@@ -201,13 +279,11 @@ body {
         flex-direction: column;
         gap: 30px;
     }
-    
     .seccion-formulario {
         flex: 1 1 auto;
         width: 100%;
         min-width: 0;
     }
-    
     .contenedor-sticky-mapa {
         position: relative;
         top: 0;
@@ -219,17 +295,21 @@ body {
     .contenedor-principal {
         padding: 20px 10px;
     }
-    
     .header-astral h1 {
         font-size: 22px;
         letter-spacing: 2px;
     }
-    
     .bloque-formulario {
-        padding: 18px;
+        padding: 15px;
     }
-    
-    .campo-dato input {
-        font-size: 16px; /* Evita zoom en iOS */
+    .campos-posicion input[type="number"] {
+        width: 45px;
+    }
+    .fila-planeta .campos-posicion input[type="number"] {
+        width: 38px;
+    }
+    .fila-planeta .nombre-astro {
+        min-width: 60px;
+        font-size: 11px;
     }
 }

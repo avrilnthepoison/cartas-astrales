@@ -3,56 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gliese: Carta Astral - Sistema de Signos Enteros</title>
+    <title>Gliese · Carta Astral (Manual)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <main class="contenedor-principal">
         <header class="header-astral">
             <h1>Carta Astral</h1>
-            <p class="subtitulo">Sistema de Signos Enteros - Swiss Ephemeris</p>
+            <p class="subtitulo">Ingreso manual · Whole Sign / Regiomontanus</p>
         </header>
 
         <div class="interfaz-columnas">
             <!-- COLUMNA IZQUIERDA: FORMULARIO -->
             <section class="seccion-formulario">
-                <div class="bloque-formulario">
-                    <h3>Datos de Nacimiento</h3>
-                    
-                    <div class="campo-dato">
-                        <label for="fecha-nacimiento">Fecha de Nacimiento</label>
-                        <input type="date" id="fecha-nacimiento" value="2000-01-01">
+                <form id="form-carta" autocomplete="off">
+                    <!-- Ejes principales -->
+                    <div class="bloque-formulario">
+                        <h3>Ejes principales</h3>
+                        <div class="campo-eje">
+                            <label>Ascendente (ASC)</label>
+                            <div class="campos-posicion">
+                                <input type="number" id="asc-grado" min="0" max="29" placeholder="G°">
+                                <input type="number" id="asc-minuto" min="0" max="59" placeholder="M'">
+                                <select id="asc-signo">
+                                    <option value="0">Aries</option><option value="1">Tauro</option>
+                                    <option value="2">Géminis</option><option value="3">Cáncer</option>
+                                    <option value="4">Leo</option><option value="5">Virgo</option>
+                                    <option value="6">Libra</option><option value="7">Escorpio</option>
+                                    <option value="8">Sagitario</option><option value="9">Capricornio</option>
+                                    <option value="10">Acuario</option><option value="11">Piscis</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="campo-eje">
+                            <label>Medio Cielo (MC)</label>
+                            <div class="campos-posicion">
+                                <input type="number" id="mc-grado" min="0" max="29" placeholder="G°">
+                                <input type="number" id="mc-minuto" min="0" max="59" placeholder="M'">
+                                <select id="mc-signo">
+                                    <option value="0">Aries</option><option value="1">Tauro</option>
+                                    <option value="2">Géminis</option><option value="3">Cáncer</option>
+                                    <option value="4">Leo</option><option value="5">Virgo</option>
+                                    <option value="6">Libra</option><option value="7">Escorpio</option>
+                                    <option value="8">Sagitario</option><option value="9">Capricornio</option>
+                                    <option value="10">Acuario</option><option value="11">Piscis</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="campo-eje">
+                            <label>Latitud (para Regiomontanus)</label>
+                            <input type="number" id="latitud-casas" step="any" placeholder="Ej: 40.7128">
+                            <small>Necesaria solo para sistema Regiomontanus</small>
+                        </div>
                     </div>
-                    
-                    <div class="campo-dato">
-                        <label for="hora-nacimiento">Hora de Nacimiento (local)</label>
-                        <input type="time" id="hora-nacimiento" value="12:00" step="60">
-                    </div>
-                    
-                    <div class="campo-dato">
-                        <label for="latitud">Latitud (°)</label>
-                        <input type="number" id="latitud" step="0.0001" placeholder="Ej: 40.7128" value="40.7128">
-                        <small style="display:block;font-size:10px;color:#888;margin-top:4px;">Norte: positivo | Sur: negativo</small>
-                    </div>
-                    
-                    <div class="campo-dato">
-                        <label for="longitud">Longitud (°)</label>
-                        <input type="number" id="longitud" step="0.0001" placeholder="Ej: -74.0060" value="-74.0060">
-                        <small style="display:block;font-size:10px;color:#888;margin-top:4px;">Este: positivo | Oeste: negativo</small>
-                    </div>
-                    
-                    <div class="campo-dato">
-                        <label for="zona-horaria">Zona Horaria (UTC)</label>
-                        <input type="number" id="zona-horaria" step="0.5" value="-5">
-                        <small style="display:block;font-size:10px;color:#888;margin-top:4px;">Ej: -5 para EST, +1 para CET</small>
-                    </div>
-                </div>
 
-                <button id="btn-calcular">Calcular Carta Astral</button>
-                <button id="btn-borrar">Restablecer Datos</button>
+                    <!-- Planetas -->
+                    <div class="bloque-formulario">
+                        <h3>Planetas y puntos</h3>
+                        <div id="lista-planetas">
+                            <!-- Se genera con JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Opciones adicionales -->
+                    <div class="bloque-formulario">
+                        <h3>Opciones</h3>
+                        <div class="campo-opcion">
+                            <label for="sistema-casas">Sistema de casas</label>
+                            <select id="sistema-casas">
+                                <option value="W">Whole Sign (signos enteros)</option>
+                                <option value="R">Regiomontanus</option>
+                            </select>
+                        </div>
+                        <div class="campo-opcion">
+                            <label>Mostrar líneas de casas</label>
+                            <input type="checkbox" id="mostrar-casas" checked>
+                        </div>
+                    </div>
+
+                    <button type="button" id="btn-generar">Dibujar Carta</button>
+                    <button type="button" id="btn-restablecer">Restablecer datos</button>
+                </form>
+                <div id="mensaje-error" style="display:none; margin-top:15px; padding:12px; background:#fee; border-radius:12px; color:#c00; font-size:13px;"></div>
             </section>
 
             <!-- COLUMNA DERECHA: GRÁFICO -->
@@ -64,11 +99,6 @@
         </div>
     </main>
 
-    <!-- LIBRERÍAS EXTERNAS -->
-    <script src="https://cdn.jsdelivr.net/npm/swe.js@2.0.0/dist/swe.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.43/moment-timezone-with-data.min.js"></script>
-    
     <script src="script.js"></script>
 </body>
 </html>
