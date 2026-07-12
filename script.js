@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const gInput = fila.querySelector(".p-grado").value;
             const mInput = fila.querySelector(".p-minuto").value;
             const signoIndice = parseInt(fila.querySelector(".p-signo").value, 10);
-            // Verificar si existe el checkbox de retrógrado
+            // Leer checkbox de retrógrado (si existe)
             const retroCheck = fila.querySelector(".p-retrogrado");
             const retrogrado = retroCheck ? retroCheck.checked : false;
 
@@ -98,11 +98,8 @@ document.addEventListener("DOMContentLoaded", () => {
             fila.querySelector(".p-grado").value = "";
             fila.querySelector(".p-minuto").value = "";
             fila.querySelector(".p-signo").value = "0";
-            // Desmarcar checkbox de retrógrado si existe
             const retroCheck = fila.querySelector(".p-retrogrado");
-            if (retroCheck) {
-                retroCheck.checked = false;
-            }
+            if (retroCheck) retroCheck.checked = false;
         });
 
         dibujarRadixManual(0, 0, {}, false);
@@ -135,11 +132,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         fila.querySelector(".p-grado").value = datosAstro.g;
                         fila.querySelector(".p-minuto").value = datosAstro.m;
                         fila.querySelector(".p-signo").value = datosAstro.signo;
-                        // Restaurar checkbox retrógrado si existe
                         const retroCheck = fila.querySelector(".p-retrogrado");
-                        if (retroCheck) {
-                            retroCheck.checked = datosAstro.retrogrado || false;
-                        }
+                        if (retroCheck) retroCheck.checked = datosAstro.retrogrado || false;
                     }
                 });
             }
@@ -154,6 +148,9 @@ document.addEventListener("DOMContentLoaded", () => {
     botonBorrar.addEventListener("click", restablecerTodoACero);
     cargarValoresGuardados();
 
+    // ============================================================
+    //  FUNCIÓN DE DIBUJO (CORREGIDA: etiquetas con grado en signo y posición interior)
+    // ============================================================
     function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
         while (lienzoSvg.firstChild) {
             lienzoSvg.removeChild(lienzoSvg.firstChild);
@@ -270,78 +267,97 @@ document.addEventListener("DOMContentLoaded", () => {
             txtMc.textContent = "M.C.";
             lienzoSvg.appendChild(txtMc);
 
-            // --- Planetas con símbolo, posición y retrógrado ---
-            // Obtener datos de retrógrado desde localStorage
-            let datosRetro = {};
+            // --- Obtener datos originales de los planetas desde localStorage ---
+            let datosPlanetasForm = {};
             try {
                 const raw = localStorage.getItem("datosRadixManual");
                 if (raw) {
                     const parsed = JSON.parse(raw);
                     if (parsed.planetas) {
                         for (const [nombre, info] of Object.entries(parsed.planetas)) {
-                            datosRetro[nombre] = info.retrogrado || false;
+                            datosPlanetasForm[nombre] = {
+                                g: info.g || 0,
+                                m: info.m || 0,
+                                retrogrado: info.retrogrado || false
+                            };
                         }
                     }
                 }
             } catch (e) {}
 
+            // --- Dibujar planetas ---
             let idx = 0;
             for (const nombre of cuerpos) {
                 if (planetas.hasOwnProperty(nombre)) {
                     const gradosAbsolutos = planetas[nombre];
                     const radPlaneta = ajustarAngulo(gradosAbsolutos);
+
+                    // Radio del planeta (escalonado)
                     const radioPlanetas = RADIO_RUEDA - 45 - (idx % 3) * 8;
                     const xPlaneta = Math.round(CENTRO_X + radioPlanetas * Math.cos(radPlaneta));
                     const yPlaneta = Math.round(CENTRO_Y + radioPlanetas * Math.sin(radPlaneta));
 
-                    // Símbolo del planeta
+                    // 1. Símbolo del planeta (en el radio principal)
                     const simbolo = simbolos[nombre] || "?";
                     const txtSimbolo = document.createElementNS("http://www.w3.org/2000/svg", "text");
                     txtSimbolo.setAttribute("x", String(xPlaneta));
-                    txtSimbolo.setAttribute("y", String(yPlaneta - 4));
+                    txtSimbolo.setAttribute("y", String(yPlaneta + 4)); // centrado vertical
                     txtSimbolo.setAttribute("font-family", "'Segoe UI Symbol', 'Arial Unicode MS', sans-serif");
-                    txtSimbolo.setAttribute("font-size", "14");
+                    txtSimbolo.setAttribute("font-size", "16");
                     txtSimbolo.setAttribute("font-weight", "400");
                     txtSimbolo.setAttribute("text-anchor", "middle");
+                    txtSimbolo.setAttribute("dominant-baseline", "central");
                     txtSimbolo.setAttribute("fill", "#111111");
                     txtSimbolo.textContent = simbolo;
                     lienzoSvg.appendChild(txtSimbolo);
 
-                    // Si está retrógrado (y no es SOL ni LUNA, pero por si acaso)
-                    const retrogrado = datosRetro[nombre] || false;
-                    if (retrogrado) {
+                    // 2. Etiqueta de posición (grado y minuto) - detrás del símbolo (más cerca del centro)
+                    // Usamos los valores originales del formulario (grado en signo y minuto)
+                    const datosPlaneta = datosPlanetasForm[nombre] || { g: 0, m: 0 };
+                    const gradoEnSigno = parseInt(datosPlaneta.g, 10) || 0;
+                    const minuto = parseInt(datosPlaneta.m, 10) || 0;
+
+                    // Radio interior para la etiqueta (entre el centro y el planeta)
+                    const radioEtiqueta = radioPlanetas - 14;
+                    const xEtiqueta = Math.round(CENTRO_X + radioEtiqueta * Math.cos(radPlaneta));
+                    const yEtiqueta = Math.round(CENTRO_Y + radioEtiqueta * Math.sin(radPlaneta));
+
+                    const txtPos = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    txtPos.setAttribute("x", String(xEtiqueta));
+                    txtPos.setAttribute("y", String(yEtiqueta + 2));
+                    txtPos.setAttribute("font-family", "'Inter', sans-serif");
+                    txtPos.setAttribute("font-size", "8");
+                    txtPos.setAttribute("font-weight", "500");
+                    txtPos.setAttribute("text-anchor", "middle");
+                    txtPos.setAttribute("dominant-baseline", "central");
+                    txtPos.setAttribute("fill", "#666666");
+                    txtPos.textContent = `${gradoEnSigno}°${minuto}'`;
+                    lienzoSvg.appendChild(txtPos);
+
+                    // 3. Si está retrógrado, dibujar "R" al lado del símbolo (un poco más afuera)
+                    if (datosPlaneta.retrogrado) {
+                        const radioR = radioPlanetas + 12;
+                        const xR = Math.round(CENTRO_X + radioR * Math.cos(radPlaneta));
+                        const yR = Math.round(CENTRO_Y + radioR * Math.sin(radPlaneta));
                         const txtRetro = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                        txtRetro.setAttribute("x", String(xPlaneta + 10));
-                        txtRetro.setAttribute("y", String(yPlaneta - 8));
+                        txtRetro.setAttribute("x", String(xR));
+                        txtRetro.setAttribute("y", String(yR + 1));
                         txtRetro.setAttribute("font-family", "'Inter', sans-serif");
-                        txtRetro.setAttribute("font-size", "8");
+                        txtRetro.setAttribute("font-size", "9");
                         txtRetro.setAttribute("font-weight", "700");
                         txtRetro.setAttribute("text-anchor", "middle");
+                        txtRetro.setAttribute("dominant-baseline", "central");
                         txtRetro.setAttribute("fill", "#c00");
                         txtRetro.textContent = "R";
                         lienzoSvg.appendChild(txtRetro);
                     }
-
-                    // Posición en grados y minutos
-                    const grado = Math.floor(gradosAbsolutos);
-                    const minuto = Math.round((gradosAbsolutos - grado) * 60);
-                    const txtPos = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                    txtPos.setAttribute("x", String(xPlaneta));
-                    txtPos.setAttribute("y", String(yPlaneta + 10));
-                    txtPos.setAttribute("font-family", "'Inter', sans-serif");
-                    txtPos.setAttribute("font-size", "7");
-                    txtPos.setAttribute("font-weight", "400");
-                    txtPos.setAttribute("text-anchor", "middle");
-                    txtPos.setAttribute("fill", "#666666");
-                    txtPos.textContent = `${grado}°${minuto}'`;
-                    lienzoSvg.appendChild(txtPos);
 
                     idx++;
                 }
             }
         }
 
-        // ---- CAPA 4: Nombres de los signos ----
+        // ---- CAPA 4: Nombres de los signos (texto curvado) ----
         for (let i = 0; i < 12; i++) {
             const gradoInicioArco = i * 30;
             const gradoFinArco = gradoInicioArco + 30;

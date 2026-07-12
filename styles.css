@@ -224,25 +224,7 @@ select {
     shape-rendering: geometricPrecision;
 }
 
-/* RESPONSIVE: Si la pantalla es pequeña (celulares), vuelve a una sola columna */
-@media (max-width: 850px) {
-    .interfaz-columnas {
-        display: block;
-        width: 100%;
-    }
-    .seccion-formulario,
-    .seccion-mapa {
-        display: block;
-        width: 100%;
-        padding-right: 0;
-    }
-    .contenedor-sticky-mapa {
-        position: relative;
-        top: 0;
-    }
-}
-
-/* Retrógrado */
+/* Estilos para el checkbox de retrógrado */
 .etiqueta-retrogrado {
     display: inline-flex;
     align-items: center;
@@ -263,16 +245,33 @@ select {
 
 /* Ajustar el ancho de los inputs para que quepa el checkbox */
 .campos-posicion input[type="number"] {
-    width: 45px; /* ligeramente más estrecho */
+    width: 45px;
     margin-right: 4px;
 }
 
 .campos-posicion select {
-    width: 85px; /* un poco más estrecho */
+    width: 85px;
     margin-right: 4px;
 }
 
-/* En pantallas pequeñas, mantener legibilidad */
+/* RESPONSIVE: Si la pantalla es pequeña (celulares), vuelve a una sola columna */
+@media (max-width: 850px) {
+    .interfaz-columnas {
+        display: block;
+        width: 100%;
+    }
+    .seccion-formulario,
+    .seccion-mapa {
+        display: block;
+        width: 100%;
+        padding-right: 0;
+    }
+    .contenedor-sticky-mapa {
+        position: relative;
+        top: 0;
+    }
+}
+
 @media (max-width: 500px) {
     .campos-posicion input[type="number"] {
         width: 35px;
