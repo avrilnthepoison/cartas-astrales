@@ -1,6 +1,8 @@
-/* ==========================================================================
-   1. VARIABLES Y CONFIGURACIÓN GLOBAL
-   ========================================================================== */
+/* ============================================
+   GLIESE - ESTILOS PARA CARTA ASTRAL
+   ============================================ */
+
+/* ---------- RESET Y BASE ---------- */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -14,15 +16,14 @@ body {
     line-height: 1.5;
 }
 
-/* ==========================================================================
-   2. ESTRUCTURA DE LA INTERFAZ (DOS COLUMNAS)
-   ========================================================================== */
+/* ---------- CONTENEDOR PRINCIPAL ---------- */
 .contenedor-principal {
     max-width: 1300px;
     margin: 0 auto;
     padding: 40px 20px;
 }
 
+/* ---------- HEADER ---------- */
 .header-astral {
     text-align: center;
     margin-bottom: 50px;
@@ -45,25 +46,21 @@ body {
     margin: 0;
 }
 
+/* ---------- INTERFAZ DE DOS COLUMNAS ---------- */
 .interfaz-columnas {
-    display: table;
-    width: 100%;
-    table-layout: fixed;
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
 }
 
-/* Columna Izquierda: Formulario */
 .seccion-formulario {
-    display: table-cell;
-    width: 40%;
-    padding-right: 5%;
-    vertical-align: top;
+    flex: 0 0 35%;
+    min-width: 280px;
 }
 
-/* Columna Derecha: Gráfico */
 .seccion-mapa {
-    display: table-cell;
-    width: 60%;
-    vertical-align: top;
+    flex: 1;
+    min-width: 0;
 }
 
 .contenedor-sticky-mapa {
@@ -74,9 +71,7 @@ body {
     margin: 0 auto;
 }
 
-/* ==========================================================================
-   3. COMPONENTES DEL FORMULARIO
-   ========================================================================== */
+/* ---------- FORMULARIO ---------- */
 .bloque-formulario {
     border: none;
     padding: 25px;
@@ -96,58 +91,45 @@ body {
     padding-bottom: 8px;
 }
 
-/* Filas de entrada */
-.fila-eje, .fila-planeta {
-    display: table;
-    width: 100%;
-    margin-bottom: 15px;
+.campo-dato {
+    margin-bottom: 16px;
 }
 
-.fila-planeta:last-child {
-    margin-bottom: 0;
-}
-
-.nombre-eje, .nombre-astro {
-    display: table-cell;
-    width: 30%;
-    vertical-align: middle;
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
+.campo-dato label {
+    display: block;
+    font-size: 11px;
     font-weight: 600;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    color: #444444;
 }
 
-.campos-posicion {
-    display: table-cell;
-    width: 70%;
-    text-align: right;
-}
-
-/* Inputs y Selects */
-input[type="number"], select {
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    color: #111111;
+.campo-dato input {
+    width: 100%;
+    padding: 10px 12px;
     border: none;
     border-radius: 12px;
-    padding: 6px 6px;
     background-color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
     outline: none;
-    vertical-align: middle;
+    transition: box-shadow 0.2s ease;
 }
 
-input[type="number"] {
-    width: 50px;
-    margin-right: 8px;
-    text-align: center;
+.campo-dato input:focus {
+    box-shadow: 0 0 0 2px #11111120;
 }
 
-select {
-    width: 110px;
+.campo-dato small {
+    display: block;
+    font-size: 10px;
+    color: #888888;
+    margin-top: 4px;
 }
 
-/* Botón de Generar Gráfico */
-#btn-generar {
+/* ---------- BOTONES ---------- */
+#btn-calcular {
     display: block;
     width: 100%;
     background-color: #111111;
@@ -164,11 +146,10 @@ select {
     transition: background-color 0.2s ease;
 }
 
-#btn-generar:hover {
+#btn-calcular:hover {
     background-color: #333333;
 }
 
-/* Botón para Restablecer */
 #btn-borrar {
     display: block;
     width: 100%;
@@ -184,7 +165,7 @@ select {
     text-transform: uppercase;
     padding: 12px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 #btn-borrar:hover {
@@ -192,38 +173,63 @@ select {
     color: #ffffff;
 }
 
-/* ==========================================================================
-   4. ESTILOS DEL GRÁFICO SVG (RADIX)
-   ========================================================================== */
+/* ---------- SVG CARTA ASTRAL ---------- */
 #carta-astral {
     display: block;
     width: 100%;
     height: auto;
+    aspect-ratio: 1/1;
 }
 
-/* Forzar tipografía Inter en todo el contenido de texto interno del SVG */
 #carta-astral text {
     font-family: 'Inter', sans-serif !important;
     font-size: 10px;
     font-weight: 600;
-    letter-spacing: 1.2px;
+    letter-spacing: 0.5px;
     fill: #111111;
 }
 
-/* Ajuste específico para que las líneas mantengan su finura */
-#carta-astral circle, 
-#carta-astral line {
+#carta-astral circle,
+#carta-astral line,
+#carta-astral path {
     shape-rendering: geometricPrecision;
 }
 
-/* RESPONSIVE: Si la pantalla es pequeña (celulares), vuelve a una sola columna */
-@media (max-width: 850px) {
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 900px) {
     .interfaz-columnas {
-        grid-template-columns: 1fr;
+        flex-direction: column;
         gap: 30px;
     }
+    
+    .seccion-formulario {
+        flex: 1 1 auto;
+        width: 100%;
+        min-width: 0;
+    }
+    
     .contenedor-sticky-mapa {
         position: relative;
         top: 0;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 500px) {
+    .contenedor-principal {
+        padding: 20px 10px;
+    }
+    
+    .header-astral h1 {
+        font-size: 22px;
+        letter-spacing: 2px;
+    }
+    
+    .bloque-formulario {
+        padding: 18px;
+    }
+    
+    .campo-dato input {
+        font-size: 16px; /* Evita zoom en iOS */
     }
 }
