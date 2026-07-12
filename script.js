@@ -62,7 +62,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const gInput = fila.querySelector(".p-grado").value;
             const mInput = fila.querySelector(".p-minuto").value;
             const signoIndice = parseInt(fila.querySelector(".p-signo").value, 10);
-            const retrogrado = fila.querySelector(".p-retrogrado").checked; // <-- NUEVO
+            // Verificar si existe el checkbox de retrógrado
+            const retroCheck = fila.querySelector(".p-retrogrado");
+            const retrogrado = retroCheck ? retroCheck.checked : false;
 
             const g = parseInt(gInput, 10) || 0;
             const m = parseInt(mInput, 10) || 0;
@@ -74,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 g: gInput,
                 m: mInput,
                 signo: signoIndice,
-                retrogrado: retrogrado  // <-- NUEVO
+                retrogrado: retrogrado
             };
         });
 
@@ -96,7 +98,11 @@ document.addEventListener("DOMContentLoaded", () => {
             fila.querySelector(".p-grado").value = "";
             fila.querySelector(".p-minuto").value = "";
             fila.querySelector(".p-signo").value = "0";
-            fila.querySelector(".p-retrogrado").checked = false; // <-- NUEVO
+            // Desmarcar checkbox de retrógrado si existe
+            const retroCheck = fila.querySelector(".p-retrogrado");
+            if (retroCheck) {
+                retroCheck.checked = false;
+            }
         });
 
         dibujarRadixManual(0, 0, {}, false);
@@ -129,11 +135,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         fila.querySelector(".p-grado").value = datosAstro.g;
                         fila.querySelector(".p-minuto").value = datosAstro.m;
                         fila.querySelector(".p-signo").value = datosAstro.signo;
-                        // Restaurar checkbox retrógrado
-                        if (datosAstro.retrogrado !== undefined) {
-                            fila.querySelector(".p-retrogrado").checked = datosAstro.retrogrado;
-                        } else {
-                            fila.querySelector(".p-retrogrado").checked = false;
+                        // Restaurar checkbox retrógrado si existe
+                        const retroCheck = fila.querySelector(".p-retrogrado");
+                        if (retroCheck) {
+                            retroCheck.checked = datosAstro.retrogrado || false;
                         }
                     }
                 });
@@ -266,10 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(txtMc);
 
             // --- Planetas con símbolo, posición y retrógrado ---
-            // Primero, necesitamos obtener los datos de retrogrado desde la estructura guardada
-            // Para eso, recuperamos los datos de localStorage o de la variable global.
-            // Voy a leer la estructura guardada desde el localStorage para obtener el flag.
-            // Si no está disponible, asumo false.
+            // Obtener datos de retrógrado desde localStorage
             let datosRetro = {};
             try {
                 const raw = localStorage.getItem("datosRadixManual");
@@ -305,7 +307,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     txtSimbolo.textContent = simbolo;
                     lienzoSvg.appendChild(txtSimbolo);
 
-                    // Si está retrógrado, dibujar "R" al lado (derecha)
+                    // Si está retrógrado (y no es SOL ni LUNA, pero por si acaso)
                     const retrogrado = datosRetro[nombre] || false;
                     if (retrogrado) {
                         const txtRetro = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -315,7 +317,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         txtRetro.setAttribute("font-size", "8");
                         txtRetro.setAttribute("font-weight", "700");
                         txtRetro.setAttribute("text-anchor", "middle");
-                        txtRetro.setAttribute("fill", "#c00"); // Color rojo para resaltar
+                        txtRetro.setAttribute("fill", "#c00");
                         txtRetro.textContent = "R";
                         lienzoSvg.appendChild(txtRetro);
                     }
@@ -339,7 +341,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // ---- CAPA 4: Nombres de los signos (texto curvado) ----
+        // ---- CAPA 4: Nombres de los signos ----
         for (let i = 0; i < 12; i++) {
             const gradoInicioArco = i * 30;
             const gradoFinArco = gradoInicioArco + 30;
