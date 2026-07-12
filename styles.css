@@ -136,13 +136,13 @@ input[type="number"], select {
 }
 
 input[type="number"] {
-    width: 50px;
+    width: 60px;
     margin-right: 8px;
     text-align: right;
 }
 
 select {
-    width: 100px;
+    width: 110px;
 }
 
 /* Botón de Generar Gráfico */
