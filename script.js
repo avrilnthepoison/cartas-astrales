@@ -1,469 +1,347 @@
-// ============================================================
-//  GLIESE · CARTA ASTRAL MANUAL (SIN API)
-//  v5.0 - Whole Sign / Regiomontanus (cálculo propio)
-// ============================================================
+document.addEventListener("DOMContentLoaded", () => {
 
-document.addEventListener('DOMContentLoaded', () => {
+    const botonGenerar = document.getElementById("btn-generar");
+    const botonBorrar = document.getElementById("btn-borrar");
+    const lienzoSvg = document.getElementById("carta-astral");
 
-    // ---- ELEMENTOS DEL DOM ----
-    const btnGenerar = document.getElementById('btn-generar');
-    const btnRestablecer = document.getElementById('btn-restablecer');
-    const svg = document.getElementById('carta-astral');
-    const mensajeError = document.getElementById('mensaje-error');
-    const listaPlanetas = document.getElementById('lista-planetas');
+    const CENTRO_X = 300;
+    const CENTRO_Y = 300;
+    const RADIO_RUEDA = 230;
 
-    // ---- CONFIGURACIÓN ----
-    const CX = 300, CY = 300, RADIO = 230;
-    const SIGNOS = ['ARIES','TAURO','GÉMINIS','CÁNCER','LEO','VIRGO',
-                    'LIBRA','ESCORPIO','SAGITARIO','CAPRICORNIO','ACUARIO','PISCIS'];
-
-    // Lista de cuerpos celestes con sus símbolos Unicode
-    const CUERPOS = [
-        { id: 'sol',       nombre: 'Sol',       simbolo: '☉' },
-        { id: 'luna',      nombre: 'Luna',      simbolo: '☽' },
-        { id: 'mercurio',  nombre: 'Mercurio',  simbolo: '☿' },
-        { id: 'venus',     nombre: 'Venus',     simbolo: '♀' },
-        { id: 'marte',     nombre: 'Marte',     simbolo: '♂' },
-        { id: 'jupiter',   nombre: 'Júpiter',   simbolo: '♃' },
-        { id: 'saturno',   nombre: 'Saturno',   simbolo: '♄' },
-        { id: 'urano',     nombre: 'Urano',     simbolo: '♅' },
-        { id: 'neptuno',   nombre: 'Neptuno',   simbolo: '♆' },
-        { id: 'pluton',    nombre: 'Plutón',    simbolo: '♇' },
-        { id: 'quiron',    nombre: 'Quirón',    simbolo: '⚷' },
-        { id: 'nodo-norte', nombre: 'Nodo Norte', simbolo: '☊' }
+    const nombresSignos = [
+        "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
+        "LEO", "VIRGO", "LIBRA", "ESCORPIO",
+        "SAGITARIO", "CAPRICORNIO", "ACUARIO", "PISCIS"
     ];
 
-    // ---- GENERAR DINÁMICAMENTE LOS CAMPOS DE PLANETAS ----
-    function generarCamposPlanetas() {
-        listaPlanetas.innerHTML = '';
-        CUERPOS.forEach((cuerpo) => {
-            const div = document.createElement('div');
-            div.className = 'fila-planeta';
-            div.dataset.planetaId = cuerpo.id;
+    // Símbolos planetarios (Unicode)
+    const simbolos = {
+        "SOL": "☉",
+        "LUNA": "☽",
+        "MERCURIO": "☿",
+        "VENUS": "♀",
+        "MARTE": "♂",
+        "JUPITER": "♃",
+        "SATURNO": "♄",
+        "URANO": "♅",
+        "NEPTUNO": "♆",
+        "PLUTON": "♇",
+        "QUIRON": "⚷",
+        "NODO_NORTE": "☊"
+    };
 
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.className = 'check-mostrar';
-            checkbox.checked = true;
-            checkbox.dataset.planetaId = cuerpo.id;
+    // Lista de todos los cuerpos (para iterar)
+    const cuerpos = Object.keys(simbolos);
 
-            const label = document.createElement('label');
-            label.className = 'nombre-astro';
-            label.textContent = `${cuerpo.simbolo} ${cuerpo.nombre}`;
-
-            const contenedorCampos = document.createElement('div');
-            contenedorCampos.className = 'campos-posicion';
-
-            const inputGrado = document.createElement('input');
-            inputGrado.type = 'number';
-            inputGrado.min = 0; inputGrado.max = 29;
-            inputGrado.placeholder = 'G°';
-            inputGrado.className = 'p-grado';
-            inputGrado.dataset.planetaId = cuerpo.id;
-
-            const inputMinuto = document.createElement('input');
-            inputMinuto.type = 'number';
-            inputMinuto.min = 0; inputMinuto.max = 59;
-            inputMinuto.placeholder = "M'";
-            inputMinuto.className = 'p-minuto';
-            inputMinuto.dataset.planetaId = cuerpo.id;
-
-            const selectSigno = document.createElement('select');
-            selectSigno.className = 'p-signo';
-            selectSigno.dataset.planetaId = cuerpo.id;
-            SIGNOS.forEach((sig, i) => {
-                const opt = document.createElement('option');
-                opt.value = i;
-                opt.textContent = sig;
-                selectSigno.appendChild(opt);
-            });
-
-            contenedorCampos.appendChild(inputGrado);
-            contenedorCampos.appendChild(inputMinuto);
-            contenedorCampos.appendChild(selectSigno);
-
-            div.appendChild(checkbox);
-            div.appendChild(label);
-            div.appendChild(contenedorCampos);
-
-            listaPlanetas.appendChild(div);
-        });
-    }
-    generarCamposPlanetas();
-
-    // ---- FUNCIONES AUXILIARES ----
-    function mostrarError(msg) {
-        mensajeError.textContent = msg;
-        mensajeError.style.display = 'block';
-        console.error(msg);
-    }
-    function ocultarError() {
-        mensajeError.style.display = 'none';
+    function transformarADecimal(g, m) {
+        return g + (m / 60);
     }
 
-    function crearElemento(tipo, atributos) {
-        const el = document.createElementNS('http://www.w3.org/2000/svg', tipo);
-        if (atributos) {
-            for (const [k, v] of Object.entries(atributos)) {
-                el.setAttribute(k, String(v));
-            }
-        }
-        return el;
-    }
+    // Función central para procesar formulario y guardar en memoria
+    function procesarYGenerarCarta() {
+        const ascG = parseInt(document.getElementById("asc-grado").value, 10) || 0;
+        const ascM = parseInt(document.getElementById("asc-minuto").value, 10) || 0;
+        const ascSigno = parseInt(document.getElementById("asc-signo").value, 10);
+        const valorAscDecimal = transformarADecimal(ascG, ascM);
+        const gradoAscAbsoluto = (ascSigno * 30) + valorAscDecimal;
 
-    function limpiarSVG() {
-        while (svg.firstChild) svg.removeChild(svg.firstChild);
-    }
+        const mcG = parseInt(document.getElementById("mc-grado").value, 10) || 0;
+        const mcM = parseInt(document.getElementById("mc-minuto").value, 10) || 0;
+        const mcSigno = parseInt(document.getElementById("mc-signo").value, 10);
+        const valorMcDecimal = transformarADecimal(mcG, mcM);
+        const gradoMcAbsoluto = (mcSigno * 30) + valorMcDecimal;
 
-    // ---- CONVERSIÓN A GRADOS ABSOLUTOS ----
-    function posicionAbsoluta(grado, minuto, signo) {
-        const g = parseFloat(grado) || 0;
-        const m = parseFloat(minuto) || 0;
-        const s = parseInt(signo, 10) || 0;
-        return s * 30 + g + m / 60;
-    }
-
-    // ---- RECOGER DATOS DEL FORMULARIO ----
-    function obtenerDatosFormulario() {
-        const datos = {
-            ascendente: null,
-            medioCielo: null,
-            latitud: null,
-            sistema: document.getElementById('sistema-casas').value,
-            mostrarCasas: document.getElementById('mostrar-casas').checked,
+        const planetasIngresados = {};
+        const filasPlanetas = document.querySelectorAll(".fila-planeta");
+        const estructuraAGuardar = {
+            ascendente: { g: document.getElementById("asc-grado").value, m: document.getElementById("asc-minuto").value, signo: ascSigno },
+            medioCielo: { g: document.getElementById("mc-grado").value, m: document.getElementById("mc-minuto").value, signo: mcSigno },
             planetas: {}
         };
 
-        // ASC
-        const ascG = document.getElementById('asc-grado').value;
-        const ascM = document.getElementById('asc-minuto').value;
-        const ascS = document.getElementById('asc-signo').value;
-        if (ascG !== '' && ascM !== '' && ascS !== '') {
-            datos.ascendente = posicionAbsoluta(ascG, ascM, ascS);
-        }
+        filasPlanetas.forEach(fila => {
+            const nombreAstro = fila.getAttribute("data-astro");
+            const gInput = fila.querySelector(".p-grado").value;
+            const mInput = fila.querySelector(".p-minuto").value;
+            const signoIndice = parseInt(fila.querySelector(".p-signo").value, 10);
+            const g = parseInt(gInput, 10) || 0;
+            const m = parseInt(mInput, 10) || 0;
+            const posicionDecimal = transformarADecimal(g, m);
+            const posicionAbsoluta = (signoIndice * 30) + posicionDecimal;
 
-        // MC
-        const mcG = document.getElementById('mc-grado').value;
-        const mcM = document.getElementById('mc-minuto').value;
-        const mcS = document.getElementById('mc-signo').value;
-        if (mcG !== '' && mcM !== '' && mcS !== '') {
-            datos.medioCielo = posicionAbsoluta(mcG, mcM, mcS);
-        }
-
-        // Latitud
-        const lat = document.getElementById('latitud-casas').value;
-        datos.latitud = parseFloat(lat) || 0;
-
-        // Planetas
-        const filas = document.querySelectorAll('.fila-planeta');
-        filas.forEach(fila => {
-            const id = fila.dataset.planetaId;
-            const check = fila.querySelector('.check-mostrar');
-            const g = fila.querySelector('.p-grado').value;
-            const m = fila.querySelector('.p-minuto').value;
-            const s = fila.querySelector('.p-signo').value;
-            if (g !== '' && m !== '' && s !== '') {
-                datos.planetas[id] = {
-                    posicion: posicionAbsoluta(g, m, s),
-                    mostrar: check.checked
-                };
-            } else {
-                datos.planetas[id] = { posicion: 0, mostrar: false };
-            }
+            planetasIngresados[nombreAstro] = posicionAbsoluta;
+            estructuraAGuardar.planetas[nombreAstro] = { g: gInput, m: mInput, signo: signoIndice };
         });
 
-        return datos;
+        localStorage.setItem("datosRadixManual", JSON.stringify(estructuraAGuardar));
+        dibujarRadixManual(gradoAscAbsoluto, gradoMcAbsoluto, planetasIngresados, true);
     }
 
-    // ---- CÁLCULO DE CÚSPIDES (SIN API) ----
-    function calcularCuspides(asc, mc, lat, sistema) {
-        const eps = 23.4366; // oblicuidad de la eclíptica (valor fijo)
-        const cusp = [];
+    function restablecerTodoACero() {
+        localStorage.removeItem("datosRadixManual");
+        document.getElementById("asc-grado").value = "";
+        document.getElementById("asc-minuto").value = "";
+        document.getElementById("asc-signo").value = "0";
+        document.getElementById("mc-grado").value = "";
+        document.getElementById("mc-minuto").value = "";
+        document.getElementById("mc-signo").value = "0";
 
-        if (sistema === 'W') {
-            // Whole Sign: cada 30° desde el ASC
-            for (let i = 0; i < 12; i++) {
-                let ang = (asc + i * 30) % 360;
-                if (ang < 0) ang += 360;
-                cusp.push(ang);
-            }
-            return cusp;
-        }
+        const filasPlanetas = document.querySelectorAll(".fila-planeta");
+        filasPlanetas.forEach(fila => {
+            fila.querySelector(".p-grado").value = "";
+            fila.querySelector(".p-minuto").value = "";
+            fila.querySelector(".p-signo").value = "0";
+        });
 
-        if (sistema === 'R') {
-            // Regiomontanus (aproximación ecuatorial)
-            const latRad = lat * Math.PI / 180;
-            const epsRad = eps * Math.PI / 180;
-            const ascRad = asc * Math.PI / 180;
-            const mcRad = mc * Math.PI / 180;
-
-            // ARMC = MC - 90°
-            let armc = mc - 90;
-            if (armc < 0) armc += 360;
-            const armcRad = armc * Math.PI / 180;
-
-            // RA del ASC
-            const sinDecAsc = Math.sin(epsRad) * Math.sin(ascRad);
-            const decAsc = Math.asin(sinDecAsc);
-            const cosDecAsc = Math.cos(decAsc);
-            let raAsc = Math.atan2(Math.cos(epsRad) * Math.sin(ascRad), Math.cos(ascRad));
-            let raAscDeg = raAsc * 180 / Math.PI;
-            if (raAscDeg < 0) raAscDeg += 360;
-
-            // Ángulo horario del ASC
-            let hAsc = raAscDeg - armc;
-            if (hAsc < 0) hAsc += 360;
-
-            // Para cada casa, calcular su cúspide
-            for (let i = 0; i < 12; i++) {
-                let h = hAsc + i * 30;
-                if (h >= 360) h -= 360;
-                let ra = armc + h;
-                if (ra >= 360) ra -= 360;
-                const raRad = ra * Math.PI / 180;
-                // Proyectar sobre la eclíptica (asumiendo declinación cero)
-                let lon = Math.atan2(Math.sin(raRad) * Math.cos(epsRad), Math.cos(raRad));
-                let lonDeg = lon * 180 / Math.PI;
-                if (lonDeg < 0) lonDeg += 360;
-                cusp.push(lonDeg);
-            }
-            return cusp;
-        }
-
-        // Fallback: Whole Sign
-        for (let i = 0; i < 12; i++) {
-            let ang = (asc + i * 30) % 360;
-            if (ang < 0) ang += 360;
-            cusp.push(ang);
-        }
-        return cusp;
+        dibujarRadixManual(0, 0, {}, false);
     }
 
-    // ---- DIBUJO DE LA CARTA ----
-    function dibujarCarta(datos) {
-        limpiarSVG();
-        if (!datos || datos.ascendente === null || datos.medioCielo === null) {
-            dibujarRuedaBase();
+    function cargarValoresGuardados() {
+        const datosGuardados = localStorage.getItem("datosRadixManual");
+        if (!datosGuardados) {
+            dibujarRadixManual(0, 0, {}, false);
             return;
         }
-
-        const { ascendente, medioCielo, latitud, sistema, mostrarCasas, planetas } = datos;
-
-        // 1. Rueda base
-        dibujarRuedaBase();
-
-        // 2. Líneas de casas (si está activado)
-        if (mostrarCasas) {
-            const cuspides = calcularCuspides(ascendente, medioCielo, latitud, sistema);
-            dibujarLineasCasas(cuspides);
-        }
-
-        // 3. Ejes ASC y MC
-        dibujarEjes(ascendente, medioCielo);
-
-        // 4. Nombres de signos (curvados)
-        dibujarNombresSignos();
-
-        // 5. Grados (cada 10°)
-        dibujarGrados();
-
-        // 6. Planetas (con símbolos)
-        dibujarPlanetas(planetas);
-
-        // Guardar en localStorage
         try {
-            localStorage.setItem('carta_manual_datos', JSON.stringify(datos));
-        } catch (e) {}
-    }
-
-    // ---- SUBFUNCIONES DE DIBUJO ----
-    function dibujarRuedaBase() {
-        svg.appendChild(crearElemento('circle', { cx: CX, cy: CY, r: RADIO, stroke: '#111', 'stroke-width': 1.5, fill: 'none' }));
-        svg.appendChild(crearElemento('circle', { cx: CX, cy: CY, r: RADIO - 25, stroke: '#111', 'stroke-width': 1, fill: 'none' }));
-        svg.appendChild(crearElemento('circle', { cx: CX, cy: CY, r: 3, fill: '#111' }));
-    }
-
-    function dibujarLineasCasas(cuspides) {
-        cuspides.forEach(grado => {
-            const ang = (grado - 90) * Math.PI / 180;
-            const x1 = CX, y1 = CY;
-            const x2 = CX + RADIO * Math.cos(ang);
-            const y2 = CY + RADIO * Math.sin(ang);
-            svg.appendChild(crearElemento('line', {
-                x1, y1, x2, y2,
-                stroke: '#999', 'stroke-width': 0.5, 'stroke-dasharray': '2,4'
-            }));
-        });
-    }
-
-    function dibujarEjes(asc, mc) {
-        // Ascendente
-        const radAsc = (asc - 90) * Math.PI / 180;
-        const xAsc1 = CX + (RADIO - 25) * Math.cos(radAsc);
-        const yAsc1 = CY + (RADIO - 25) * Math.sin(radAsc);
-        const xAsc2 = CX + (RADIO - 65) * Math.cos(radAsc);
-        const yAsc2 = CY + (RADIO - 65) * Math.sin(radAsc);
-        svg.appendChild(crearElemento('line', { x1: xAsc1, y1: yAsc1, x2: xAsc2, y2: yAsc2, stroke: '#111', 'stroke-width': 2 }));
-        const txtAsc = crearElemento('text', {
-            x: CX + (RADIO - 78) * Math.cos(radAsc),
-            y: CY + (RADIO - 78) * Math.sin(radAsc) + 4,
-            'font-family': "'Inter', sans-serif", 'font-size': 10, 'font-weight': 600,
-            'text-anchor': 'middle', fill: '#111'
-        });
-        txtAsc.textContent = 'ASC';
-        svg.appendChild(txtAsc);
-
-        // Medio Cielo
-        const radMc = (mc - 90) * Math.PI / 180;
-        const xMc1 = CX + (RADIO - 25) * Math.cos(radMc);
-        const yMc1 = CY + (RADIO - 25) * Math.sin(radMc);
-        const xMc2 = CX + (RADIO - 65) * Math.cos(radMc);
-        const yMc2 = CY + (RADIO - 65) * Math.sin(radMc);
-        svg.appendChild(crearElemento('line', { x1: xMc1, y1: yMc1, x2: xMc2, y2: yMc2, stroke: '#111', 'stroke-width': 1.5, 'stroke-dasharray': '4,4' }));
-        const txtMc = crearElemento('text', {
-            x: CX + (RADIO - 78) * Math.cos(radMc),
-            y: CY + (RADIO - 78) * Math.sin(radMc) + 4,
-            'font-family': "'Inter', sans-serif", 'font-size': 10, 'font-weight': 600,
-            'text-anchor': 'middle', fill: '#111'
-        });
-        txtMc.textContent = 'MC';
-        svg.appendChild(txtMc);
-    }
-
-    function dibujarNombresSignos() {
-        const rTexto = RADIO - 16;
-        for (let i = 0; i < 12; i++) {
-            const angIni = (i * 30 - 90) * Math.PI / 180;
-            const angFin = ((i * 30 + 30) - 90) * Math.PI / 180;
-            const sx = CX + rTexto * Math.cos(angIni);
-            const sy = CY + rTexto * Math.sin(angIni);
-            const ex = CX + rTexto * Math.cos(angFin);
-            const ey = CY + rTexto * Math.sin(angFin);
-            const id = `path-signo-${i}`;
-            svg.appendChild(crearElemento('path', { id, d: `M ${ex},${ey} A ${rTexto},${rTexto} 0 0,1 ${sx},${sy}`, fill: 'none', stroke: 'none' }));
-            const tp = crearElemento('textPath', { href: `#${id}`, 'startOffset': '50%', 'text-anchor': 'middle' });
-            tp.textContent = SIGNOS[i];
-            const txt = crearElemento('text', { 'font-family': "'Inter', sans-serif", 'font-size': 10, 'font-weight': 600, fill: '#111' });
-            txt.appendChild(tp);
-            svg.appendChild(txt);
-        }
-    }
-
-    function dibujarGrados() {
-        const rGrados = RADIO - 4;
-        for (let i = 0; i < 360; i += 10) {
-            const ang = (i - 90) * Math.PI / 180;
-            const x = CX + rGrados * Math.cos(ang);
-            const y = CY + rGrados * Math.sin(ang) + 2;
-            const txt = crearElemento('text', {
-                x, y,
-                'font-family': "'Inter', sans-serif",
-                'font-size': 6,
-                'text-anchor': 'middle',
-                fill: '#666',
-                opacity: 0.5
-            });
-            txt.textContent = i;
-            svg.appendChild(txt);
-        }
-    }
-
-    function dibujarPlanetas(planetas) {
-        const radioBase = RADIO - 45;
-        const radioStep = 7;
-        let idx = 0;
-        for (const [id, data] of Object.entries(planetas)) {
-            if (!data.mostrar) continue;
-            const pos = data.posicion;
-            const cuerpo = CUERPOS.find(c => c.id === id);
-            if (!cuerpo) continue;
-            const radio = Math.min(radioBase + (idx % 3) * radioStep, RADIO - 30);
-            const ang = (pos - 90) * Math.PI / 180;
-            const x = CX + radio * Math.cos(ang);
-            const y = CY + radio * Math.sin(ang) + 3;
-            const txt = crearElemento('text', {
-                x, y,
-                'font-family': "'Segoe UI Symbol', 'Arial Unicode MS', sans-serif",
-                'font-size': 14,
-                'font-weight': 400,
-                'text-anchor': 'middle',
-                fill: '#111',
-                opacity: 0.9
-            });
-            txt.textContent = cuerpo.simbolo;
-            svg.appendChild(txt);
-            idx++;
-        }
-    }
-
-    // ---- ACCIÓN PRINCIPAL ----
-    function generarCarta() {
-        ocultarError();
-        const datos = obtenerDatosFormulario();
-        if (datos.ascendente === null || datos.medioCielo === null) {
-            mostrarError('⚠️ Debes ingresar el Ascendente y el Medio Cielo.');
-            return;
-        }
-        // Validar que al menos un planeta tenga datos
-        const algunPlaneta = Object.values(datos.planetas).some(p => p.posicion !== 0 && p.mostrar);
-        if (!algunPlaneta) {
-            mostrarError('⚠️ Ingresa al menos un planeta o punto para mostrar.');
-            return;
-        }
-        dibujarCarta(datos);
-    }
-
-    function restablecerDatos() {
-        document.querySelectorAll('input[type="number"]').forEach(inp => inp.value = '');
-        document.querySelectorAll('select').forEach(sel => sel.selectedIndex = 0);
-        document.querySelectorAll('.check-mostrar').forEach(chk => chk.checked = true);
-        document.getElementById('latitud-casas').value = '';
-        document.getElementById('sistema-casas').value = 'W';
-        document.getElementById('mostrar-casas').checked = true;
-        localStorage.removeItem('carta_manual_datos');
-        dibujarCarta(null);
-        ocultarError();
-    }
-
-    // ---- CARGAR DATOS GUARDADOS ----
-    function cargarDatosGuardados() {
-        try {
-            const raw = localStorage.getItem('carta_manual_datos');
-            if (!raw) {
-                dibujarCarta(null);
-                return;
+            const datos = JSON.parse(datosGuardados);
+            if (datos.ascendente) {
+                document.getElementById("asc-grado").value = datos.ascendente.g;
+                document.getElementById("asc-minuto").value = datos.ascendente.m;
+                document.getElementById("asc-signo").value = datos.ascendente.signo;
             }
-            const datos = JSON.parse(raw);
-            dibujarCarta(datos);
+            if (datos.medioCielo) {
+                document.getElementById("mc-grado").value = datos.medioCielo.g;
+                document.getElementById("mc-minuto").value = datos.medioCielo.m;
+                document.getElementById("mc-signo").value = datos.medioCielo.signo;
+            }
+            if (datos.planetas) {
+                const filasPlanetas = document.querySelectorAll(".fila-planeta");
+                filasPlanetas.forEach(fila => {
+                    const nombreAstro = fila.getAttribute("data-astro");
+                    const datosAstro = datos.planetas[nombreAstro];
+                    if (datosAstro) {
+                        fila.querySelector(".p-grado").value = datosAstro.g;
+                        fila.querySelector(".p-minuto").value = datosAstro.m;
+                        fila.querySelector(".p-signo").value = datosAstro.signo;
+                    }
+                });
+            }
+            procesarYGenerarCarta();
         } catch (e) {
-            console.warn('No se pudieron cargar datos guardados:', e);
-            dibujarCarta(null);
+            console.error("Error al restaurar los datos de sesión:", e);
+            dibujarRadixManual(0, 0, {}, false);
         }
     }
 
-    // ---- SOBRESCRIBIR dibujarCarta PARA GUARDAR ----
-    const dibujarCartaOriginal = dibujarCarta;
-    dibujarCarta = function(datos) {
-        dibujarCartaOriginal(datos);
-        if (datos && datos.ascendente !== null) {
-            try {
-                localStorage.setItem('carta_manual_datos', JSON.stringify(datos));
-            } catch (e) {}
+    botonGenerar.addEventListener("click", procesarYGenerarCarta);
+    botonBorrar.addEventListener("click", restablecerTodoACero);
+    cargarValoresGuardados();
+
+    // Función central gráfica con orden de capas y correcciones
+    function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
+        // Limpieza absoluta del lienzo previo
+        while (lienzoSvg.firstChild) {
+            lienzoSvg.removeChild(lienzoSvg.firstChild);
         }
-    };
 
-    // ---- EVENTOS ----
-    btnGenerar.addEventListener('click', generarCarta);
-    btnRestablecer.addEventListener('click', restablecerDatos);
-    document.querySelectorAll('input, select').forEach(el => {
-        el.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                generarCarta();
+        // Determinar el signo del ASC y el desplazamiento para la rotación
+        const indiceSignoCuspide = Math.floor(ascendenteAbs / 30);
+        const inicioSignoCuspideG = indiceSignoCuspide * 30;
+        const desfaceG = 180 + inicioSignoCuspideG;
+
+        function ajustarAngulo(gradosOriginales) {
+            return (desfaceG - gradosOriginales) * (Math.PI / 180);
+        }
+
+        // ---- CAPA 1: Círculos y punto central ----
+        const circuloExterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circuloExterior.setAttribute("cx", CENTRO_X);
+        circuloExterior.setAttribute("cy", CENTRO_Y);
+        circuloExterior.setAttribute("r", RADIO_RUEDA);
+        circuloExterior.setAttribute("stroke", "#111111");
+        circuloExterior.setAttribute("stroke-width", "1");
+        circuloExterior.setAttribute("fill", "none");
+        lienzoSvg.appendChild(circuloExterior);
+
+        const circuloInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circuloInterior.setAttribute("cx", CENTRO_X);
+        circuloInterior.setAttribute("cy", CENTRO_Y);
+        circuloInterior.setAttribute("r", RADIO_RUEDA - 25);
+        circuloInterior.setAttribute("stroke", "#111111");
+        circuloInterior.setAttribute("stroke-width", "1");
+        circuloInterior.setAttribute("fill", "none");
+        lienzoSvg.appendChild(circuloInterior);
+
+        const puntoCentral = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        puntoCentral.setAttribute("cx", CENTRO_X);
+        puntoCentral.setAttribute("cy", CENTRO_Y);
+        puntoCentral.setAttribute("r", "3");
+        puntoCentral.setAttribute("fill", "#111111");
+        lienzoSvg.appendChild(puntoCentral);
+
+        // ---- CAPA 2: Líneas divisorias de los 12 signos ----
+        for (let i = 0; i < 12; i++) {
+            const gradoLinea = i * 30;
+            const radLinea = ajustarAngulo(gradoLinea);
+            const x1 = Math.round(CENTRO_X + RADIO_RUEDA * Math.cos(radLinea));
+            const y1 = Math.round(CENTRO_Y + RADIO_RUEDA * Math.sin(radLinea));
+            const x2 = Math.round(CENTRO_X + (RADIO_RUEDA - 25) * Math.cos(radLinea));
+            const y2 = Math.round(CENTRO_Y + (RADIO_RUEDA - 25) * Math.sin(radLinea));
+            const lineaDivisoria = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            lineaDivisoria.setAttribute("x1", x1);
+            lineaDivisoria.setAttribute("y1", y1);
+            lineaDivisoria.setAttribute("x2", x2);
+            lineaDivisoria.setAttribute("y2", y2);
+            lineaDivisoria.setAttribute("stroke", "#111111");
+            lineaDivisoria.setAttribute("stroke-width", "1");
+            lienzoSvg.appendChild(lineaDivisoria);
+        }
+
+        // ---- CAPA 3: Ejes y planetas (si hay contenido) ----
+        if (mostrarContenido) {
+            // Eje del Ascendente
+            const radAsc = ajustarAngulo(ascendenteAbs);
+            const xAsc1 = Math.round(CENTRO_X + (RADIO_RUEDA - 25) * Math.cos(radAsc));
+            const yAsc1 = Math.round(CENTRO_Y + (RADIO_RUEDA - 25) * Math.sin(radAsc));
+            const xAsc2 = Math.round(CENTRO_X + (RADIO_RUEDA - 60) * Math.cos(radAsc));
+            const yAsc2 = Math.round(CENTRO_Y + (RADIO_RUEDA - 60) * Math.sin(radAsc));
+            const lineaAsc = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            lineaAsc.setAttribute("x1", xAsc1);
+            lineaAsc.setAttribute("y1", yAsc1);
+            lineaAsc.setAttribute("x2", xAsc2);
+            lineaAsc.setAttribute("y2", yAsc2);
+            lineaAsc.setAttribute("stroke", "#111111");
+            lineaAsc.setAttribute("stroke-width", "2");
+            lienzoSvg.appendChild(lineaAsc);
+            const xAscTxt = Math.round(CENTRO_X + (RADIO_RUEDA - 75) * Math.cos(radAsc));
+            const yAscTxt = Math.round(CENTRO_Y + (RADIO_RUEDA - 75) * Math.sin(radAsc)) + 4;
+            const txtAsc = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            txtAsc.setAttribute("x", xAscTxt);
+            txtAsc.setAttribute("y", yAscTxt);
+            txtAsc.setAttribute("font-family", "'Inter', sans-serif");
+            txtAsc.setAttribute("font-size", "10");
+            txtAsc.setAttribute("font-weight", "600");
+            txtAsc.setAttribute("text-anchor", "middle");
+            txtAsc.setAttribute("fill", "#111111");
+            txtAsc.textContent = "ASC";
+            lienzoSvg.appendChild(txtAsc);
+
+            // Eje del Medio Cielo
+            const radMc = ajustarAngulo(mcAbs);
+            const xMc1 = Math.round(CENTRO_X + (RADIO_RUEDA - 25) * Math.cos(radMc));
+            const yMc1 = Math.round(CENTRO_Y + (RADIO_RUEDA - 25) * Math.sin(radMc));
+            const xMc2 = Math.round(CENTRO_X + (RADIO_RUEDA - 60) * Math.cos(radMc));
+            const yMc2 = Math.round(CENTRO_Y + (RADIO_RUEDA - 60) * Math.sin(radMc));
+            const lineaMc = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            lineaMc.setAttribute("x1", xMc1);
+            lineaMc.setAttribute("y1", yMc1);
+            lineaMc.setAttribute("x2", xMc2);
+            lineaMc.setAttribute("y2", yMc2);
+            lineaMc.setAttribute("stroke", "#111111");
+            lineaMc.setAttribute("stroke-width", "1.5");
+            lineaMc.setAttribute("stroke-dasharray", "3,3");
+            lienzoSvg.appendChild(lineaMc);
+            const xMcTxt = Math.round(CENTRO_X + (RADIO_RUEDA - 75) * Math.cos(radMc));
+            const yMcTxt = Math.round(CENTRO_Y + (RADIO_RUEDA - 75) * Math.sin(radMc)) + 4;
+            const txtMc = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            txtMc.setAttribute("x", xMcTxt);
+            txtMc.setAttribute("y", yMcTxt);
+            txtMc.setAttribute("font-family", "'Inter', sans-serif");
+            txtMc.setAttribute("font-size", "11");
+            txtMc.setAttribute("font-weight", "600");
+            txtMc.setAttribute("text-anchor", "middle");
+            txtMc.setAttribute("fill", "#111111");
+            txtMc.textContent = "M.C.";
+            lienzoSvg.appendChild(txtMc);
+
+            // Planetas: dibujar símbolo y posición
+            // Recorremos todos los cuerpos definidos (para mantener orden)
+            let idx = 0;
+            for (const nombre of cuerpos) {
+                if (planetas.hasOwnProperty(nombre)) {
+                    const gradosAbsolutos = planetas[nombre];
+                    // Si el valor es 0 y no se ingresó realmente, lo omitimos? 
+                    // Mejor lo dibujamos igual, pero podemos comprobar si se ingresó.
+                    // Para simplificar, lo dibujamos siempre que exista en el objeto.
+                    const radPlaneta = ajustarAngulo(gradosAbsolutos);
+                    // Radio variable para evitar solapamiento: usamos un radio base y lo desplazamos según el índice
+                    const radioPlanetas = RADIO_RUEDA - 45 - (idx % 3) * 8;
+                    const xPlaneta = Math.round(CENTRO_X + radioPlanetas * Math.cos(radPlaneta));
+                    const yPlaneta = Math.round(CENTRO_Y + radioPlanetas * Math.sin(radPlaneta));
+
+                    // Símbolo del planeta
+                    const simbolo = simbolos[nombre] || "?";
+                    const txtSimbolo = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    txtSimbolo.setAttribute("x", xPlaneta);
+                    txtSimbolo.setAttribute("y", yPlaneta - 4);
+                    txtSimbolo.setAttribute("font-family", "'Segoe UI Symbol', 'Arial Unicode MS', sans-serif");
+                    txtSimbolo.setAttribute("font-size", "14");
+                    txtSimbolo.setAttribute("font-weight", "400");
+                    txtSimbolo.setAttribute("text-anchor", "middle");
+                    txtSimbolo.setAttribute("fill", "#111111");
+                    txtSimbolo.textContent = simbolo;
+                    lienzoSvg.appendChild(txtSimbolo);
+
+                    // Posición en grados y minutos
+                    const grado = Math.floor(gradosAbsolutos);
+                    const minuto = Math.round((gradosAbsolutos - grado) * 60);
+                    const txtPos = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    txtPos.setAttribute("x", xPlaneta);
+                    txtPos.setAttribute("y", yPlaneta + 10);
+                    txtPos.setAttribute("font-family", "'Inter', sans-serif");
+                    txtPos.setAttribute("font-size", "7");
+                    txtPos.setAttribute("font-weight", "400");
+                    txtPos.setAttribute("text-anchor", "middle");
+                    txtPos.setAttribute("fill", "#666666");
+                    txtPos.textContent = `${grado}°${minuto}'`;
+                    lienzoSvg.appendChild(txtPos);
+
+                    idx++;
+                }
             }
-        });
-    });
+        }
 
-    // ---- INICIALIZAR ----
-    cargarDatosGuardados();
+        // ---- CAPA 4 (SUPERIOR): Textos curvados de los Signos (CORREGIDO) ----
+        for (let i = 0; i < 12; i++) {
+            // El sector i corresponde al signo (indiceSignoCuspide + i) % 12
+            const signoIndex = (indiceSignoCuspide + i) % 12;
+            const gradoLinea = i * 30;
+            const gradoInicioArco = gradoLinea;
+            const gradoFinArco = gradoLinea + 30;
+
+            const radInicio = ajustarAngulo(gradoInicioArco);
+            const radFin = ajustarAngulo(gradoFinArco);
+            const radioTrayectoTexto = RADIO_RUEDA - 16;
+
+            const sx = (CENTRO_X + radioTrayectoTexto * Math.cos(radInicio)).toFixed(2);
+            const sy = (CENTRO_Y + radioTrayectoTexto * Math.sin(radInicio)).toFixed(2);
+            const ex = (CENTRO_X + radioTrayectoTexto * Math.cos(radFin)).toFixed(2);
+            const ey = (CENTRO_Y + radioTrayectoTexto * Math.sin(radFin)).toFixed(2);
+
+            const idTrayecto = `trayecto-signo-${i}`;
+            const d = `M ${ex},${ey} A ${radioTrayectoTexto},${radioTrayectoTexto} 0 0,1 ${sx},${sy}`;
+
+            const rutaDefinicion = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            rutaDefinicion.setAttribute("id", idTrayecto);
+            rutaDefinicion.setAttribute("d", d);
+            rutaDefinicion.setAttribute("fill", "none");
+            rutaDefinicion.setAttribute("stroke", "none");
+            lienzoSvg.appendChild(rutaDefinicion);
+
+            const etiquetaTexto = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            etiquetaTexto.setAttribute("font-family", "'Inter', sans-serif");
+            etiquetaTexto.setAttribute("font-size", "10");
+            etiquetaTexto.setAttribute("font-weight", "600");
+            etiquetaTexto.setAttribute("fill", "#111111");
+
+            const trayectoTexto = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
+            trayectoTexto.setAttribute("href", `#${idTrayecto}`);
+            trayectoTexto.setAttribute("startOffset", "50%");
+            trayectoTexto.setAttribute("text-anchor", "middle");
+            trayectoTexto.textContent = nombresSignos[signoIndex];
+
+            etiquetaTexto.appendChild(trayectoTexto);
+            lienzoSvg.appendChild(etiquetaTexto);
+        }
+    }
 });
