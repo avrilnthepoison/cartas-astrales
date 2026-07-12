@@ -241,3 +241,46 @@ select {
         top: 0;
     }
 }
+
+/* Retrógrado */
+.etiqueta-retrogrado {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #c00;
+    margin-left: 4px;
+    cursor: pointer;
+}
+
+.etiqueta-retrogrado input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Ajustar el ancho de los inputs para que quepa el checkbox */
+.campos-posicion input[type="number"] {
+    width: 45px; /* ligeramente más estrecho */
+    margin-right: 4px;
+}
+
+.campos-posicion select {
+    width: 85px; /* un poco más estrecho */
+    margin-right: 4px;
+}
+
+/* En pantallas pequeñas, mantener legibilidad */
+@media (max-width: 500px) {
+    .campos-posicion input[type="number"] {
+        width: 35px;
+    }
+    .campos-posicion select {
+        width: 65px;
+    }
+    .etiqueta-retrogrado {
+        font-size: 9px;
+    }
+}

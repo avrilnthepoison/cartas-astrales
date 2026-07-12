@@ -26,18 +26,12 @@
                             <input type="number" id="asc-grado" min="0" max="29" placeholder="G°">
                             <input type="number" id="asc-minuto" min="0" max="59" placeholder="M'">
                             <select id="asc-signo">
-                                <option value="0">Aries</option>
-                                <option value="1">Tauro</option>
-                                <option value="2">Géminis</option>
-                                <option value="3">Cáncer</option>
-                                <option value="4">Leo</option>
-                                <option value="5">Virgo</option>
-                                <option value="6">Libra</option>
-                                <option value="7">Escorpio</option>
-                                <option value="8">Sagitario</option>
-                                <option value="9">Capricornio</option>
-                                <option value="10">Acuario</option>
-                                <option value="11">Piscis</option>
+                                <option value="0">Aries</option><option value="1">Tauro</option>
+                                <option value="2">Géminis</option><option value="3">Cáncer</option>
+                                <option value="4">Leo</option><option value="5">Virgo</option>
+                                <option value="6">Libra</option><option value="7">Escorpio</option>
+                                <option value="8">Sagitario</option><option value="9">Capricornio</option>
+                                <option value="10">Acuario</option><option value="11">Piscis</option>
                             </select>
                         </div>
                     </div>
@@ -47,18 +41,12 @@
                             <input type="number" id="mc-grado" min="0" max="29" placeholder="G°">
                             <input type="number" id="mc-minuto" min="0" max="59" placeholder="M'">
                             <select id="mc-signo">
-                                <option value="0">Aries</option>
-                                <option value="1">Tauro</option>
-                                <option value="2">Géminis</option>
-                                <option value="3">Cáncer</option>
-                                <option value="4">Leo</option>
-                                <option value="5">Virgo</option>
-                                <option value="6">Libra</option>
-                                <option value="7">Escorpio</option>
-                                <option value="8">Sagitario</option>
-                                <option value="9">Capricornio</option>
-                                <option value="10">Acuario</option>
-                                <option value="11">Piscis</option>
+                                <option value="0">Aries</option><option value="1">Tauro</option>
+                                <option value="2">Géminis</option><option value="3">Cáncer</option>
+                                <option value="4">Leo</option><option value="5">Virgo</option>
+                                <option value="6">Libra</option><option value="7">Escorpio</option>
+                                <option value="8">Sagitario</option><option value="9">Capricornio</option>
+                                <option value="10">Acuario</option><option value="11">Piscis</option>
                             </select>
                         </div>
                     </div>
@@ -66,7 +54,7 @@
 
                 <div class="bloque-formulario">
                     <h3>Planetas y Puntos</h3>
-                    <!-- Planetas tradicionales -->
+                    <!-- Sol -->
                     <div class="fila-planeta" data-astro="SOL">
                         <span class="nombre-astro">SOL</span>
                         <div class="campos-posicion">
@@ -80,8 +68,12 @@
                                 <option value="8">Sagitario</option><option value="9">Capricornio</option>
                                 <option value="10">Acuario</option><option value="11">Piscis</option>
                             </select>
+                            <label class="etiqueta-retrogrado">
+                                <input type="checkbox" class="p-retrogrado"> R
+                            </label>
                         </div>
                     </div>
+                    <!-- Luna -->
                     <div class="fila-planeta" data-astro="LUNA">
                         <span class="nombre-astro">LUNA</span>
                         <div class="campos-posicion">
@@ -95,8 +87,12 @@
                                 <option value="8">Sagitario</option><option value="9">Capricornio</option>
                                 <option value="10">Acuario</option><option value="11">Piscis</option>
                             </select>
+                            <label class="etiqueta-retrogrado">
+                                <input type="checkbox" class="p-retrogrado"> R
+                            </label>
                         </div>
                     </div>
+                    <!-- Mercurio -->
                     <div class="fila-planeta" data-astro="MERCURIO">
                         <span class="nombre-astro">MERCURIO</span>
                         <div class="campos-posicion">
@@ -110,8 +106,12 @@
                                 <option value="8">Sagitario</option><option value="9">Capricornio</option>
                                 <option value="10">Acuario</option><option value="11">Piscis</option>
                             </select>
+                            <label class="etiqueta-retrogrado">
+                                <input type="checkbox" class="p-retrogrado"> R
+                            </label>
                         </div>
                     </div>
+                    <!-- Venus -->
                     <div class="fila-planeta" data-astro="VENUS">
                         <span class="nombre-astro">VENUS</span>
                         <div class="campos-posicion">
@@ -125,8 +125,12 @@
                                 <option value="8">Sagitario</option><option value="9">Capricornio</option>
                                 <option value="10">Acuario</option><option value="11">Piscis</option>
                             </select>
+                            <label class="etiqueta-retrogrado">
+                                <input type="checkbox" class="p-retrogrado"> R
+                            </label>
                         </div>
                     </div>
+                    <!-- Marte -->
                     <div class="fila-planeta" data-astro="MARTE">
                         <span class="nombre-astro">MARTE</span>
                         <div class="campos-posicion">
@@ -140,8 +144,12 @@
                                 <option value="8">Sagitario</option><option value="9">Capricornio</option>
                                 <option value="10">Acuario</option><option value="11">Piscis</option>
                             </select>
+                            <label class="etiqueta-retrogrado">
+                                <input type="checkbox" class="p-retrogrado"> R
+                            </label>
                         </div>
                     </div>
+                    <!-- Júpiter -->
                     <div class="fila-planeta" data-astro="JUPITER">
                         <span class="nombre-astro">JÚPITER</span>
                         <div class="campos-posicion">
@@ -155,8 +163,12 @@
                                 <option value="8">Sagitario</option><option value="9">Capricornio</option>
                                 <option value="10">Acuario</option><option value="11">Piscis</option>
                             </select>
+                            <label class="etiqueta-retrogrado">
+                                <input type="checkbox" class="p-retrogrado"> R
+                            </label>
                         </div>
                     </div>
+                    <!-- Saturno -->
                     <div class="fila-planeta" data-astro="SATURNO">
                         <span class="nombre-astro">SATURNO</span>
                         <div class="campos-posicion">
@@ -170,9 +182,12 @@
                                 <option value="8">Sagitario</option><option value="9">Capricornio</option>
                                 <option value="10">Acuario</option><option value="11">Piscis</option>
                             </select>
+                            <label class="etiqueta-retrogrado">
+                                <input type="checkbox" class="p-retrogrado"> R
+                            </label>
                         </div>
                     </div>
-                    <!-- Nuevos cuerpos -->
+                    <!-- Urano -->
                     <div class="fila-planeta" data-astro="URANO">
                         <span class="nombre-astro">URANO</span>
                         <div class="campos-posicion">
@@ -186,8 +201,12 @@
                                 <option value="8">Sagitario</option><option value="9">Capricornio</option>
                                 <option value="10">Acuario</option><option value="11">Piscis</option>
                             </select>
+                            <label class="etiqueta-retrogrado">
+                                <input type="checkbox" class="p-retrogrado"> R
+                            </label>
                         </div>
                     </div>
+                    <!-- Neptuno -->
                     <div class="fila-planeta" data-astro="NEPTUNO">
                         <span class="nombre-astro">NEPTUNO</span>
                         <div class="campos-posicion">
@@ -201,8 +220,12 @@
                                 <option value="8">Sagitario</option><option value="9">Capricornio</option>
                                 <option value="10">Acuario</option><option value="11">Piscis</option>
                             </select>
+                            <label class="etiqueta-retrogrado">
+                                <input type="checkbox" class="p-retrogrado"> R
+                            </label>
                         </div>
                     </div>
+                    <!-- Plutón -->
                     <div class="fila-planeta" data-astro="PLUTON">
                         <span class="nombre-astro">PLUTÓN</span>
                         <div class="campos-posicion">
@@ -216,8 +239,12 @@
                                 <option value="8">Sagitario</option><option value="9">Capricornio</option>
                                 <option value="10">Acuario</option><option value="11">Piscis</option>
                             </select>
+                            <label class="etiqueta-retrogrado">
+                                <input type="checkbox" class="p-retrogrado"> R
+                            </label>
                         </div>
                     </div>
+                    <!-- Quirón -->
                     <div class="fila-planeta" data-astro="QUIRON">
                         <span class="nombre-astro">QUIRÓN</span>
                         <div class="campos-posicion">
@@ -231,8 +258,12 @@
                                 <option value="8">Sagitario</option><option value="9">Capricornio</option>
                                 <option value="10">Acuario</option><option value="11">Piscis</option>
                             </select>
+                            <label class="etiqueta-retrogrado">
+                                <input type="checkbox" class="p-retrogrado"> R
+                            </label>
                         </div>
                     </div>
+                    <!-- Nodo Norte -->
                     <div class="fila-planeta" data-astro="NODO_NORTE">
                         <span class="nombre-astro">NODO NORTE</span>
                         <div class="campos-posicion">
@@ -246,6 +277,9 @@
                                 <option value="8">Sagitario</option><option value="9">Capricornio</option>
                                 <option value="10">Acuario</option><option value="11">Piscis</option>
                             </select>
+                            <label class="etiqueta-retrogrado">
+                                <input type="checkbox" class="p-retrogrado"> R
+                            </label>
                         </div>
                     </div>
                 </div>

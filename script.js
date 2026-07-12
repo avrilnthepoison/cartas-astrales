@@ -30,7 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
         "NODO_NORTE": "☊"
     };
 
-    // Lista de todos los cuerpos (para iterar en orden)
     const cuerpos = Object.keys(simbolos);
 
     function transformarADecimal(g, m) {
@@ -63,13 +62,20 @@ document.addEventListener("DOMContentLoaded", () => {
             const gInput = fila.querySelector(".p-grado").value;
             const mInput = fila.querySelector(".p-minuto").value;
             const signoIndice = parseInt(fila.querySelector(".p-signo").value, 10);
+            const retrogrado = fila.querySelector(".p-retrogrado").checked; // <-- NUEVO
+
             const g = parseInt(gInput, 10) || 0;
             const m = parseInt(mInput, 10) || 0;
             const posicionDecimal = transformarADecimal(g, m);
             const posicionAbsoluta = (signoIndice * 30) + posicionDecimal;
 
             planetasIngresados[nombreAstro] = posicionAbsoluta;
-            estructuraAGuardar.planetas[nombreAstro] = { g: gInput, m: mInput, signo: signoIndice };
+            estructuraAGuardar.planetas[nombreAstro] = {
+                g: gInput,
+                m: mInput,
+                signo: signoIndice,
+                retrogrado: retrogrado  // <-- NUEVO
+            };
         });
 
         localStorage.setItem("datosRadixManual", JSON.stringify(estructuraAGuardar));
@@ -90,6 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
             fila.querySelector(".p-grado").value = "";
             fila.querySelector(".p-minuto").value = "";
             fila.querySelector(".p-signo").value = "0";
+            fila.querySelector(".p-retrogrado").checked = false; // <-- NUEVO
         });
 
         dibujarRadixManual(0, 0, {}, false);
@@ -122,6 +129,12 @@ document.addEventListener("DOMContentLoaded", () => {
                         fila.querySelector(".p-grado").value = datosAstro.g;
                         fila.querySelector(".p-minuto").value = datosAstro.m;
                         fila.querySelector(".p-signo").value = datosAstro.signo;
+                        // Restaurar checkbox retrógrado
+                        if (datosAstro.retrogrado !== undefined) {
+                            fila.querySelector(".p-retrogrado").checked = datosAstro.retrogrado;
+                        } else {
+                            fila.querySelector(".p-retrogrado").checked = false;
+                        }
                     }
                 });
             }
@@ -136,16 +149,11 @@ document.addEventListener("DOMContentLoaded", () => {
     botonBorrar.addEventListener("click", restablecerTodoACero);
     cargarValoresGuardados();
 
-    // ============================================================
-    //  FUNCIÓN DE DIBUJO (basada en el código original)
-    // ============================================================
     function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
-        // Limpieza del lienzo
         while (lienzoSvg.firstChild) {
             lienzoSvg.removeChild(lienzoSvg.firstChild);
         }
 
-        // --- Rotación según el Ascendente ---
         const indiceSignoCuspide = Math.floor(ascendenteAbs / 30);
         const inicioSignoCuspideG = indiceSignoCuspide * 30;
         const desfaceG = 180 + inicioSignoCuspideG;
@@ -180,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
         puntoCentral.setAttribute("fill", "#111111");
         lienzoSvg.appendChild(puntoCentral);
 
-        // ---- CAPA 2: Líneas divisorias (cada 30°) ----
+        // ---- CAPA 2: Líneas divisorias ----
         for (let i = 0; i < 12; i++) {
             const gradoLinea = i * 30;
             const radLinea = ajustarAngulo(gradoLinea);
@@ -198,7 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(lineaDivisoria);
         }
 
-        // ---- CAPA 3: Ejes y planetas (si hay contenido) ----
+        // ---- CAPA 3: Ejes y planetas ----
         if (mostrarContenido) {
             // Eje del Ascendente
             const radAsc = ajustarAngulo(ascendenteAbs);
@@ -257,13 +265,29 @@ document.addEventListener("DOMContentLoaded", () => {
             txtMc.textContent = "M.C.";
             lienzoSvg.appendChild(txtMc);
 
-            // --- Planetas (con símbolo y posición) ---
+            // --- Planetas con símbolo, posición y retrógrado ---
+            // Primero, necesitamos obtener los datos de retrogrado desde la estructura guardada
+            // Para eso, recuperamos los datos de localStorage o de la variable global.
+            // Voy a leer la estructura guardada desde el localStorage para obtener el flag.
+            // Si no está disponible, asumo false.
+            let datosRetro = {};
+            try {
+                const raw = localStorage.getItem("datosRadixManual");
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed.planetas) {
+                        for (const [nombre, info] of Object.entries(parsed.planetas)) {
+                            datosRetro[nombre] = info.retrogrado || false;
+                        }
+                    }
+                }
+            } catch (e) {}
+
             let idx = 0;
             for (const nombre of cuerpos) {
                 if (planetas.hasOwnProperty(nombre)) {
                     const gradosAbsolutos = planetas[nombre];
                     const radPlaneta = ajustarAngulo(gradosAbsolutos);
-                    // Radio escalonado para evitar solapamiento
                     const radioPlanetas = RADIO_RUEDA - 45 - (idx % 3) * 8;
                     const xPlaneta = Math.round(CENTRO_X + radioPlanetas * Math.cos(radPlaneta));
                     const yPlaneta = Math.round(CENTRO_Y + radioPlanetas * Math.sin(radPlaneta));
@@ -280,6 +304,21 @@ document.addEventListener("DOMContentLoaded", () => {
                     txtSimbolo.setAttribute("fill", "#111111");
                     txtSimbolo.textContent = simbolo;
                     lienzoSvg.appendChild(txtSimbolo);
+
+                    // Si está retrógrado, dibujar "R" al lado (derecha)
+                    const retrogrado = datosRetro[nombre] || false;
+                    if (retrogrado) {
+                        const txtRetro = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                        txtRetro.setAttribute("x", String(xPlaneta + 10));
+                        txtRetro.setAttribute("y", String(yPlaneta - 8));
+                        txtRetro.setAttribute("font-family", "'Inter', sans-serif");
+                        txtRetro.setAttribute("font-size", "8");
+                        txtRetro.setAttribute("font-weight", "700");
+                        txtRetro.setAttribute("text-anchor", "middle");
+                        txtRetro.setAttribute("fill", "#c00"); // Color rojo para resaltar
+                        txtRetro.textContent = "R";
+                        lienzoSvg.appendChild(txtRetro);
+                    }
 
                     // Posición en grados y minutos
                     const grado = Math.floor(gradosAbsolutos);
@@ -301,8 +340,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // ---- CAPA 4: Nombres de los signos (texto curvado) ----
-        // IMPORTANTE: NO rotar los nombres adicionalmente, porque el desfaceG ya rota el gráfico.
-        // El sector i físicamente corresponde al signo nombresSignos[i] gracias a la rotación.
         for (let i = 0; i < 12; i++) {
             const gradoInicioArco = i * 30;
             const gradoFinArco = gradoInicioArco + 30;
@@ -336,7 +373,6 @@ document.addEventListener("DOMContentLoaded", () => {
             trayectoTexto.setAttribute("href", `#${idTrayecto}`);
             trayectoTexto.setAttribute("startOffset", "50%");
             trayectoTexto.setAttribute("text-anchor", "middle");
-            // Usamos nombresSignos[i] sin rotación adicional
             trayectoTexto.textContent = nombresSignos[i];
 
             etiquetaTexto.appendChild(trayectoTexto);
