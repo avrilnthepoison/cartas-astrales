@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "NODO_NORTE": "☊"
     };
 
-    // Lista de todos los cuerpos (para iterar)
+    // Lista de todos los cuerpos (para iterar en orden)
     const cuerpos = Object.keys(simbolos);
 
     function transformarADecimal(g, m) {
@@ -39,18 +39,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Función central para procesar formulario y guardar en memoria
     function procesarYGenerarCarta() {
+        // --- Leer Ascendente ---
         const ascG = parseInt(document.getElementById("asc-grado").value, 10) || 0;
         const ascM = parseInt(document.getElementById("asc-minuto").value, 10) || 0;
         const ascSigno = parseInt(document.getElementById("asc-signo").value, 10);
         const valorAscDecimal = transformarADecimal(ascG, ascM);
         const gradoAscAbsoluto = (ascSigno * 30) + valorAscDecimal;
 
+        // --- Leer Medio Cielo ---
         const mcG = parseInt(document.getElementById("mc-grado").value, 10) || 0;
         const mcM = parseInt(document.getElementById("mc-minuto").value, 10) || 0;
         const mcSigno = parseInt(document.getElementById("mc-signo").value, 10);
         const valorMcDecimal = transformarADecimal(mcG, mcM);
         const gradoMcAbsoluto = (mcSigno * 30) + valorMcDecimal;
 
+        // --- Leer planetas ---
         const planetasIngresados = {};
         const filasPlanetas = document.querySelectorAll(".fila-planeta");
         const estructuraAGuardar = {
@@ -74,6 +77,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         localStorage.setItem("datosRadixManual", JSON.stringify(estructuraAGuardar));
+
+        // Dibujar siempre con los datos leídos (incluso si son 0)
         dibujarRadixManual(gradoAscAbsoluto, gradoMcAbsoluto, planetasIngresados, true);
     }
 
@@ -126,6 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 });
             }
+            // Después de restaurar, volver a dibujar
             procesarYGenerarCarta();
         } catch (e) {
             console.error("Error al restaurar los datos de sesión:", e);
@@ -137,23 +143,29 @@ document.addEventListener("DOMContentLoaded", () => {
     botonBorrar.addEventListener("click", restablecerTodoACero);
     cargarValoresGuardados();
 
-    // Función central gráfica con orden de capas y correcciones
+    // ================================================================
+    //  FUNCIÓN PRINCIPAL DE DIBUJO (CORREGIDA)
+    // ================================================================
     function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
-        // Limpieza absoluta del lienzo previo
+        // Limpieza del lienzo
         while (lienzoSvg.firstChild) {
             lienzoSvg.removeChild(lienzoSvg.firstChild);
         }
 
-        // Determinar el signo del ASC y el desplazamiento para la rotación
-        const indiceSignoCuspide = Math.floor(ascendenteAbs / 30);
-        const inicioSignoCuspideG = indiceSignoCuspide * 30;
-        const desfaceG = 180 + inicioSignoCuspideG;
+        // --- 1. Determinar el signo del Ascendente y el desfase ---
+        // El signo del ASC es el índice (0-11) del signo que contiene al ASC
+        const indiceSignoASC = Math.floor(ascendenteAbs / 30);
+        // El grado de inicio de ese signo (0, 30, 60, ...)
+        const inicioSignoASC = indiceSignoASC * 30;
+        // Desfase para colocar el inicio del signo del ASC en el eje izquierdo (ángulo 180°)
+        const desfaceG = 180 + inicioSignoASC;
 
         function ajustarAngulo(gradosOriginales) {
             return (desfaceG - gradosOriginales) * (Math.PI / 180);
         }
 
-        // ---- CAPA 1: Círculos y punto central ----
+        // --- 2. Dibujar la rueda base ---
+        // Círculo exterior
         const circuloExterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloExterior.setAttribute("cx", CENTRO_X);
         circuloExterior.setAttribute("cy", CENTRO_Y);
@@ -163,6 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloExterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloExterior);
 
+        // Círculo interior
         const circuloInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloInterior.setAttribute("cx", CENTRO_X);
         circuloInterior.setAttribute("cy", CENTRO_Y);
@@ -172,6 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloInterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloInterior);
 
+        // Punto central
         const puntoCentral = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         puntoCentral.setAttribute("cx", CENTRO_X);
         puntoCentral.setAttribute("cy", CENTRO_Y);
@@ -179,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
         puntoCentral.setAttribute("fill", "#111111");
         lienzoSvg.appendChild(puntoCentral);
 
-        // ---- CAPA 2: Líneas divisorias de los 12 signos ----
+        // Líneas divisorias (cada 30°)
         for (let i = 0; i < 12; i++) {
             const gradoLinea = i * 30;
             const radLinea = ajustarAngulo(gradoLinea);
@@ -197,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(lineaDivisoria);
         }
 
-        // ---- CAPA 3: Ejes y planetas (si hay contenido) ----
+        // --- 3. Si hay contenido, dibujar ejes y planetas ---
         if (mostrarContenido) {
             // Eje del Ascendente
             const radAsc = ajustarAngulo(ascendenteAbs);
@@ -255,21 +269,16 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(txtMc);
 
             // Planetas: dibujar símbolo y posición
-            // Recorremos todos los cuerpos definidos (para mantener orden)
             let idx = 0;
             for (const nombre of cuerpos) {
                 if (planetas.hasOwnProperty(nombre)) {
                     const gradosAbsolutos = planetas[nombre];
-                    // Si el valor es 0 y no se ingresó realmente, lo omitimos? 
-                    // Mejor lo dibujamos igual, pero podemos comprobar si se ingresó.
-                    // Para simplificar, lo dibujamos siempre que exista en el objeto.
                     const radPlaneta = ajustarAngulo(gradosAbsolutos);
-                    // Radio variable para evitar solapamiento: usamos un radio base y lo desplazamos según el índice
                     const radioPlanetas = RADIO_RUEDA - 45 - (idx % 3) * 8;
                     const xPlaneta = Math.round(CENTRO_X + radioPlanetas * Math.cos(radPlaneta));
                     const yPlaneta = Math.round(CENTRO_Y + radioPlanetas * Math.sin(radPlaneta));
 
-                    // Símbolo del planeta
+                    // Símbolo
                     const simbolo = simbolos[nombre] || "?";
                     const txtSimbolo = document.createElementNS("http://www.w3.org/2000/svg", "text");
                     txtSimbolo.setAttribute("x", xPlaneta);
@@ -282,7 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     txtSimbolo.textContent = simbolo;
                     lienzoSvg.appendChild(txtSimbolo);
 
-                    // Posición en grados y minutos
+                    // Posición (grado y minuto)
                     const grado = Math.floor(gradosAbsolutos);
                     const minuto = Math.round((gradosAbsolutos - grado) * 60);
                     const txtPos = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -301,13 +310,12 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // ---- CAPA 4 (SUPERIOR): Textos curvados de los Signos (CORREGIDO) ----
+        // --- 4. Nombres de los signos (texto curvado) ---
+        // IMPORTANTE: el sector i (0 a 11) corresponde al signo (indiceSignoASC + i) % 12
         for (let i = 0; i < 12; i++) {
-            // El sector i corresponde al signo (indiceSignoCuspide + i) % 12
-            const signoIndex = (indiceSignoCuspide + i) % 12;
-            const gradoLinea = i * 30;
-            const gradoInicioArco = gradoLinea;
-            const gradoFinArco = gradoLinea + 30;
+            const signoIndex = (indiceSignoASC + i) % 12; // signo que va en este sector
+            const gradoInicioArco = i * 30;
+            const gradoFinArco = gradoInicioArco + 30;
 
             const radInicio = ajustarAngulo(gradoInicioArco);
             const radFin = ajustarAngulo(gradoFinArco);
@@ -338,7 +346,7 @@ document.addEventListener("DOMContentLoaded", () => {
             trayectoTexto.setAttribute("href", `#${idTrayecto}`);
             trayectoTexto.setAttribute("startOffset", "50%");
             trayectoTexto.setAttribute("text-anchor", "middle");
-            trayectoTexto.textContent = nombresSignos[signoIndex];
+            trayectoTexto.textContent = nombresSignos[signoIndex]; // nombre correcto
 
             etiquetaTexto.appendChild(trayectoTexto);
             lienzoSvg.appendChild(etiquetaTexto);
