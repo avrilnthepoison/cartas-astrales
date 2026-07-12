@@ -215,3 +215,15 @@ select {
 #carta-astral line {
     shape-rendering: geometricPrecision;
 }
+
+/* RESPONSIVE: Si la pantalla es pequeña (celulares), vuelve a una sola columna */
+@media (max-width: 850px) {
+    .interfaz-columnas {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    .contenedor-sticky-mapa {
+        position: relative;
+        top: 0;
+    }
+}
