@@ -135,7 +135,7 @@ input[type="number"], select {
 }
 
 input[type="number"] {
-    width: 70px;
+    width: 50px;
     margin-right: 8px;
     text-align: right;
 }
