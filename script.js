@@ -325,13 +325,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     // 3. Si está retrógrado, dibujar "R" como subíndice
                     if (datosPlaneta.retrogrado) {
-                        const radioR = radioPlaneta;  // Mismo radio que el símbolo
+                        // Reducimos el radio para que la "R" quede debajo del símbolo (más cerca del centro)
+                        const radioR = radioPlaneta - 12; // Separación radial
                         const xR = Math.round(CENTRO_X + radioR * Math.cos(radPlaneta));
                         const yR = Math.round(CENTRO_Y + radioR * Math.sin(radPlaneta));
                         const txtRetro = document.createElementNS("http://www.w3.org/2000/svg", "text");
                         txtRetro.setAttribute("x", String(xR));
                         txtRetro.setAttribute("y", String(yR));
-                        txtRetro.setAttribute("dy", "0.5em");
+                        txtRetro.setAttribute("dy", "0.5em"); // Desplazamiento vertical
                         txtRetro.setAttribute("font-family", "'Inter', sans-serif");
                         txtRetro.setAttribute("font-size", "8");
                         txtRetro.setAttribute("font-weight", "700");
