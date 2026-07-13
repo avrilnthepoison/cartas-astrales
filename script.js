@@ -274,7 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
             txtMc.setAttribute("font-weight", "600");
             txtMc.setAttribute("text-anchor", "middle");
             txtMc.setAttribute("fill", "#111111");
-            txtMc.textContent = "M.C.";
+            txtMc.textContent = "MC";
             lienzoSvg.appendChild(txtMc);
 
             // -- Obtener datos originales de los planetas desde localStorage --
@@ -321,15 +321,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     lienzoSvg.appendChild(txtSimbolo);
 
                     // 2. Si está retrógrado, dibujar "R" en el radio interior
-                    // (exactamente donde antes estaba la etiqueta de posición)
                     const datosPlaneta = datosPlanetasForm[nombre] || { retrogrado: false };
                     if (datosPlaneta.retrogrado) {
-                        const radioR = radioPlaneta - 14; // mismo radio que la etiqueta de posición
+                        const radioR = radioPlaneta - 14;
                         const xR = Math.round(CENTRO_X + radioR * Math.cos(radPlaneta));
                         const yR = Math.round(CENTRO_Y + radioR * Math.sin(radPlaneta));
                         const txtRetro = document.createElementNS("http://www.w3.org/2000/svg", "text");
                         txtRetro.setAttribute("x", String(xR));
-                        txtRetro.setAttribute("y", String(yR + 1)); // centrado vertical
+                        txtRetro.setAttribute("y", String(yR + 8));
                         txtRetro.setAttribute("font-family", "'Inter', sans-serif");
                         txtRetro.setAttribute("font-size", "8");
                         txtRetro.setAttribute("font-weight", "700");
