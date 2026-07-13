@@ -151,6 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
     //  FUNCIÓN DE DIBUJO CON NUEVO DISEÑO DE CAPAS
     // ============================================================
     function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
+
         while (lienzoSvg.firstChild) {
             lienzoSvg.removeChild(lienzoSvg.firstChild);
         }
@@ -276,7 +277,7 @@ document.addEventListener("DOMContentLoaded", () => {
             txtMc.textContent = "M.C.";
             lienzoSvg.appendChild(txtMc);
 
-            // --- Obtener datos originales de los planetas desde localStorage ---
+            // -- Obtener datos originales de los planetas desde localStorage --
             let datosPlanetasForm = {};
             try {
                 const raw = localStorage.getItem("datosRadixManual");
@@ -294,8 +295,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             } catch (e) {}
 
-            // --- Dibujar planetas en un anillo interior ---
-            // Radio fijo para los símbolos de los planetas (entre el centro y el borde)
+            // -- Dibujar planetas en un anillo interior --
             const radioPlaneta = RADIO_RUEDA - 55; // Anillo de planetas
 
             for (const nombre of cuerpos) {
@@ -320,37 +320,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     txtSimbolo.textContent = simbolo;
                     lienzoSvg.appendChild(txtSimbolo);
 
-                    // 2. Etiqueta de posición (grado y minuto) - en un radio interior al símbolo
-                    const datosPlaneta = datosPlanetasForm[nombre] || { g: 0, m: 0 };
-                    const gradoEnSigno = parseInt(datosPlaneta.g, 10) || 0;
-                    const minuto = parseInt(datosPlaneta.m, 10) || 0;
-
-                    const radioEtiqueta = radioPlaneta - 14; // más cerca del centro
-                    const xEtiqueta = Math.round(CENTRO_X + radioEtiqueta * Math.cos(radPlaneta));
-                    const yEtiqueta = Math.round(CENTRO_Y + radioEtiqueta * Math.sin(radPlaneta));
-
-                    const txtPos = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                    txtPos.setAttribute("x", String(xEtiqueta));
-                    txtPos.setAttribute("y", String(yEtiqueta + 2));
-                    txtPos.setAttribute("font-family", "'Inter', sans-serif");
-                    txtPos.setAttribute("font-size", "8");
-                    txtPos.setAttribute("font-weight", "500");
-                    txtPos.setAttribute("text-anchor", "middle");
-                    txtPos.setAttribute("dominant-baseline", "central");
-                    txtPos.setAttribute("fill", "#666666");
-                    txtPos.textContent = `${gradoEnSigno}°${minuto}'`;
-                    lienzoSvg.appendChild(txtPos);
-
-                    // 3. Si está retrógrado, dibujar "R" al lado del símbolo (un poco más afuera)
+                    // 2. Si está retrógrado, dibujar "R" en el radio interior
+                    // (exactamente donde antes estaba la etiqueta de posición)
+                    const datosPlaneta = datosPlanetasForm[nombre] || { retrogrado: false };
                     if (datosPlaneta.retrogrado) {
-                        const radioR = radioPlaneta + 12;
+                        const radioR = radioPlaneta - 14; // mismo radio que la etiqueta de posición
                         const xR = Math.round(CENTRO_X + radioR * Math.cos(radPlaneta));
                         const yR = Math.round(CENTRO_Y + radioR * Math.sin(radPlaneta));
                         const txtRetro = document.createElementNS("http://www.w3.org/2000/svg", "text");
                         txtRetro.setAttribute("x", String(xR));
-                        txtRetro.setAttribute("y", String(yR + 1));
+                        txtRetro.setAttribute("y", String(yR + 1)); // centrado vertical
                         txtRetro.setAttribute("font-family", "'Inter', sans-serif");
-                        txtRetro.setAttribute("font-size", "9");
+                        txtRetro.setAttribute("font-size", "8");
                         txtRetro.setAttribute("font-weight", "700");
                         txtRetro.setAttribute("text-anchor", "middle");
                         txtRetro.setAttribute("dominant-baseline", "central");
