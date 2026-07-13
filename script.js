@@ -151,6 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
     //  FUNCIÓN DE DIBUJO CON NUEVO DISEÑO DE CAPAS
     // ============================================================
     function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
+
         while (lienzoSvg.firstChild) {
             lienzoSvg.removeChild(lienzoSvg.firstChild);
         }
@@ -172,6 +173,16 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloExterior.setAttribute("stroke-width", "1");
         circuloExterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloExterior);
+
+        // ------------------- NUEVO: Círculo de relleno para la franja de los signos (fondo negro) -------------------
+        const circuloRellenoSignos = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circuloRellenoSignos.setAttribute("cx", String(CENTRO_X));
+        circuloRellenoSignos.setAttribute("cy", String(CENTRO_Y));
+        circuloRellenoSignos.setAttribute("r", String(RADIO_RUEDA - 2)); // Casi hasta el borde exterior
+        circuloRellenoSignos.setAttribute("fill", "#111111"); // Fondo negro
+        circuloRellenoSignos.setAttribute("stroke", "none");
+        lienzoSvg.appendChild(circuloRellenoSignos);
+        // ---------------------------------------------------------------------------------------------------------
 
         const circuloInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloInterior.setAttribute("cx", String(CENTRO_X));
@@ -276,7 +287,7 @@ document.addEventListener("DOMContentLoaded", () => {
             txtMc.textContent = "M.C.";
             lienzoSvg.appendChild(txtMc);
 
-            // --- Obtener datos originales de los planetas desde localStorage ---
+            // -- Obtener datos originales de los planetas desde localStorage --
             let datosPlanetasForm = {};
             try {
                 const raw = localStorage.getItem("datosRadixManual");
@@ -294,8 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             } catch (e) {}
 
-            // --- Dibujar planetas en un anillo interior ---
-            // Radio fijo para los símbolos de los planetas (entre el centro y el borde)
+            // -- Dibujar planetas en un anillo interior --
             const radioPlaneta = RADIO_RUEDA - 55; // Anillo de planetas
 
             for (const nombre of cuerpos) {
@@ -390,7 +400,9 @@ document.addEventListener("DOMContentLoaded", () => {
             etiquetaTexto.setAttribute("font-family", "'Inter', sans-serif");
             etiquetaTexto.setAttribute("font-size", "10");
             etiquetaTexto.setAttribute("font-weight", "600");
-            etiquetaTexto.setAttribute("fill", "#111111");
+            // ------------------- NUEVO: Texto blanco -------------------
+            etiquetaTexto.setAttribute("fill", "#ffffff");
+            // ------------------------------------------------------------
 
             const trayectoTexto = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
             trayectoTexto.setAttribute("href", `#${idTrayecto}`);
