@@ -320,19 +320,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     txtSimbolo.textContent = simbolo;
                     lienzoSvg.appendChild(txtSimbolo);
 
-                    // 2. Obtener datos del planeta (incluyendo retrogrado)
+                    // 2. Obtener datos del planeta
                     const datosPlaneta = datosPlanetasForm[nombre] || { g: 0, m: 0, retrogrado: false };
 
-                    // 3. Si está retrógrado, dibujar "R" como subíndice
+                    // 3. Si está retrógrado, dibujar "R" en un radio ligeramente mayor (subíndice radial)
                     if (datosPlaneta.retrogrado) {
-                        // Reducimos el radio para que la "R" quede debajo del símbolo (más cerca del centro)
-                        const radioR = radioPlaneta - 12; // Separación radial
+                        const radioR = radioPlaneta + 10; // Incremento radial hacia afuera
                         const xR = Math.round(CENTRO_X + radioR * Math.cos(radPlaneta));
                         const yR = Math.round(CENTRO_Y + radioR * Math.sin(radPlaneta));
                         const txtRetro = document.createElementNS("http://www.w3.org/2000/svg", "text");
                         txtRetro.setAttribute("x", String(xR));
                         txtRetro.setAttribute("y", String(yR));
-                        txtRetro.setAttribute("dy", "0.5em"); // Desplazamiento vertical
                         txtRetro.setAttribute("font-family", "'Inter', sans-serif");
                         txtRetro.setAttribute("font-size", "8");
                         txtRetro.setAttribute("font-weight", "700");
