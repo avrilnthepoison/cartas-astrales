@@ -215,7 +215,7 @@ select {
 
 /* Efecto hover */
 .etiqueta-retrogrado:hover::before {
-    background: #333333;
+    background-color: #333333;
 }
 
 /* Efecto focus (accesibilidad) */
