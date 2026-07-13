@@ -58,7 +58,7 @@ body {
 /* Columna Izquierda: Formulario */
 .seccion-formulario {
     display: table-cell;
-    width: 40%;
+    width: 45%;
     padding-right: 5%;
     vertical-align: top;
 }
@@ -66,7 +66,7 @@ body {
 /* Columna Derecha: Gráfico */
 .seccion-mapa {
     display: table-cell;
-    width: 60%;
+    width: 55%;
     vertical-align: top;
 }
 
@@ -107,6 +107,10 @@ body {
     display: table;
     width: 100%;
     margin-bottom: 15px;
+}
+
+.fila-eje:last-child {
+    margin-bottom: 0;
 }
 
 .fila-planeta:last-child {
@@ -151,6 +155,75 @@ input[type="number"] {
 select {
     width: 110px;
 }
+
+/* Estilos para el checkbox de retrógrado */
+/* Contenedor principal del checkbox */
+.etiqueta-retrogrado {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #111111;  /* Cambia este color si quieres la "R" de otro color */
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-left: 22px;  /* Espacio para el checkbox personalizado */
+    margin-left: 4px;
+}
+
+/* Ocultar el checkbox nativo */
+.etiqueta-retrogrado input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+/* Cuadrado del checkbox personalizado */
+.etiqueta-retrogrado::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid #111111;
+    border-radius: 4px;
+    background: #ffffff;
+    transition: all 0.2s ease;
+}
+
+/* Cuando el checkbox está marcado: fondo negro */
+.etiqueta-retrogrado:has(input[type="checkbox"]:checked)::before {
+    background: #111111;
+    border-color: #111111;
+}
+
+/* Check (✓) cuando está marcado */
+.etiqueta-retrogrado:has(input[type="checkbox"]:checked)::after {
+    content: '✓';
+    position: absolute;
+    left: 3px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* Efecto hover */
+.etiqueta-retrogrado:hover::before {
+    border-color: #555555;
+}
+
+/* Efecto focus (accesibilidad) */
+.etiqueta-retrogrado input[type="checkbox"]:focus + .etiqueta-retrogrado::before {
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.2);
+}
+
 
 /* Botón de Generar Gráfico */
 #btn-generar {
@@ -222,36 +295,6 @@ select {
 #carta-astral circle,
 #carta-astral line {
     shape-rendering: geometricPrecision;
-}
-
-/* Estilos para el checkbox de retrógrado */
-.etiqueta-retrogrado {
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    font-size: 11px;
-    font-weight: 600;
-    color: #c00;
-    margin-left: 4px;
-    cursor: pointer;
-}
-
-.etiqueta-retrogrado input[type="checkbox"] {
-    width: 14px;
-    height: 14px;
-    margin: 0;
-    cursor: pointer;
-}
-
-/* Ajustar el ancho de los inputs para que quepa el checkbox */
-.campos-posicion input[type="number"] {
-    width: 45px;
-    margin-right: 4px;
-}
-
-.campos-posicion select {
-    width: 85px;
-    margin-right: 4px;
 }
 
 /* RESPONSIVE: Si la pantalla es pequeña (celulares), vuelve a una sola columna */
