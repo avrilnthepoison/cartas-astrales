@@ -162,7 +162,7 @@ select {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     color: #111111;  /* Cambia este color si quieres la "R" de otro color */
     cursor: pointer;
@@ -190,7 +190,7 @@ select {
     transform: translateY(-50%);
     width: 16px;
     height: 16px;
-    border: 2px solid #111111;
+    border: none;
     border-radius: 4px;
     background: #ffffff;
     transition: all 0.2s ease;
@@ -199,7 +199,6 @@ select {
 /* Cuando el checkbox está marcado: fondo negro */
 .etiqueta-retrogrado:has(input[type="checkbox"]:checked)::before {
     background: #111111;
-    border-color: #111111;
 }
 
 /* Check (✓) cuando está marcado */

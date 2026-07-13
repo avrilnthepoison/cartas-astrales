@@ -320,9 +320,28 @@ document.addEventListener("DOMContentLoaded", () => {
                     txtSimbolo.textContent = simbolo;
                     lienzoSvg.appendChild(txtSimbolo);
 
-                    // 2. Etiqueta de posición (grado y minuto) - omitido por ahora
+                    // 2. Etiqueta de posición (grado y minuto) - en un radio interior al símbolo
+                    const datosPlaneta = datosPlanetasForm[nombre] || { g: 0, m: 0 };
+                    const gradoEnSigno = parseInt(datosPlaneta.g, 10) || 0;
+                    const minuto = parseInt(datosPlaneta.m, 10) || 0;
 
-                    // 3. Si está retrógrado, dibujar "R" al lado del símbolo
+                    const radioEtiqueta = radioPlaneta - 14; // más cerca del centro
+                    const xEtiqueta = Math.round(CENTRO_X + radioEtiqueta * Math.cos(radPlaneta));
+                    const yEtiqueta = Math.round(CENTRO_Y + radioEtiqueta * Math.sin(radPlaneta));
+
+                    const txtPos = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    txtPos.setAttribute("x", String(xEtiqueta));
+                    txtPos.setAttribute("y", String(yEtiqueta + 2));
+                    txtPos.setAttribute("font-family", "'Inter', sans-serif");
+                    txtPos.setAttribute("font-size", "8");
+                    txtPos.setAttribute("font-weight", "500");
+                    txtPos.setAttribute("text-anchor", "middle");
+                    txtPos.setAttribute("dominant-baseline", "central");
+                    txtPos.setAttribute("fill", "#666666");
+                    txtPos.textContent = `${gradoEnSigno}°${minuto}'`;
+                    lienzoSvg.appendChild(txtPos);
+
+                    // 3. Si está retrógrado, dibujar "R" al lado del símbolo (un poco más afuera)
                     if (datosPlaneta.retrogrado) {
                         const radioR = radioPlaneta + 12;
                         const xR = Math.round(CENTRO_X + radioR * Math.cos(radPlaneta));
