@@ -7,13 +7,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const CENTRO_X = 300;
     const CENTRO_Y = 300;
 
-    // Radios ajustados para mejor visibilidad
-    const RADIO_EXTERIOR = 230;
-    const RADIO_SIGNOS_INTERIOR = 200;
-    const RADIO_DECANATOS_INTERIOR = 170;
-    const RADIO_PLANETAS = 145;
-    const RADIO_TEXTO_SIGNOS = 215;
-    const RADIO_SIMBOLOS_DECANATOS = 185;
+    // RADIOS AUMENTADOS (~22% más grandes)
+    const RADIO_EXTERIOR = 280;
+    const RADIO_SIGNOS_INTERIOR = 244;
+    const RADIO_DECANATOS_INTERIOR = 207;
+    const RADIO_PLANETAS = 177;
+    const RADIO_TEXTO_SIGNOS = 262;
+    const RADIO_SIMBOLOS_DECANATOS = 226;
 
     const nombresSignos = [
         "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
@@ -38,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const cuerpos = Object.keys(simbolos);
 
-    // Decanatos: 3 planetas por signo (0°-10°, 10°-20°, 20°-30°)
     const decanatos = {
         0: ['MARTE', 'SOL', 'VENUS'],
         1: ['MERCURIO', 'LUNA', 'SATURNO'],
@@ -170,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarValoresGuardados();
 
     // ============================================================
-    //  DIBUJO CON DECANATOS CORREGIDOS
+    //  DIBUJO CON RADIOS AUMENTADOS
     // ============================================================
     function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
 
@@ -192,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloExterior.setAttribute("cy", String(CENTRO_Y));
         circuloExterior.setAttribute("r", String(RADIO_EXTERIOR));
         circuloExterior.setAttribute("stroke", "#111111");
-        circuloExterior.setAttribute("stroke-width", "1");
+        circuloExterior.setAttribute("stroke-width", "1.5");
         circuloExterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloExterior);
 
@@ -201,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloSignosInterior.setAttribute("cy", String(CENTRO_Y));
         circuloSignosInterior.setAttribute("r", String(RADIO_SIGNOS_INTERIOR));
         circuloSignosInterior.setAttribute("stroke", "#111111");
-        circuloSignosInterior.setAttribute("stroke-width", "1");
+        circuloSignosInterior.setAttribute("stroke-width", "1.5");
         circuloSignosInterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloSignosInterior);
 
@@ -210,33 +209,32 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloDecanatosInterior.setAttribute("cy", String(CENTRO_Y));
         circuloDecanatosInterior.setAttribute("r", String(RADIO_DECANATOS_INTERIOR));
         circuloDecanatosInterior.setAttribute("stroke", "#111111");
-        circuloDecanatosInterior.setAttribute("stroke-width", "0.5");
+        circuloDecanatosInterior.setAttribute("stroke-width", "1");
         circuloDecanatosInterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloDecanatosInterior);
 
         const puntoCentral = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         puntoCentral.setAttribute("cx", String(CENTRO_X));
         puntoCentral.setAttribute("cy", String(CENTRO_Y));
-        puntoCentral.setAttribute("r", "3");
+        puntoCentral.setAttribute("r", "4");
         puntoCentral.setAttribute("fill", "#111111");
         lienzoSvg.appendChild(puntoCentral);
 
-        // ---- CAPA 2: Líneas de los signos (30°) EXTENDIDAS hasta los decanatos ----
-        // Ahora se dibujan desde el borde exterior hasta el borde interior de los decanatos
+        // ---- CAPA 2: Líneas de los signos (30°) ----
         for (let i = 0; i < 12; i++) {
             const gradoLinea = i * 30;
             const radLinea = ajustarAngulo(gradoLinea);
             const x1 = Math.round(CENTRO_X + RADIO_EXTERIOR * Math.cos(radLinea));
             const y1 = Math.round(CENTRO_Y + RADIO_EXTERIOR * Math.sin(radLinea));
-            const x2 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radLinea));
-            const y2 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radLinea));
+            const x2 = Math.round(CENTRO_X + RADIO_SIGNOS_INTERIOR * Math.cos(radLinea));
+            const y2 = Math.round(CENTRO_Y + RADIO_SIGNOS_INTERIOR * Math.sin(radLinea));
             const lineaDivisoria = document.createElementNS("http://www.w3.org/2000/svg", "line");
             lineaDivisoria.setAttribute("x1", String(x1));
             lineaDivisoria.setAttribute("y1", String(y1));
             lineaDivisoria.setAttribute("x2", String(x2));
             lineaDivisoria.setAttribute("y2", String(y2));
             lineaDivisoria.setAttribute("stroke", "#111111");
-            lineaDivisoria.setAttribute("stroke-width", "1");
+            lineaDivisoria.setAttribute("stroke-width", "1.5");
             lienzoSvg.appendChild(lineaDivisoria);
         }
 
@@ -260,7 +258,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // ---- CAPA 4: Nombres de los signos ----
+        // ---- CAPA 4: Nombres de los signos (tamaño aumentado) ----
         for (let i = 0; i < 12; i++) {
             const gradoInicioArco = i * 30;
             const gradoFinArco = gradoInicioArco + 30;
@@ -281,7 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(rutaDefinicion);
             const etiquetaTexto = document.createElementNS("http://www.w3.org/2000/svg", "text");
             etiquetaTexto.setAttribute("font-family", "'Inter', sans-serif");
-            etiquetaTexto.setAttribute("font-size", "10");
+            etiquetaTexto.setAttribute("font-size", "12");
             etiquetaTexto.setAttribute("font-weight", "600");
             etiquetaTexto.setAttribute("fill", "#111111");
             const trayectoTexto = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
@@ -293,7 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(etiquetaTexto);
         }
 
-        // ---- CAPA 5: Símbolos de los decanatos ----
+        // ---- CAPA 5: Símbolos de los decanatos (tamaño aumentado) ----
         for (let i = 0; i < 12; i++) {
             const decanatosSigno = decanatos[i];
             if (!decanatosSigno) continue;
@@ -306,9 +304,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 const simbolo = simbolos[nombrePlaneta] || "?";
                 const txtSimbolo = document.createElementNS("http://www.w3.org/2000/svg", "text");
                 txtSimbolo.setAttribute("x", String(x));
-                txtSimbolo.setAttribute("y", String(y + 3));
+                txtSimbolo.setAttribute("y", String(y + 4));
                 txtSimbolo.setAttribute("font-family", "'Segoe UI Symbol', 'Arial Unicode MS', sans-serif");
-                txtSimbolo.setAttribute("font-size", "12");
+                txtSimbolo.setAttribute("font-size", "14");
                 txtSimbolo.setAttribute("font-weight", "400");
                 txtSimbolo.setAttribute("text-anchor", "middle");
                 txtSimbolo.setAttribute("dominant-baseline", "central");
@@ -318,7 +316,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // ---- CAPA 6: Ejes y planetas ----
+        // ---- CAPA 6: Ejes y planetas (tamaños ajustados) ----
         if (mostrarContenido) {
             const radAsc = ajustarAngulo(ascendenteAbs);
             const xAsc1 = Math.round(CENTRO_X + RADIO_SIGNOS_INTERIOR * Math.cos(radAsc));
@@ -331,15 +329,15 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaAsc.setAttribute("x2", String(xAsc2));
             lineaAsc.setAttribute("y2", String(yAsc2));
             lineaAsc.setAttribute("stroke", "#111111");
-            lineaAsc.setAttribute("stroke-width", "2");
+            lineaAsc.setAttribute("stroke-width", "2.5");
             lienzoSvg.appendChild(lineaAsc);
-            const xAscTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 40) * Math.cos(radAsc));
-            const yAscTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 40) * Math.sin(radAsc)) + 4;
+            const xAscTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 45) * Math.cos(radAsc));
+            const yAscTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 45) * Math.sin(radAsc)) + 5;
             const txtAsc = document.createElementNS("http://www.w3.org/2000/svg", "text");
             txtAsc.setAttribute("x", String(xAscTxt));
             txtAsc.setAttribute("y", String(yAscTxt));
             txtAsc.setAttribute("font-family", "'Inter', sans-serif");
-            txtAsc.setAttribute("font-size", "10");
+            txtAsc.setAttribute("font-size", "12");
             txtAsc.setAttribute("font-weight", "600");
             txtAsc.setAttribute("text-anchor", "middle");
             txtAsc.setAttribute("fill", "#111111");
@@ -357,15 +355,15 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaMc.setAttribute("x2", String(xMc2));
             lineaMc.setAttribute("y2", String(yMc2));
             lineaMc.setAttribute("stroke", "#111111");
-            lineaMc.setAttribute("stroke-width", "2");
+            lineaMc.setAttribute("stroke-width", "2.5");
             lienzoSvg.appendChild(lineaMc);
-            const xMcTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 40) * Math.cos(radMc));
-            const yMcTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 40) * Math.sin(radMc)) + 4;
+            const xMcTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 45) * Math.cos(radMc));
+            const yMcTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 45) * Math.sin(radMc)) + 5;
             const txtMc = document.createElementNS("http://www.w3.org/2000/svg", "text");
             txtMc.setAttribute("x", String(xMcTxt));
             txtMc.setAttribute("y", String(yMcTxt));
             txtMc.setAttribute("font-family", "'Inter', sans-serif");
-            txtMc.setAttribute("font-size", "11");
+            txtMc.setAttribute("font-size", "13");
             txtMc.setAttribute("font-weight", "600");
             txtMc.setAttribute("text-anchor", "middle");
             txtMc.setAttribute("fill", "#111111");
@@ -401,9 +399,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     const simbolo = simbolos[nombre] || "?";
                     const txtSimbolo = document.createElementNS("http://www.w3.org/2000/svg", "text");
                     txtSimbolo.setAttribute("x", String(xPlaneta));
-                    txtSimbolo.setAttribute("y", String(yPlaneta + 4));
+                    txtSimbolo.setAttribute("y", String(yPlaneta + 5));
                     txtSimbolo.setAttribute("font-family", "'Segoe UI Symbol', 'Arial Unicode MS', sans-serif");
-                    txtSimbolo.setAttribute("font-size", "16");
+                    txtSimbolo.setAttribute("font-size", "18");
                     txtSimbolo.setAttribute("font-weight", "400");
                     txtSimbolo.setAttribute("text-anchor", "middle");
                     txtSimbolo.setAttribute("dominant-baseline", "central");
@@ -414,15 +412,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     const datosPlaneta = datosPlanetasForm[nombre] || { g: 0, m: 0, retrogrado: false };
 
                     if (datosPlaneta.retrogrado) {
-                        const offsetX = 10;
-                        const offsetY = 12;
+                        const offsetX = 12;
+                        const offsetY = 14;
                         const xR = xPlaneta + offsetX;
                         const yR = yPlaneta + offsetY;
                         const txtRetro = document.createElementNS("http://www.w3.org/2000/svg", "text");
                         txtRetro.setAttribute("x", String(xR));
                         txtRetro.setAttribute("y", String(yR));
                         txtRetro.setAttribute("font-family", "'Inter', sans-serif");
-                        txtRetro.setAttribute("font-size", "8");
+                        txtRetro.setAttribute("font-size", "10");
                         txtRetro.setAttribute("font-weight", "700");
                         txtRetro.setAttribute("text-anchor", "start");
                         txtRetro.setAttribute("dominant-baseline", "central");
