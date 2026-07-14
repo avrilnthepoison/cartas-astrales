@@ -7,13 +7,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const CENTRO_X = 300;
     const CENTRO_Y = 300;
 
-    // RADIOS AUMENTADOS AL MÁXIMO (casi tocan el borde del SVG)
+    // RADIOS
     const RADIO_EXTERIOR = 295;
     const RADIO_SIGNOS_INTERIOR = 260;
     const RADIO_DECANATOS_INTERIOR = 220;
     const RADIO_PLANETAS = 185;
-    const RADIO_TEXTO_SIGNOS = 278;      // (295+260)/2 = 277.5 → 278
-    const RADIO_SIMBOLOS_DECANATOS = 240; // (260+220)/2 = 240
+    const RADIO_TEXTO_SIGNOS = 278;
+    const RADIO_SIMBOLOS_DECANATOS = 240;
 
     const nombresSignos = [
         "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarValoresGuardados();
 
     // ============================================================
-    //  DIBUJO CON RADIOS AUMENTADOS AL MÁXIMO
+    //  DIBUJO CON LÍNEAS INDEPENDIENTES POR FRANJA
     // ============================================================
     function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
 
@@ -220,7 +220,8 @@ document.addEventListener("DOMContentLoaded", () => {
         puntoCentral.setAttribute("fill", "#111111");
         lienzoSvg.appendChild(puntoCentral);
 
-        // ---- CAPA 2: Líneas de los signos (30°) ----
+        // ---- CAPA 2: Líneas de los SIGNOS (30°) ----
+        // Solo en la franja de los signos: desde RADIO_EXTERIOR hasta RADIO_SIGNOS_INTERIOR
         for (let i = 0; i < 12; i++) {
             const gradoLinea = i * 30;
             const radLinea = ajustarAngulo(gradoLinea);
@@ -228,37 +229,42 @@ document.addEventListener("DOMContentLoaded", () => {
             const y1 = Math.round(CENTRO_Y + RADIO_EXTERIOR * Math.sin(radLinea));
             const x2 = Math.round(CENTRO_X + RADIO_SIGNOS_INTERIOR * Math.cos(radLinea));
             const y2 = Math.round(CENTRO_Y + RADIO_SIGNOS_INTERIOR * Math.sin(radLinea));
-            const lineaDivisoria = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            lineaDivisoria.setAttribute("x1", String(x1));
-            lineaDivisoria.setAttribute("y1", String(y1));
-            lineaDivisoria.setAttribute("x2", String(x2));
-            lineaDivisoria.setAttribute("y2", String(y2));
-            lineaDivisoria.setAttribute("stroke", "#111111");
-            lineaDivisoria.setAttribute("stroke-width", "2");
-            lienzoSvg.appendChild(lineaDivisoria);
+            const linea = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            linea.setAttribute("x1", String(x1));
+            linea.setAttribute("y1", String(y1));
+            linea.setAttribute("x2", String(x2));
+            linea.setAttribute("y2", String(y2));
+            linea.setAttribute("stroke", "#111111");
+            linea.setAttribute("stroke-width", "2");
+            lienzoSvg.appendChild(linea);
         }
 
-        // ---- CAPA 3: Líneas de los decanatos (10°) ----
+        // ---- CAPA 3: Líneas de los DECANATOS (10°) ----
+        // En la franja de los decanatos: desde RADIO_SIGNOS_INTERIOR hasta RADIO_DECANATOS_INTERIOR
+        // Incluye todas las divisiones: 0°, 10°, 20° y 30° de cada signo
         for (let i = 0; i < 12; i++) {
-            for (let d = 1; d <= 2; d++) {
+            // Dibujamos las 4 líneas de cada signo: 0°, 10°, 20°, 30°
+            // La línea de 30° es la misma que la de 0° del siguiente signo,
+            // pero la dibujamos aquí para que cada signo tenga sus 4 líneas.
+            for (let d = 0; d <= 3; d++) {
                 const gradoLinea = i * 30 + d * 10;
                 const radLinea = ajustarAngulo(gradoLinea);
                 const x1 = Math.round(CENTRO_X + RADIO_SIGNOS_INTERIOR * Math.cos(radLinea));
                 const y1 = Math.round(CENTRO_Y + RADIO_SIGNOS_INTERIOR * Math.sin(radLinea));
                 const x2 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radLinea));
                 const y2 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radLinea));
-                const lineaDecanato = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                lineaDecanato.setAttribute("x1", String(x1));
-                lineaDecanato.setAttribute("y1", String(y1));
-                lineaDecanato.setAttribute("x2", String(x2));
-                lineaDecanato.setAttribute("y2", String(y2));
-                lineaDecanato.setAttribute("stroke", "#111111");
-                lineaDecanato.setAttribute("stroke-width", "1.5");
-                lienzoSvg.appendChild(lineaDecanato);
+                const linea = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                linea.setAttribute("x1", String(x1));
+                linea.setAttribute("y1", String(y1));
+                linea.setAttribute("x2", String(x2));
+                linea.setAttribute("y2", String(y2));
+                linea.setAttribute("stroke", "#111111");
+                linea.setAttribute("stroke-width", "1.5");
+                lienzoSvg.appendChild(linea);
             }
         }
 
-        // ---- CAPA 4: Nombres de los signos (fuente grande, centrada) ----
+        // ---- CAPA 4: Nombres de los signos ----
         for (let i = 0; i < 12; i++) {
             const gradoInicioArco = i * 30;
             const gradoFinArco = gradoInicioArco + 30;
@@ -291,7 +297,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(etiquetaTexto);
         }
 
-        // ---- CAPA 5: Símbolos de los decanatos (centrados, fuente grande) ----
+        // ---- CAPA 5: Símbolos de los decanatos ----
         for (let i = 0; i < 12; i++) {
             const decanatosSigno = decanatos[i];
             if (!decanatosSigno) continue;
@@ -316,7 +322,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // ---- CAPA 6: Ejes y planetas (con tamaños ajustados) ----
+        // ---- CAPA 6: Ejes y planetas ----
         if (mostrarContenido) {
             const radAsc = ajustarAngulo(ascendenteAbs);
             const xAsc1 = Math.round(CENTRO_X + RADIO_SIGNOS_INTERIOR * Math.cos(radAsc));
