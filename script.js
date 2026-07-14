@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const RADIO_EXTERIOR = 230;
     const RADIO_SIGNOS_INTERIOR = 200;
     const RADIO_DECANATOS_INTERIOR = 170;
-    const RADIO_PLANETAS = 145;              // más adentro para dejar espacio
+    const RADIO_PLANETAS = 145;
     const RADIO_TEXTO_SIGNOS = 215;
     const RADIO_SIMBOLOS_DECANATOS = 185;
 
@@ -221,14 +221,15 @@ document.addEventListener("DOMContentLoaded", () => {
         puntoCentral.setAttribute("fill", "#111111");
         lienzoSvg.appendChild(puntoCentral);
 
-        // ---- CAPA 2: Líneas de los signos (30°) ----
+        // ---- CAPA 2: Líneas de los signos (30°) EXTENDIDAS hasta los decanatos ----
+        // Ahora se dibujan desde el borde exterior hasta el borde interior de los decanatos
         for (let i = 0; i < 12; i++) {
             const gradoLinea = i * 30;
             const radLinea = ajustarAngulo(gradoLinea);
             const x1 = Math.round(CENTRO_X + RADIO_EXTERIOR * Math.cos(radLinea));
             const y1 = Math.round(CENTRO_Y + RADIO_EXTERIOR * Math.sin(radLinea));
-            const x2 = Math.round(CENTRO_X + RADIO_SIGNOS_INTERIOR * Math.cos(radLinea));
-            const y2 = Math.round(CENTRO_Y + RADIO_SIGNOS_INTERIOR * Math.sin(radLinea));
+            const x2 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radLinea));
+            const y2 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radLinea));
             const lineaDivisoria = document.createElementNS("http://www.w3.org/2000/svg", "line");
             lineaDivisoria.setAttribute("x1", String(x1));
             lineaDivisoria.setAttribute("y1", String(y1));
@@ -240,8 +241,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // ---- CAPA 3: Líneas de los decanatos (10°) ----
-        // Se dibujan desde el borde interior de los signos hasta el centro de la rueda
-        // (para que no queden espacios en blanco)
         for (let i = 0; i < 12; i++) {
             for (let d = 1; d <= 2; d++) {
                 const gradoLinea = i * 30 + d * 10;
@@ -255,8 +254,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 lineaDecanato.setAttribute("y1", String(y1));
                 lineaDecanato.setAttribute("x2", String(x2));
                 lineaDecanato.setAttribute("y2", String(y2));
-                lineaDecanato.setAttribute("stroke", "#111111");   // Color negro sólido
-                lineaDecanato.setAttribute("stroke-width", "1");   // Sin dash
+                lineaDecanato.setAttribute("stroke", "#111111");
+                lineaDecanato.setAttribute("stroke-width", "1");
                 lienzoSvg.appendChild(lineaDecanato);
             }
         }
