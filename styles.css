@@ -127,57 +127,49 @@ body {
     letter-spacing: 1px;
 }
 
-/* ---- CONTENEDOR DE CAMPOS DE POSICIÓN (FLEX) ---- */
 .campos-posicion {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 4px;
-    width: 100%;
+    display: table-cell;
+    width: 70%;
+    text-align: right;
 }
 
-/* Todos los inputs de número (grado y minuto) */
-.campos-posicion input[type="number"] {
+/* Inputs y Selects */
+input[type="number"], select {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: #111111;
+    border: none;
+    border-radius: 12px;
+    padding: 6px 6px;
+    background-color: #ffffff;
+    outline: none;
+    vertical-align: middle;
+}
+
+input[type="number"] {
     width: 50px;
-    padding: 6px 4px;
-    border: none;
-    border-radius: 12px;
-    background-color: #ffffff;
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    color: #111111;
-    outline: none;
+    margin-right: 8px;
     text-align: center;
-    box-sizing: border-box;
-    flex-shrink: 0;
 }
 
-/* Select del signo */
-.campos-posicion select {
+select {
     width: 110px;
-    padding: 6px 4px;
-    border: none;
-    border-radius: 12px;
-    background-color: #ffffff;
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    color: #111111;
-    outline: none;
-    box-sizing: border-box;
-    flex-shrink: 0;
 }
 
-/* ---- CHECKBOX DE RETRÓGRADO (con ancho fijo para alinear) ---- */
+/* Estilos para el checkbox de retrógrado */
+/* Contenedor principal del checkbox */
 .etiqueta-retrogrado {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    width: 28px;  /* Ancho fijo para que Sol y Luna mantengan el espacio */
-    height: 24px;
-    position: relative;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #111111;  /* Cambia este color si quieres la "R" de otro color */
     cursor: pointer;
     user-select: none;
-    flex-shrink: 0;
+    position: relative;
+    padding-left: 22px;  /* Espacio para el checkbox personalizado */
+    margin-left: 4px;
 }
 
 /* Ocultar el checkbox nativo */
@@ -189,13 +181,13 @@ body {
     pointer-events: none;
 }
 
-/* Cuadrado del checkbox personalizado (centrado) */
+/* Cuadrado del checkbox personalizado */
 .etiqueta-retrogrado::before {
     content: '';
     position: absolute;
-    left: 50%;
+    left: 0;
     top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateY(-50%);
     width: 16px;
     height: 16px;
     border: none;
@@ -213,9 +205,9 @@ body {
 .etiqueta-retrogrado:has(input[type="checkbox"]:checked)::after {
     content: '✓';
     position: absolute;
-    left: 50%;
+    left: 3px;
     top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateY(-50%);
     color: #ffffff;
     font-size: 12px;
     font-weight: 700;
@@ -231,12 +223,8 @@ body {
     box-shadow: 0 0 0 2px rgba(0,0,0,0.2);
 }
 
-/* La "R" al lado del checkbox (oculta, solo el checkbox es visual) */
-.etiqueta-retrogrado .texto-retro {
-    display: none;
-}
 
-/* ---- BOTONES ---- */
+/* Botón de Generar Gráfico */
 #btn-generar {
     display: block;
     width: 100%;
@@ -258,6 +246,7 @@ body {
     background-color: #333333;
 }
 
+/* Botón para Restablecer */
 #btn-borrar {
     display: block;
     width: 100%;
@@ -307,11 +296,7 @@ body {
     shape-rendering: geometricPrecision;
 }
 
-/*
-==========================================================================
-   5. RESPONSIVE
-==========================================================================
-*/
+/* RESPONSIVE: Si la pantalla es pequeña (celulares), vuelve a una sola columna */
 @media (max-width: 850px) {
     .interfaz-columnas {
         display: block;
@@ -327,59 +312,16 @@ body {
         position: relative;
         top: 0;
     }
-
-    /* Ajustes de flex en móvil */
-    .campos-posicion {
-        gap: 3px;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-    }
-    .campos-posicion input[type="number"] {
-        width: 40px;
-        font-size: 11px;
-        padding: 4px 2px;
-    }
-    .campos-posicion select {
-        width: 80px;
-        font-size: 11px;
-        padding: 4px 2px;
-    }
-    .etiqueta-retrogrado {
-        width: 24px;
-        height: 20px;
-    }
-    .etiqueta-retrogrado::before {
-        width: 14px;
-        height: 14px;
-    }
-    .etiqueta-retrogrado:has(input[type="checkbox"]:checked)::after {
-        font-size: 10px;
-    }
 }
 
 @media (max-width: 500px) {
-    .campos-posicion {
-        gap: 2px;
-    }
     .campos-posicion input[type="number"] {
-        width: 32px;
-        font-size: 10px;
-        padding: 3px 2px;
+        width: 35px;
     }
     .campos-posicion select {
         width: 65px;
-        font-size: 10px;
-        padding: 3px 2px;
     }
     .etiqueta-retrogrado {
-        width: 20px;
-        height: 18px;
-    }
-    .etiqueta-retrogrado::before {
-        width: 12px;
-        height: 12px;
-    }
-    .etiqueta-retrogrado:has(input[type="checkbox"]:checked)::after {
-        font-size: 8px;
+        font-size: 9px;
     }
 }
