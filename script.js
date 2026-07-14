@@ -327,7 +327,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (datosPlaneta.retrogrado) {
                         // Desplazamientos fijos en píxeles (ajusta estos valores a tu gusto)
                         const offsetX = 10;  // hacia la derecha
-                        const offsetY = 6;   // hacia abajo
+                        const offsetY = 12;   // hacia abajo
                         const xR = xPlaneta + offsetX;
                         const yR = yPlaneta + offsetY;
                         const txtRetro = document.createElementNS("http://www.w3.org/2000/svg", "text");
