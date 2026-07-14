@@ -323,18 +323,20 @@ document.addEventListener("DOMContentLoaded", () => {
                     // 2. Obtener datos del planeta
                     const datosPlaneta = datosPlanetasForm[nombre] || { g: 0, m: 0, retrogrado: false };
 
-                    // 3. Si está retrógrado, dibujar "R" en un radio ligeramente mayor (subíndice radial)
+                    // 3. Si está retrógrado, dibujar "R" como subíndice fijo (abajo a la derecha)
                     if (datosPlaneta.retrogrado) {
-                        const radioR = radioPlaneta + 10; // Incremento radial hacia afuera
-                        const xR = Math.round(CENTRO_X + radioR * Math.cos(radPlaneta));
-                        const yR = Math.round(CENTRO_Y + radioR * Math.sin(radPlaneta));
+                        // Desplazamientos fijos en píxeles (ajusta estos valores a tu gusto)
+                        const offsetX = 10;  // hacia la derecha
+                        const offsetY = 6;   // hacia abajo
+                        const xR = xPlaneta + offsetX;
+                        const yR = yPlaneta + offsetY;
                         const txtRetro = document.createElementNS("http://www.w3.org/2000/svg", "text");
                         txtRetro.setAttribute("x", String(xR));
                         txtRetro.setAttribute("y", String(yR));
                         txtRetro.setAttribute("font-family", "'Inter', sans-serif");
                         txtRetro.setAttribute("font-size", "8");
                         txtRetro.setAttribute("font-weight", "700");
-                        txtRetro.setAttribute("text-anchor", "middle");
+                        txtRetro.setAttribute("text-anchor", "start"); // alineado a la izquierda
                         txtRetro.setAttribute("dominant-baseline", "central");
                         txtRetro.setAttribute("fill", "#111111");
                         txtRetro.textContent = "R";
