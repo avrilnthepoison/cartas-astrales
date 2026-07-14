@@ -183,24 +183,6 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloInterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloInterior);
 
-        // Círculo adicional para separar la zona de planetas (opcional)
-        const circuloPlanetas = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circuloPlanetas.setAttribute("cx", String(CENTRO_X));
-        circuloPlanetas.setAttribute("cy", String(CENTRO_Y));
-        circuloPlanetas.setAttribute("r", String(RADIO_RUEDA - 45));
-        circuloPlanetas.setAttribute("stroke", "#cccccc");
-        circuloPlanetas.setAttribute("stroke-width", "0.5");
-        circuloPlanetas.setAttribute("stroke-dasharray", "2,2");
-        circuloPlanetas.setAttribute("fill", "none");
-        lienzoSvg.appendChild(circuloPlanetas);
-
-        const puntoCentral = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        puntoCentral.setAttribute("cx", String(CENTRO_X));
-        puntoCentral.setAttribute("cy", String(CENTRO_Y));
-        puntoCentral.setAttribute("r", "3");
-        puntoCentral.setAttribute("fill", "#111111");
-        lienzoSvg.appendChild(puntoCentral);
-
         // ---- CAPA 2: Líneas divisorias ----
         for (let i = 0; i < 12; i++) {
             const gradoLinea = i * 30;
