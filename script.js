@@ -169,7 +169,9 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarValoresGuardados();
 
     // ============================================================
-    //  DIBUJO CON LÍNEAS INDEPENDIENTES POR FRANJA
+    //  DIBUJO CON CAPAS INDEPENDIENTES
+    //  CAPA 2: 12 líneas de los signos (30°)
+    //  CAPA 3: 36 líneas de los decanatos (0°, 10°, 20° de cada signo)
     // ============================================================
     function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
 
@@ -221,7 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
         lienzoSvg.appendChild(puntoCentral);
 
         // ---- CAPA 2: Líneas de los SIGNOS (30°) ----
-        // Solo en la franja de los signos: desde RADIO_EXTERIOR hasta RADIO_SIGNOS_INTERIOR
+        // 12 líneas: desde RADIO_EXTERIOR hasta RADIO_SIGNOS_INTERIOR
         for (let i = 0; i < 12; i++) {
             const gradoLinea = i * 30;
             const radLinea = ajustarAngulo(gradoLinea);
@@ -239,14 +241,11 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(linea);
         }
 
-        // ---- CAPA 3: Líneas de los DECANATOS (10°) ----
-        // En la franja de los decanatos: desde RADIO_SIGNOS_INTERIOR hasta RADIO_DECANATOS_INTERIOR
-        // Incluye todas las divisiones: 0°, 10°, 20° y 30° de cada signo
+        // ---- CAPA 3: Líneas de los DECANATOS (0°, 10°, 20° de cada signo) ----
+        // 36 líneas: desde RADIO_SIGNOS_INTERIOR hasta RADIO_DECANATOS_INTERIOR
+        // No dibujamos el 30° porque es el 0° del siguiente signo (evita duplicados)
         for (let i = 0; i < 12; i++) {
-            // Dibujamos las 4 líneas de cada signo: 0°, 10°, 20°, 30°
-            // La línea de 30° es la misma que la de 0° del siguiente signo,
-            // pero la dibujamos aquí para que cada signo tenga sus 4 líneas.
-            for (let d = 0; d <= 3; d++) {
+            for (let d = 0; d < 3; d++) {
                 const gradoLinea = i * 30 + d * 10;
                 const radLinea = ajustarAngulo(gradoLinea);
                 const x1 = Math.round(CENTRO_X + RADIO_SIGNOS_INTERIOR * Math.cos(radLinea));
