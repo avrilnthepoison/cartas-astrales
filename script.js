@@ -398,11 +398,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     // ---- MARCA DE POSICIÓN (línea radial) ----
                     const xInicio = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radPlaneta));
                     const yInicio = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radPlaneta));
-                    // El punto final es el símbolo del planeta, pero con un pequeño margen para no solaparse
-                    const margen = -10; // distancia desde el centro del planeta hacia afuera
-                    const radioFin = radioPlaneta - margen;
-                    const xFin = Math.round(CENTRO_X + radioFin * Math.cos(radPlaneta));
-                    const yFin = Math.round(CENTRO_Y + radioFin * Math.sin(radPlaneta));
+                    // La marca tiene EXACTAMENTE 15 unidades de largo desde el borde interior de decanatos
+                    const radioFinMarca = RADIO_DECANATOS_INTERIOR + 15;
+                    const xFin = Math.round(CENTRO_X + radioFinMarca * Math.cos(radPlaneta));
+                    const yFin = Math.round(CENTRO_Y + radioFinMarca * Math.sin(radPlaneta));
 
                     const lineaPosicion = document.createElementNS("http://www.w3.org/2000/svg", "line");
                     lineaPosicion.setAttribute("x1", String(xInicio));
