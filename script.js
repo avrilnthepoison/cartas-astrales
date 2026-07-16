@@ -9,20 +9,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Radios
     const RADIO_EXTERIOR = 295;
-    const RADIO_SIGNOS_INTERIOR = 255;
-    const RADIO_DECANATOS_INTERIOR = 225;
-    const RADIO_PLANETAS = 200;
-    const RADIO_TEXTO_SIGNOS = 275;
+    const RADIO_SIGNOS_INTERIOR = 260;
+    const RADIO_DECANATOS_INTERIOR = 220;
+    const RADIO_PLANETAS = 185;
+    const RADIO_TEXTO_SIGNOS = 277;  // Centrado en la franja de signos
     const RADIO_SIMBOLOS_DECANATOS = 240;
 
-    // Orden de los signos
     const nombresSignos = [
         "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
         "LEO", "VIRGO", "LIBRA", "ESCORPIO",
         "SAGITARIO", "CAPRICORNIO", "ACUARIO", "PISCIS"
     ];
 
-    // Símbolos planetarios
     const simbolos = {
         "SOL": "☉",
         "LUNA": "☽",
@@ -40,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const cuerpos = Object.keys(simbolos);
 
-    // Orden de los decanatos
     const decanatos = {
         0: ['MARTE', 'SOL', 'VENUS'],
         1: ['MERCURIO', 'LUNA', 'SATURNO'],
@@ -60,7 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return g + (m / 60);
     }
 
-     // Función Central para procesar formulario y guardar en memoria
     function procesarYGenerarCarta() {
         const ascG = parseInt(document.getElementById("asc-grado").value, 10) || 0;
         const ascM = parseInt(document.getElementById("asc-minuto").value, 10) || 0;
@@ -108,7 +104,6 @@ document.addEventListener("DOMContentLoaded", () => {
         dibujarRadixManual(gradoAscAbsoluto, gradoMcAbsoluto, planetasIngresados, true);
     }
 
-    // Función para borrar la memoria y volver al estado vacío (solo la rueda base)
     function restablecerTodoACero() {
         localStorage.removeItem("datosRadixManual");
         document.getElementById("asc-grado").value = "";
@@ -130,7 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
         dibujarRadixManual(0, 0, {}, false);
     }
 
-    // Función para recoger historial tras refrescar la página (F5)
     function cargarValoresGuardados() {
         const datosGuardados = localStorage.getItem("datosRadixManual");
         if (!datosGuardados) {
@@ -174,7 +168,6 @@ document.addEventListener("DOMContentLoaded", () => {
     botonBorrar.addEventListener("click", restablecerTodoACero);
     cargarValoresGuardados();
 
-    // Función para el dibujo de la gráfica con orden de capas
     function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
 
         while (lienzoSvg.firstChild) {
@@ -262,13 +255,13 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // ---- CAPA 4: Nombres de los signos ----
+        // ---- CAPA 4: Nombres de los signos (CENTRADOS) ----
         for (let i = 0; i < 12; i++) {
             const gradoInicioArco = i * 30;
             const gradoFinArco = gradoInicioArco + 30;
             const radInicio = ajustarAngulo(gradoInicioArco);
             const radFin = ajustarAngulo(gradoFinArco);
-            const radioTrayectoTexto = RADIO_TEXTO_SIGNOS;
+            const radioTrayectoTexto = RADIO_TEXTO_SIGNOS; // 277 (centrado)
             const sx = (CENTRO_X + radioTrayectoTexto * Math.cos(radInicio)).toFixed(2);
             const sy = (CENTRO_Y + radioTrayectoTexto * Math.sin(radInicio)).toFixed(2);
             const ex = (CENTRO_X + radioTrayectoTexto * Math.cos(radFin)).toFixed(2);
@@ -304,29 +297,30 @@ document.addEventListener("DOMContentLoaded", () => {
                 const rad = ajustarAngulo(gradoCentral);
                 const x = Math.round(CENTRO_X + RADIO_SIMBOLOS_DECANATOS * Math.cos(rad));
                 const y = Math.round(CENTRO_Y + RADIO_SIMBOLOS_DECANATOS * Math.sin(rad));
-
                 const nombrePlaneta = decanatosSigno[d];
-                const nombreSVG = nombrePlaneta.toLowerCase().replace('_', '-');
-                const rutaSVG = `svg/${nombreSVG}.svg`;
-
-                const imgDecanato = document.createElementNS("http://www.w3.org/2000/svg", "image");
-                imgDecanato.setAttribute("x", String(x - 8));
-                imgDecanato.setAttribute("y", String(y - 8));
-                imgDecanato.setAttribute("width", "16");
-                imgDecanato.setAttribute("height", "16");
-                imgDecanato.setAttribute("href", rutaSVG);
-                lienzoSvg.appendChild(imgDecanato);
+                const simbolo = simbolos[nombrePlaneta] || "?";
+                const txtSimbolo = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                txtSimbolo.setAttribute("x", String(x));
+                txtSimbolo.setAttribute("y", String(y + 5));
+                txtSimbolo.setAttribute("font-family", "'Segoe UI Symbol', 'Arial Unicode MS', sans-serif");
+                txtSimbolo.setAttribute("font-size", "16");
+                txtSimbolo.setAttribute("font-weight", "400");
+                txtSimbolo.setAttribute("text-anchor", "middle");
+                txtSimbolo.setAttribute("dominant-baseline", "central");
+                txtSimbolo.setAttribute("fill", "#666666");
+                txtSimbolo.textContent = simbolo;
+                lienzoSvg.appendChild(txtSimbolo);
             }
         }
 
         // ---- CAPA 6: Ejes y planetas ----
         if (mostrarContenido) {
-            // Eje del Ascendente
+            // Eje del Ascendente (desde borde interior de decanatos hasta más adentro)
             const radAsc = ajustarAngulo(ascendenteAbs);
-            const xAsc1 = Math.round(CENTRO_X + RADIO_SIGNOS_INTERIOR * Math.cos(radAsc));
-            const yAsc1 = Math.round(CENTRO_Y + RADIO_SIGNOS_INTERIOR * Math.sin(radAsc));
-            const xAsc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 35) * Math.cos(radAsc));
-            const yAsc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 35) * Math.sin(radAsc));
+            const xAsc1 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radAsc));
+            const yAsc1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radAsc));
+            const xAsc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 50) * Math.cos(radAsc));
+            const yAsc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 50) * Math.sin(radAsc));
             const lineaAsc = document.createElementNS("http://www.w3.org/2000/svg", "line");
             lineaAsc.setAttribute("x1", String(xAsc1));
             lineaAsc.setAttribute("y1", String(yAsc1));
@@ -336,25 +330,26 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaAsc.setAttribute("stroke-width", "3");
             lienzoSvg.appendChild(lineaAsc);
 
-            const xAscTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 50) * Math.cos(radAsc));
-            const yAscTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 50) * Math.sin(radAsc)) + 6;
+            // Nombre "ASC" más adentro
+            const xAscTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 55) * Math.cos(radAsc));
+            const yAscTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 55) * Math.sin(radAsc)) + 6;
             const txtAsc = document.createElementNS("http://www.w3.org/2000/svg", "text");
             txtAsc.setAttribute("x", String(xAscTxt));
             txtAsc.setAttribute("y", String(yAscTxt));
             txtAsc.setAttribute("font-family", "'Inter', sans-serif");
-            txtAsc.setAttribute("font-size", "16");
+            txtAsc.setAttribute("font-size", "14");
             txtAsc.setAttribute("font-weight", "600");
             txtAsc.setAttribute("text-anchor", "middle");
             txtAsc.setAttribute("fill", "#111111");
             txtAsc.textContent = "ASC";
             lienzoSvg.appendChild(txtAsc);
 
-             // Eje del Medio Cielo
+            // Eje del Medio Cielo (desde borde interior de decanatos hasta más adentro)
             const radMc = ajustarAngulo(mcAbs);
-            const xMc1 = Math.round(CENTRO_X + RADIO_SIGNOS_INTERIOR * Math.cos(radMc));
-            const yMc1 = Math.round(CENTRO_Y + RADIO_SIGNOS_INTERIOR * Math.sin(radMc));
-            const xMc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 35) * Math.cos(radMc));
-            const yMc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 35) * Math.sin(radMc));
+            const xMc1 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radMc));
+            const yMc1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radMc));
+            const xMc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 50) * Math.cos(radMc));
+            const yMc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 50) * Math.sin(radMc));
             const lineaMc = document.createElementNS("http://www.w3.org/2000/svg", "line");
             lineaMc.setAttribute("x1", String(xMc1));
             lineaMc.setAttribute("y1", String(yMc1));
@@ -364,13 +359,14 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaMc.setAttribute("stroke-width", "3");
             lienzoSvg.appendChild(lineaMc);
 
-            const xMcTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 50) * Math.cos(radMc));
-            const yMcTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 50) * Math.sin(radMc)) + 6;
+            // Nombre "MC" más adentro
+            const xMcTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 55) * Math.cos(radMc));
+            const yMcTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 55) * Math.sin(radMc)) + 6;
             const txtMc = document.createElementNS("http://www.w3.org/2000/svg", "text");
             txtMc.setAttribute("x", String(xMcTxt));
             txtMc.setAttribute("y", String(yMcTxt));
             txtMc.setAttribute("font-family", "'Inter', sans-serif");
-            txtMc.setAttribute("font-size", "16");
+            txtMc.setAttribute("font-size", "15");
             txtMc.setAttribute("font-weight", "600");
             txtMc.setAttribute("text-anchor", "middle");
             txtMc.setAttribute("fill", "#111111");
@@ -404,29 +400,31 @@ document.addEventListener("DOMContentLoaded", () => {
                     const xPlaneta = Math.round(CENTRO_X + radioPlaneta * Math.cos(radPlaneta));
                     const yPlaneta = Math.round(CENTRO_Y + radioPlaneta * Math.sin(radPlaneta));
 
-                    // 1. Símbolo del planeta (SVG)
-                    const nombreSVG = nombre.toLowerCase().replace('_', '-');
-                    const rutaSVG = `svg/${nombreSVG}.svg`;
-                    const imgPlaneta = document.createElementNS("http://www.w3.org/2000/svg", "image");
-                    imgPlaneta.setAttribute("x", String(xPlaneta - 12));
-                    imgPlaneta.setAttribute("y", String(yPlaneta - 12));
-                    imgPlaneta.setAttribute("width", "24");
-                    imgPlaneta.setAttribute("height", "24");
-                    imgPlaneta.setAttribute("href", rutaSVG);
-                    lienzoSvg.appendChild(imgPlaneta);
+                    const simbolo = simbolos[nombre] || "?";
+                    const txtSimbolo = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    txtSimbolo.setAttribute("x", String(xPlaneta));
+                    txtSimbolo.setAttribute("y", String(yPlaneta + 6));
+                    txtSimbolo.setAttribute("font-family", "'Segoe UI Symbol', 'Arial Unicode MS', sans-serif");
+                    txtSimbolo.setAttribute("font-size", "20");
+                    txtSimbolo.setAttribute("font-weight", "400");
+                    txtSimbolo.setAttribute("text-anchor", "middle");
+                    txtSimbolo.setAttribute("dominant-baseline", "central");
+                    txtSimbolo.setAttribute("fill", "#111111");
+                    txtSimbolo.textContent = simbolo;
+                    lienzoSvg.appendChild(txtSimbolo);
 
-                    // 2. Retrógrado (R)
                     const datosPlaneta = datosPlanetasForm[nombre] || { g: 0, m: 0, retrogrado: false };
+
                     if (datosPlaneta.retrogrado) {
-                        const offsetX = 10;
-                        const offsetY = 10;
+                        const offsetX = 14;
+                        const offsetY = 16;
                         const xR = xPlaneta + offsetX;
                         const yR = yPlaneta + offsetY;
                         const txtRetro = document.createElementNS("http://www.w3.org/2000/svg", "text");
                         txtRetro.setAttribute("x", String(xR));
                         txtRetro.setAttribute("y", String(yR));
                         txtRetro.setAttribute("font-family", "'Inter', sans-serif");
-                        txtRetro.setAttribute("font-size", "14");
+                        txtRetro.setAttribute("font-size", "12");
                         txtRetro.setAttribute("font-weight", "700");
                         txtRetro.setAttribute("text-anchor", "start");
                         txtRetro.setAttribute("dominant-baseline", "central");
