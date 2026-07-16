@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const RADIO_SIGNOS_INTERIOR = 255;
     const RADIO_DECANATOS_INTERIOR = 225;
     const RADIO_PLANETAS = 200;
-    const RADIO_TEXTO_SIGNOS = 265;
+    const RADIO_TEXTO_SIGNOS = 270;
     const RADIO_SIMBOLOS_DECANATOS = 240;
 
     // Orden de los signos
@@ -284,7 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const etiquetaTexto = document.createElementNS("http://www.w3.org/2000/svg", "text");
             etiquetaTexto.setAttribute("font-family", "'Inter', sans-serif");
             etiquetaTexto.setAttribute("font-size", "20");
-            etiquetaTexto.setAttribute("font-weight", "700");
+            etiquetaTexto.setAttribute("font-weight", "800");
             etiquetaTexto.setAttribute("fill", "#111111");
             const trayectoTexto = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
             trayectoTexto.setAttribute("href", `#${idTrayecto}`);
@@ -323,8 +323,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (mostrarContenido) {
             // Eje del Ascendente
             const radAsc = ajustarAngulo(ascendenteAbs);
-            const xAsc1 = Math.round(CENTRO_X + RADIO_SIGNOS_INTERIOR * Math.cos(radAsc));
-            const yAsc1 = Math.round(CENTRO_Y + RADIO_SIGNOS_INTERIOR * Math.sin(radAsc));
+            const xAsc1 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radAsc));
+            const yAsc1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radAsc));
             const xAsc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 50) * Math.cos(radAsc));
             const yAsc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 50) * Math.sin(radAsc));
             const lineaAsc = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -335,24 +335,25 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaAsc.setAttribute("stroke", "#111111");
             lineaAsc.setAttribute("stroke-width", "3");
             lienzoSvg.appendChild(lineaAsc);
-
-            const xAscTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 60) * Math.cos(radAsc));
-            const yAscTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 60) * Math.sin(radAsc)) + 6;
+        
+            // Nombre "ASC"
+            const xAscTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 70) * Math.cos(radAsc));
+            const yAscTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 70) * Math.sin(radAsc)) + 6;
             const txtAsc = document.createElementNS("http://www.w3.org/2000/svg", "text");
             txtAsc.setAttribute("x", String(xAscTxt));
             txtAsc.setAttribute("y", String(yAscTxt));
             txtAsc.setAttribute("font-family", "'Inter', sans-serif");
             txtAsc.setAttribute("font-size", "16");
-            txtAsc.setAttribute("font-weight", "600");
+            txtAsc.setAttribute("font-weight", "800");
             txtAsc.setAttribute("text-anchor", "middle");
             txtAsc.setAttribute("fill", "#111111");
             txtAsc.textContent = "ASC";
             lienzoSvg.appendChild(txtAsc);
-
-             // Eje del Medio Cielo
+        
+            // Eje del Medio Cielo
             const radMc = ajustarAngulo(mcAbs);
-            const xMc1 = Math.round(CENTRO_X + RADIO_SIGNOS_INTERIOR * Math.cos(radMc));
-            const yMc1 = Math.round(CENTRO_Y + RADIO_SIGNOS_INTERIOR * Math.sin(radMc));
+            const xMc1 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radMc));
+            const yMc1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radMc));
             const xMc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 50) * Math.cos(radMc));
             const yMc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 50) * Math.sin(radMc));
             const lineaMc = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -363,20 +364,21 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaMc.setAttribute("stroke", "#111111");
             lineaMc.setAttribute("stroke-width", "3");
             lienzoSvg.appendChild(lineaMc);
-
-            const xMcTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 60) * Math.cos(radMc));
-            const yMcTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 60) * Math.sin(radMc)) + 6;
+        
+            // Nombre "MC"
+            const xMcTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 70) * Math.cos(radMc));
+            const yMcTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 70) * Math.sin(radMc)) + 6;
             const txtMc = document.createElementNS("http://www.w3.org/2000/svg", "text");
             txtMc.setAttribute("x", String(xMcTxt));
             txtMc.setAttribute("y", String(yMcTxt));
             txtMc.setAttribute("font-family", "'Inter', sans-serif");
             txtMc.setAttribute("font-size", "16");
-            txtMc.setAttribute("font-weight", "600");
+            txtMc.setAttribute("font-weight", "800");
             txtMc.setAttribute("text-anchor", "middle");
             txtMc.setAttribute("fill", "#111111");
             txtMc.textContent = "MC";
             lienzoSvg.appendChild(txtMc);
-
+            
             // Obtener datos de retrogrado
             let datosPlanetasForm = {};
             try {
@@ -427,7 +429,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         txtRetro.setAttribute("y", String(yR));
                         txtRetro.setAttribute("font-family", "'Inter', sans-serif");
                         txtRetro.setAttribute("font-size", "14");
-                        txtRetro.setAttribute("font-weight", "700");
+                        txtRetro.setAttribute("font-weight", "800");
                         txtRetro.setAttribute("text-anchor", "start");
                         txtRetro.setAttribute("dominant-baseline", "central");
                         txtRetro.setAttribute("fill", "#111111");
