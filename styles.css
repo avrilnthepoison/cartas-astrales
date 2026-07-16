@@ -285,7 +285,6 @@ select {
 #carta-astral text {
     font-family: 'Inter', sans-serif !important;
     letter-spacing: 1.2px;
-    fill: #111111;
 }
 
 /* Ajuste específico para que las líneas mantengan su finura */
