@@ -1,6 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 325 325">
-  <g>
-    <circle cx="162.5" cy="162.5" r="150" stroke="currentColor" stroke-width="var(--stroke-width, 20)" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="162.5" cy="162.5" r="13.33" stroke="currentColor" stroke-width="var(--stroke-width, 20)" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 325 325">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: var(--stroke-width, 20px);
+      }
+    </style>
+  </defs>
+  <g id="Capa_2-2" data-name="Capa 2">
+    <g>
+      <circle class="cls-1" cx="162.5" cy="162.5" r="150"/>
+      <circle class="cls-1" cx="162.5" cy="162.5" r="13.33"/>
+    </g>
   </g>
 </svg>
