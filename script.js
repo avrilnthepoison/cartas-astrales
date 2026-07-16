@@ -15,14 +15,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const RADIO_TEXTO_SIGNOS = 270;
     const RADIO_SIMBOLOS_DECANATOS = 240;
 
-    // Orden de los signos
     const nombresSignos = [
         "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
         "LEO", "VIRGO", "LIBRA", "ESCORPIO",
         "SAGITARIO", "CAPRICORNIO", "ACUARIO", "PISCIS"
     ];
 
-    // Símbolos planetarios
     const simbolos = {
         "SOL": "☉",
         "LUNA": "☽",
@@ -40,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const cuerpos = Object.keys(simbolos);
 
-    // Orden de los decanatos
     const decanatos = {
         0: ['MARTE', 'SOL', 'VENUS'],
         1: ['MERCURIO', 'LUNA', 'SATURNO'],
@@ -60,7 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return g + (m / 60);
     }
 
-     // Función Central para procesar formulario y guardar en memoria
     function procesarYGenerarCarta() {
         const ascG = parseInt(document.getElementById("asc-grado").value, 10) || 0;
         const ascM = parseInt(document.getElementById("asc-minuto").value, 10) || 0;
@@ -108,7 +104,6 @@ document.addEventListener("DOMContentLoaded", () => {
         dibujarRadixManual(gradoAscAbsoluto, gradoMcAbsoluto, planetasIngresados, true);
     }
 
-    // Función para borrar la memoria y volver al estado vacío (solo la rueda base)
     function restablecerTodoACero() {
         localStorage.removeItem("datosRadixManual");
         document.getElementById("asc-grado").value = "";
@@ -130,7 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
         dibujarRadixManual(0, 0, {}, false);
     }
 
-    // Función para recoger historial tras refrescar la página (F5)
     function cargarValoresGuardados() {
         const datosGuardados = localStorage.getItem("datosRadixManual");
         if (!datosGuardados) {
@@ -174,7 +168,6 @@ document.addEventListener("DOMContentLoaded", () => {
     botonBorrar.addEventListener("click", restablecerTodoACero);
     cargarValoresGuardados();
 
-    // Función para el dibujo de la gráfica con orden de capas
     function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
 
         while (lienzoSvg.firstChild) {
@@ -304,11 +297,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 const rad = ajustarAngulo(gradoCentral);
                 const x = Math.round(CENTRO_X + RADIO_SIMBOLOS_DECANATOS * Math.cos(rad));
                 const y = Math.round(CENTRO_Y + RADIO_SIMBOLOS_DECANATOS * Math.sin(rad));
-
                 const nombrePlaneta = decanatosSigno[d];
                 const nombreSVG = nombrePlaneta.toLowerCase().replace('_', '-');
                 const rutaSVG = `svg/${nombreSVG}.svg`;
-
                 const imgDecanato = document.createElementNS("http://www.w3.org/2000/svg", "image");
                 imgDecanato.setAttribute("x", String(x - 8));
                 imgDecanato.setAttribute("y", String(y - 8));
@@ -319,7 +310,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // ---- CAPA 6: Ejes y planetas ----
+        // ---- CAPA 6: Ejes, marcas de posición y planetas ----
         if (mostrarContenido) {
             // Eje del Ascendente
             const radAsc = ajustarAngulo(ascendenteAbs);
@@ -335,8 +326,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaAsc.setAttribute("stroke", "#111111");
             lineaAsc.setAttribute("stroke-width", "3");
             lienzoSvg.appendChild(lineaAsc);
-        
-            // Nombre "ASC"
+
             const xAscTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 70) * Math.cos(radAsc));
             const yAscTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 70) * Math.sin(radAsc)) + 6;
             const txtAsc = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -349,7 +339,7 @@ document.addEventListener("DOMContentLoaded", () => {
             txtAsc.setAttribute("fill", "#111111");
             txtAsc.textContent = "ASC";
             lienzoSvg.appendChild(txtAsc);
-        
+
             // Eje del Medio Cielo
             const radMc = ajustarAngulo(mcAbs);
             const xMc1 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radMc));
@@ -364,8 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaMc.setAttribute("stroke", "#111111");
             lineaMc.setAttribute("stroke-width", "3");
             lienzoSvg.appendChild(lineaMc);
-        
-            // Nombre "MC"
+
             const xMcTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 70) * Math.cos(radMc));
             const yMcTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 70) * Math.sin(radMc)) + 6;
             const txtMc = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -378,7 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
             txtMc.setAttribute("fill", "#111111");
             txtMc.textContent = "MC";
             lienzoSvg.appendChild(txtMc);
-            
+
             // Obtener datos de retrogrado
             let datosPlanetasForm = {};
             try {
@@ -405,6 +394,26 @@ document.addEventListener("DOMContentLoaded", () => {
                     const radPlaneta = ajustarAngulo(gradosAbsolutos);
                     const xPlaneta = Math.round(CENTRO_X + radioPlaneta * Math.cos(radPlaneta));
                     const yPlaneta = Math.round(CENTRO_Y + radioPlaneta * Math.sin(radPlaneta));
+
+                    // ---- MARCA DE POSICIÓN (línea radial) ----
+                    // Desde el borde interior de los decanatos hasta justo antes del símbolo del planeta
+                    const xInicio = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radPlaneta));
+                    const yInicio = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radPlaneta));
+                    // El punto final es el símbolo del planeta, pero con un pequeño margen para no solaparse
+                    const margen = 14; // distancia desde el centro del planeta hacia afuera
+                    const radioFin = radioPlaneta - margen;
+                    const xFin = Math.round(CENTRO_X + radioFin * Math.cos(radPlaneta));
+                    const yFin = Math.round(CENTRO_Y + radioFin * Math.sin(radPlaneta));
+
+                    const lineaPosicion = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    lineaPosicion.setAttribute("x1", String(xInicio));
+                    lineaPosicion.setAttribute("y1", String(yInicio));
+                    lineaPosicion.setAttribute("x2", String(xFin));
+                    lineaPosicion.setAttribute("y2", String(yFin));
+                    lineaPosicion.setAttribute("stroke", "#111111");
+                    lineaPosicion.setAttribute("stroke-width", "1");
+                    lineaPosicion.setAttribute("opacity", "0.5");
+                    lienzoSvg.appendChild(lineaPosicion);
 
                     // 1. Símbolo del planeta (SVG)
                     const nombreSVG = nombre.toLowerCase().replace('_', '-');
