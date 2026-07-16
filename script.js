@@ -408,7 +408,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     lineaPosicion.setAttribute("x2", String(xFin));
                     lineaPosicion.setAttribute("y2", String(yFin));
                     lineaPosicion.setAttribute("stroke", "#111111");
-                    lineaPosicion.setAttribute("stroke-width", "1.5");
+                    lineaPosicion.setAttribute("stroke-width", "2");
                     lineaPosicion.setAttribute("opacity", "1");
                     lienzoSvg.appendChild(lineaPosicion);
 
@@ -418,8 +418,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     const imgPlaneta = document.createElementNS("http://www.w3.org/2000/svg", "image");
                     imgPlaneta.setAttribute("x", String(xPlaneta - 12));
                     imgPlaneta.setAttribute("y", String(yPlaneta - 12));
-                    imgPlaneta.setAttribute("width", "24");
-                    imgPlaneta.setAttribute("height", "24");
+                    imgPlaneta.setAttribute("width", "20");
+                    imgPlaneta.setAttribute("height", "20");
                     imgPlaneta.setAttribute("href", rutaSVG);
                     lienzoSvg.appendChild(imgPlaneta);
 
