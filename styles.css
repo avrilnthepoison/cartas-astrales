@@ -284,8 +284,6 @@ select {
 /* Forzar tipografía Inter en todo el contenido de texto interno del SVG */
 #carta-astral text {
     font-family: 'Inter', sans-serif !important;
-    font-size: 10px;
-    font-weight: 600;
     letter-spacing: 1.2px;
     fill: #111111;
 }
