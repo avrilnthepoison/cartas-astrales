@@ -283,7 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(rutaDefinicion);
             const etiquetaTexto = document.createElementNS("http://www.w3.org/2000/svg", "text");
             etiquetaTexto.setAttribute("font-family", "'Inter', sans-serif");
-            etiquetaTexto.setAttribute("font-size", "20");
+            etiquetaTexto.setAttribute("font-size", "14");
             etiquetaTexto.setAttribute("font-weight", "800");
             etiquetaTexto.setAttribute("fill", "#111111");
             const trayectoTexto = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
@@ -343,8 +343,8 @@ document.addEventListener("DOMContentLoaded", () => {
             txtAsc.setAttribute("x", String(xAscTxt));
             txtAsc.setAttribute("y", String(yAscTxt));
             txtAsc.setAttribute("font-family", "'Inter', sans-serif");
-            txtAsc.setAttribute("font-size", "16");
-            txtAsc.setAttribute("font-weight", "800");
+            txtAsc.setAttribute("font-size", "14");
+            txtAsc.setAttribute("font-weight", "700");
             txtAsc.setAttribute("text-anchor", "middle");
             txtAsc.setAttribute("fill", "#111111");
             txtAsc.textContent = "ASC";
@@ -372,8 +372,8 @@ document.addEventListener("DOMContentLoaded", () => {
             txtMc.setAttribute("x", String(xMcTxt));
             txtMc.setAttribute("y", String(yMcTxt));
             txtMc.setAttribute("font-family", "'Inter', sans-serif");
-            txtMc.setAttribute("font-size", "16");
-            txtMc.setAttribute("font-weight", "800");
+            txtMc.setAttribute("font-size", "14");
+            txtMc.setAttribute("font-weight", "700");
             txtMc.setAttribute("text-anchor", "middle");
             txtMc.setAttribute("fill", "#111111");
             txtMc.textContent = "MC";
@@ -428,8 +428,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         txtRetro.setAttribute("x", String(xR));
                         txtRetro.setAttribute("y", String(yR));
                         txtRetro.setAttribute("font-family", "'Inter', sans-serif");
-                        txtRetro.setAttribute("font-size", "14");
-                        txtRetro.setAttribute("font-weight", "800");
+                        txtRetro.setAttribute("font-size", "12");
+                        txtRetro.setAttribute("font-weight", "600");
                         txtRetro.setAttribute("text-anchor", "start");
                         txtRetro.setAttribute("dominant-baseline", "central");
                         txtRetro.setAttribute("fill", "#111111");
