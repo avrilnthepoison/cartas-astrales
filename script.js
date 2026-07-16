@@ -396,11 +396,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     const yPlaneta = Math.round(CENTRO_Y + radioPlaneta * Math.sin(radPlaneta));
 
                     // ---- MARCA DE POSICIÓN (línea radial) ----
-                    // Desde el borde interior de los decanatos hasta justo antes del símbolo del planeta
                     const xInicio = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radPlaneta));
                     const yInicio = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radPlaneta));
                     // El punto final es el símbolo del planeta, pero con un pequeño margen para no solaparse
-                    const margen = 14; // distancia desde el centro del planeta hacia afuera
+                    const margen = 30; // distancia desde el centro del planeta hacia afuera
                     const radioFin = radioPlaneta - margen;
                     const xFin = Math.round(CENTRO_X + radioFin * Math.cos(radPlaneta));
                     const yFin = Math.round(CENTRO_Y + radioFin * Math.sin(radPlaneta));
@@ -411,8 +410,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     lineaPosicion.setAttribute("x2", String(xFin));
                     lineaPosicion.setAttribute("y2", String(yFin));
                     lineaPosicion.setAttribute("stroke", "#111111");
-                    lineaPosicion.setAttribute("stroke-width", "1");
-                    lineaPosicion.setAttribute("opacity", "0.5");
+                    lineaPosicion.setAttribute("stroke-width", "1.5");
+                    lineaPosicion.setAttribute("opacity", "1");
                     lienzoSvg.appendChild(lineaPosicion);
 
                     // 1. Símbolo del planeta (SVG)
