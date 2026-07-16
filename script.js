@@ -213,7 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloDecanatosInterior.setAttribute("cy", String(CENTRO_Y));
         circuloDecanatosInterior.setAttribute("r", String(RADIO_DECANATOS_INTERIOR));
         circuloDecanatosInterior.setAttribute("stroke", "#111111");
-        circuloDecanatosInterior.setAttribute("stroke-width", "1.5");
+        circuloDecanatosInterior.setAttribute("stroke-width", "2");
         circuloDecanatosInterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloDecanatosInterior);
 
@@ -257,7 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 linea.setAttribute("x2", String(x2));
                 linea.setAttribute("y2", String(y2));
                 linea.setAttribute("stroke", "#111111");
-                linea.setAttribute("stroke-width", "1.5");
+                linea.setAttribute("stroke-width", "2");
                 lienzoSvg.appendChild(linea);
             }
         }
