@@ -399,7 +399,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const xInicio = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radPlaneta));
                     const yInicio = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radPlaneta));
                     // El punto final es el símbolo del planeta, pero con un pequeño margen para no solaparse
-                    const margen = 30; // distancia desde el centro del planeta hacia afuera
+                    const margen = -10; // distancia desde el centro del planeta hacia afuera
                     const radioFin = radioPlaneta - margen;
                     const xFin = Math.round(CENTRO_X + radioFin * Math.cos(radPlaneta));
                     const yFin = Math.round(CENTRO_Y + radioFin * Math.sin(radPlaneta));
