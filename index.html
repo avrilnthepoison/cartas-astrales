@@ -10,6 +10,68 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+    <!-- SPRITE SVG OCULTO CON TODOS LOS ÍCONOS DE PLANETAS -->
+    <!-- Debes reemplazar el contenido de cada <g> con el de tu propio archivo SVG,
+         pero asegurándote de usar stroke="currentColor" y stroke-width="var(--stroke-width, 2)"
+         para que herede los estilos desde CSS. -->
+    <svg style="display:none;" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <!-- SOL -->
+            <g id="sol">
+                <!-- Ejemplo: círculo simple, reemplaza con tu SVG -->
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="var(--stroke-width, 2)" fill="none"/>
+                <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="var(--stroke-width, 2)" fill="none"/>
+            </g>
+            <!-- LUNA -->
+            <g id="luna">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="var(--stroke-width, 2)" fill="none"/>
+                <circle cx="8" cy="12" r="5" stroke="currentColor" stroke-width="var(--stroke-width, 2)" fill="none"/>
+            </g>
+            <!-- MERCURIO -->
+            <g id="mercurio">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="var(--stroke-width, 2)" fill="none"/>
+                <!-- Añade más elementos según tu diseño -->
+            </g>
+            <!-- VENUS -->
+            <g id="venus">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="var(--stroke-width, 2)" fill="none"/>
+            </g>
+            <!-- MARTE -->
+            <g id="marte">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="var(--stroke-width, 2)" fill="none"/>
+            </g>
+            <!-- JÚPITER -->
+            <g id="jupiter">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="var(--stroke-width, 2)" fill="none"/>
+            </g>
+            <!-- SATURNO -->
+            <g id="saturno">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="var(--stroke-width, 2)" fill="none"/>
+            </g>
+            <!-- URANO -->
+            <g id="urano">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="var(--stroke-width, 2)" fill="none"/>
+            </g>
+            <!-- NEPTUNO -->
+            <g id="neptuno">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="var(--stroke-width, 2)" fill="none"/>
+            </g>
+            <!-- PLUTÓN -->
+            <g id="pluton">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="var(--stroke-width, 2)" fill="none"/>
+            </g>
+            <!-- QUIRÓN -->
+            <g id="quiron">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="var(--stroke-width, 2)" fill="none"/>
+            </g>
+            <!-- NODO NORTE -->
+            <g id="nodo-norte">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="var(--stroke-width, 2)" fill="none"/>
+            </g>
+        </defs>
+    </svg>
+
     <main class="contenedor-principal">
         <header class="header-astral">
             <h1>Carta Astral</h1>
@@ -291,6 +353,7 @@
             </section>
         </div>
     </main>
+
     <script src="script.js"></script>
 </body>
 </html>
