@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const RADIO_SIGNOS_INTERIOR = 255;
     const RADIO_DECANATOS_INTERIOR = 225;
     const RADIO_PLANETAS = 200;
-    const RADIO_TEXTO_SIGNOS = 275;
+    const RADIO_TEXTO_SIGNOS = 265;
     const RADIO_SIMBOLOS_DECANATOS = 240;
 
     // Orden de los signos
@@ -283,8 +283,8 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(rutaDefinicion);
             const etiquetaTexto = document.createElementNS("http://www.w3.org/2000/svg", "text");
             etiquetaTexto.setAttribute("font-family", "'Inter', sans-serif");
-            etiquetaTexto.setAttribute("font-size", "14");
-            etiquetaTexto.setAttribute("font-weight", "600");
+            etiquetaTexto.setAttribute("font-size", "20");
+            etiquetaTexto.setAttribute("font-weight", "700");
             etiquetaTexto.setAttribute("fill", "#111111");
             const trayectoTexto = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
             trayectoTexto.setAttribute("href", `#${idTrayecto}`);
@@ -325,8 +325,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const radAsc = ajustarAngulo(ascendenteAbs);
             const xAsc1 = Math.round(CENTRO_X + RADIO_SIGNOS_INTERIOR * Math.cos(radAsc));
             const yAsc1 = Math.round(CENTRO_Y + RADIO_SIGNOS_INTERIOR * Math.sin(radAsc));
-            const xAsc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 35) * Math.cos(radAsc));
-            const yAsc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 35) * Math.sin(radAsc));
+            const xAsc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 50) * Math.cos(radAsc));
+            const yAsc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 50) * Math.sin(radAsc));
             const lineaAsc = document.createElementNS("http://www.w3.org/2000/svg", "line");
             lineaAsc.setAttribute("x1", String(xAsc1));
             lineaAsc.setAttribute("y1", String(yAsc1));
@@ -336,8 +336,8 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaAsc.setAttribute("stroke-width", "3");
             lienzoSvg.appendChild(lineaAsc);
 
-            const xAscTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 50) * Math.cos(radAsc));
-            const yAscTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 50) * Math.sin(radAsc)) + 6;
+            const xAscTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 60) * Math.cos(radAsc));
+            const yAscTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 60) * Math.sin(radAsc)) + 6;
             const txtAsc = document.createElementNS("http://www.w3.org/2000/svg", "text");
             txtAsc.setAttribute("x", String(xAscTxt));
             txtAsc.setAttribute("y", String(yAscTxt));
@@ -353,8 +353,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const radMc = ajustarAngulo(mcAbs);
             const xMc1 = Math.round(CENTRO_X + RADIO_SIGNOS_INTERIOR * Math.cos(radMc));
             const yMc1 = Math.round(CENTRO_Y + RADIO_SIGNOS_INTERIOR * Math.sin(radMc));
-            const xMc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 35) * Math.cos(radMc));
-            const yMc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 35) * Math.sin(radMc));
+            const xMc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 50) * Math.cos(radMc));
+            const yMc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 50) * Math.sin(radMc));
             const lineaMc = document.createElementNS("http://www.w3.org/2000/svg", "line");
             lineaMc.setAttribute("x1", String(xMc1));
             lineaMc.setAttribute("y1", String(yMc1));
@@ -364,8 +364,8 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaMc.setAttribute("stroke-width", "3");
             lienzoSvg.appendChild(lineaMc);
 
-            const xMcTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 50) * Math.cos(radMc));
-            const yMcTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 50) * Math.sin(radMc)) + 6;
+            const xMcTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 60) * Math.cos(radMc));
+            const yMcTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 60) * Math.sin(radMc)) + 6;
             const txtMc = document.createElementNS("http://www.w3.org/2000/svg", "text");
             txtMc.setAttribute("x", String(xMcTxt));
             txtMc.setAttribute("y", String(yMcTxt));
