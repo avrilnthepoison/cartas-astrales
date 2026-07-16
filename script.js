@@ -324,7 +324,8 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaAsc.setAttribute("x2", String(xAsc2));
             lineaAsc.setAttribute("y2", String(yAsc2));
             lineaAsc.setAttribute("stroke", "#111111");
-            lineaAsc.setAttribute("stroke-width", "3");
+            lineaAsc.setAttribute("stroke-width", "2.5");
+            lineaAsc.setAttribute("stroke-linecap", "round");
             lienzoSvg.appendChild(lineaAsc);
 
             const xAscTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 70) * Math.cos(radAsc));
@@ -352,7 +353,8 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaMc.setAttribute("x2", String(xMc2));
             lineaMc.setAttribute("y2", String(yMc2));
             lineaMc.setAttribute("stroke", "#111111");
-            lineaMc.setAttribute("stroke-width", "3");
+            lineaMc.setAttribute("stroke-width", "2.5");
+            lineaMc.setAttribute("stroke-linecap", "round");
             lienzoSvg.appendChild(lineaMc);
 
             const xMcTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 70) * Math.cos(radMc));
@@ -408,8 +410,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     lineaPosicion.setAttribute("x2", String(xFin));
                     lineaPosicion.setAttribute("y2", String(yFin));
                     lineaPosicion.setAttribute("stroke", "#111111");
-                    lineaPosicion.setAttribute("stroke-width", "2");
+                    lineaPosicion.setAttribute("stroke-width", "1.5");
                     lineaPosicion.setAttribute("opacity", "1");
+                    lineaPosicion.setAttribute("stroke-linecap", "round");
                     lienzoSvg.appendChild(lineaPosicion);
 
                     // 1. Símbolo del planeta (SVG)
