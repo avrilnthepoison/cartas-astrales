@@ -398,8 +398,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     // ---- MARCA DE POSICIÓN (línea radial) ----
                     const xInicio = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radPlaneta));
                     const yInicio = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radPlaneta));
-                    // La marca tiene EXACTAMENTE 15 unidades de largo desde el borde interior de decanatos
-                    const radioFinMarca = RADIO_DECANATOS_INTERIOR + 15;
+                    const radioFinMarca = RADIO_DECANATOS_INTERIOR - 10;
                     const xFin = Math.round(CENTRO_X + radioFinMarca * Math.cos(radPlaneta));
                     const yFin = Math.round(CENTRO_Y + radioFinMarca * Math.sin(radPlaneta));
 
