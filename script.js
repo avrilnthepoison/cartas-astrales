@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const RADIO_SIGNOS_INTERIOR = 265;
     const RADIO_DECANATOS_INTERIOR = 240;
     const RADIO_PLANETAS = 200;
-    const RADIO_TEXTO_SIGNOS = 276;
+    const RADIO_TEXTO_SIGNOS = 277;
     const RADIO_SIMBOLOS_DECANATOS = 250;
     const RADIO_GRADOS = 230;
     const RADIO_ASPECTOS = 135;
@@ -312,8 +312,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 const nombreSVG = nombrePlaneta.toLowerCase().replace('_', '-');
                 const rutaSVG = `svg/${nombreSVG}.svg`;
                 const imgDecanato = document.createElementNS("http://www.w3.org/2000/svg", "image");
-                imgDecanato.setAttribute("x", String(x - 8));
-                imgDecanato.setAttribute("y", String(y - 8));
+                imgDecanato.setAttribute("x", String(x - 7));
+                imgDecanato.setAttribute("y", String(y - 7));
                 imgDecanato.setAttribute("width", "14");
                 imgDecanato.setAttribute("height", "14");
                 imgDecanato.setAttribute("href", rutaSVG);
