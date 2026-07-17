@@ -228,13 +228,6 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloDecanatosInterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloDecanatosInterior);
 
-        const puntoCentral = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        puntoCentral.setAttribute("cx", String(CENTRO_X));
-        puntoCentral.setAttribute("cy", String(CENTRO_Y));
-        puntoCentral.setAttribute("r", "5");
-        puntoCentral.setAttribute("fill", "#111111");
-        lienzoSvg.appendChild(puntoCentral);
-
         // ---- CAPA 2: Líneas de los SIGNOS (30°) ----
         for (let i = 0; i < 12; i++) {
             const gradoLinea = i * 30;
