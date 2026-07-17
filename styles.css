@@ -265,8 +265,7 @@ select {
 }
 
 #carta-astral text {
-    font-family: 'Inter', sans-serif !important;
-    letter-spacing: 1.2px;
+    letter-spacing: 1.2px !important;
 }
 
 #carta-astral circle,

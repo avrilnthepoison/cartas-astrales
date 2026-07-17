@@ -300,9 +300,9 @@ document.addEventListener("DOMContentLoaded", () => {
             rutaDefinicion.setAttribute("stroke", "none");
             lienzoSvg.appendChild(rutaDefinicion);
             const etiquetaTexto = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            etiquetaTexto.setAttribute("font-family", "'Inter', sans-serif");
+            etiquetaTexto.setAttribute("font-family", "'IM Fell DW Pica', serif");
             etiquetaTexto.setAttribute("font-size", "14");
-            etiquetaTexto.setAttribute("font-weight", "800");
+            etiquetaTexto.setAttribute("font-weight", "400");
             etiquetaTexto.setAttribute("fill", "#ffffff");
             const trayectoTexto = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
             trayectoTexto.setAttribute("href", `#${idTrayecto}`);
@@ -360,9 +360,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const txtAsc = document.createElementNS("http://www.w3.org/2000/svg", "text");
             txtAsc.setAttribute("x", String(xAscTxt));
             txtAsc.setAttribute("y", String(yAscTxt));
-            txtAsc.setAttribute("font-family", "'Inter', sans-serif");
+            txtAsc.setAttribute("font-family", "'IM Fell DW Pica', serif");
             txtAsc.setAttribute("font-size", "12");
-            txtAsc.setAttribute("font-weight", "800");
+            txtAsc.setAttribute("font-weight", "400");
             txtAsc.setAttribute("text-anchor", "middle");
             txtAsc.setAttribute("fill", "#111111");
             txtAsc.textContent = "ASC";
@@ -389,9 +389,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const txtMc = document.createElementNS("http://www.w3.org/2000/svg", "text");
             txtMc.setAttribute("x", String(xMcTxt));
             txtMc.setAttribute("y", String(yMcTxt));
-            txtMc.setAttribute("font-family", "'Inter', sans-serif");
+            txtMc.setAttribute("font-family", "'IM Fell DW Pica', serif");
             txtMc.setAttribute("font-size", "12");
-            txtMc.setAttribute("font-weight", "800");
+            txtMc.setAttribute("font-weight", "400");
             txtMc.setAttribute("text-anchor", "middle");
             txtMc.setAttribute("fill", "#111111");
             txtMc.textContent = "MC";
@@ -463,9 +463,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         const txtRetro = document.createElementNS("http://www.w3.org/2000/svg", "text");
                         txtRetro.setAttribute("x", String(xR));
                         txtRetro.setAttribute("y", String(yR));
-                        txtRetro.setAttribute("font-family", "'Inter', sans-serif");
+                        txtRetro.setAttribute("font-family", "'IM Fell DW Pica', serif");
+                        txtRetro.setAttribute("font-style", "italic");
                         txtRetro.setAttribute("font-size", "10");
-                        txtRetro.setAttribute("font-weight", "800");
+                        txtRetro.setAttribute("font-weight", "400");
                         txtRetro.setAttribute("text-anchor", "start");
                         txtRetro.setAttribute("dominant-baseline", "central");
                         txtRetro.setAttribute("fill", "#111111");
