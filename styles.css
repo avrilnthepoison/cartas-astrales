@@ -1,8 +1,6 @@
-/*
-==========================================================================
+/* ==========================================================================
    1. VARIABLES Y CONFIGURACIÓN GLOBAL
-==========================================================================
-*/
+   ========================================================================== */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -16,11 +14,9 @@ body {
     line-height: 1.5;
 }
 
-/*
-==========================================================================
+/* ==========================================================================
    2. ESTRUCTURA DE LA INTERFAZ (DOS COLUMNAS)
-==========================================================================
-*/
+   ========================================================================== */
 .contenedor-principal {
     max-width: 1300px;
     margin: 0 auto;
@@ -78,11 +74,9 @@ body {
     margin: 0 auto;
 }
 
-/*
-==========================================================================
+/* ==========================================================================
    3. COMPONENTES DEL FORMULARIO
-==========================================================================
-*/
+   ========================================================================== */
 .bloque-formulario {
     border: none;
     padding: 25px;
@@ -261,11 +255,9 @@ select {
     color: #ffffff;
 }
 
-/*
-==========================================================================
+/* ==========================================================================
    4. ESTILOS DEL GRÁFICO SVG (RADIX)
-==========================================================================
-*/
+   ========================================================================== */
 #carta-astral {
     display: block;
     width: 100%;
@@ -282,40 +274,9 @@ select {
     shape-rendering: geometricPrecision;
 }
 
-/* ============================================
-   ESTILOS PARA LOS ÍCONOS DE PLANETAS (SPRITE)
-   ============================================ */
-
-/* Planetas principales (dentro del gráfico) */
-.planeta-principal {
-    fill: none;                 /* Sin relleno (depende de tu SVG) */
-    stroke: #111111;          /* Color del trazo (negro) */
-    stroke-width: 3px;        /* Grosor del trazo */            
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-/* Planetas de los decanatos (en la franja) */
-.planeta-decanato {
-    fill: none;
-    stroke: #111111;
-    stroke-width: 3px;      /* Grosor más fino */
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-/* Opcional: estilos específicos para planetas individuales */
-/* Ejemplo: si quieres que el Sol tenga un trazo más grueso */
-/* .planeta-principal#sol { --stroke-width: 3.5px; } */
-
-/* Opcional: si quieres que los decanatos tengan un color diferente según el planeta */
-/* .planeta-decanato#marte { color: #cc0000; } */
-
-/*
-==========================================================================
+/* ==========================================================================
    5. RESPONSIVE
-==========================================================================
-*/
+   ========================================================================== */
 @media (max-width: 850px) {
     .interfaz-columnas {
         display: block;

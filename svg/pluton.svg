@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+<svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34.33 41">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #111;
+        stroke-width: 4px;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+    </style>
+  </defs>
   <g id="iconos">
-    <g id="pluton" transform="translate(2.83, 9.5)">
+    <g id="pluton">
       <circle class="cls-1" cx="17.17" cy="10.5" r="10"/>
       <line class="cls-1" x1="17.17" y1="27.17" x2="17.17" y2="40.5"/>
       <line class="cls-1" x1="10.5" y1="33.83" x2="23.83" y2="33.83"/>
