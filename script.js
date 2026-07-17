@@ -402,8 +402,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     const aspectos = [
                         { tipo: 'conjuncion', angulo: 0, strokeWidth: 1.5, dasharray: null, opacity: 1 },
                         { tipo: 'sextil', angulo: 60, strokeWidth: 2, dasharray: '5,5', opacity: 0.5 },
-                        { tipo: 'cuadratura', angulo: 90, strokeWidth: 2, dasharray: null, opacity: 0.8 },
-                        { tipo: 'trígono', angulo: 120, strokeWidth: 2, dasharray: '10,5', opacity: 1 },
+                        { tipo: 'cuadratura', angulo: 90, strokeWidth: 2, dasharray: null, opacity: 0.5 },
+                        { tipo: 'trígono', angulo: 120, strokeWidth: 2, dasharray: '5,10', opacity: 0.5 },
                         { tipo: 'oposicion', angulo: 180, strokeWidth: 3, dasharray: null, opacity: 1 }
                     ];
 
