@@ -430,7 +430,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // ---- CAPA 6: Ejes, marcas de posición y planetas (CON SEPARACIÓN DE PLANETAS CERCANOS) ----
+        // ---- CAPA 6: Ejes, marcas de posición y planetas (CON SEPARACIÓN DE PLANETAS CERCANOS Y EJES) ----
         if (mostrarContenido) {
             // Eje del Ascendente
             const radAsc = ajustarAngulo(ascendenteAbs);
@@ -533,7 +533,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // ---- ORDENAR POR POSICIÓN ANGULAR ----
             planetasData.sort((a, b) => a.gradosAbsolutos - b.gradosAbsolutos);
 
-            // ---- AGRUPAR PLANETAS CERCANOS (umbral 2.5 grados) ----
+            // ---- AGRUPAR PLANETAS CERCANOS (umbral 8 grados) ----
             const umbral = 8;
             const grupos = [];
             let grupoActual = [];
@@ -554,24 +554,54 @@ document.addEventListener("DOMContentLoaded", () => {
             if (grupoActual.length > 0) grupos.push(grupoActual);
 
             // ---- CALCULAR DESPLAZAMIENTOS PARA CADA GRUPO ----
-            const separacion = 25; // píxeles de separación entre planetas
+            const separacionGrupo = 28; // píxeles de separación entre planetas
             const desplazamientos = {};
             for (const grupo of grupos) {
                 const n = grupo.length;
                 if (n === 1) {
                     desplazamientos[grupo[0].nombre] = { dx: 0, dy: 0 };
                 } else {
-                    // Para cada planeta en el grupo, calcular desplazamiento a lo largo de la tangente
-                    // La tangente en el ángulo rad es (-sin(rad), cos(rad))
-                    // Usamos el rad del primer planeta como referencia (todos están muy cerca)
                     const radRef = grupo[0].radPlaneta;
                     const tangenteX = -Math.sin(radRef);
                     const tangenteY = Math.cos(radRef);
                     for (let i = 0; i < n; i++) {
-                        const offset = (i - (n - 1) / 2) * separacion;
+                        const offset = (i - (n - 1) / 2) * separacionGrupo;
                         const dx = Math.round(offset * tangenteX);
                         const dy = Math.round(offset * tangenteY);
                         desplazamientos[grupo[i].nombre] = { dx, dy };
+                    }
+                }
+            }
+
+            // ---- DESPLAZAMIENTO ADICIONAL POR EJES (ASC y MC) ----
+            const umbralEjes = 5; // grados de tolerancia
+            const separacionEjes = 15; // píxeles de separación
+            const ejes = [
+                { nombre: 'ASC', angulo: ascendenteAbs },
+                { nombre: 'MC', angulo: mcAbs }
+            ];
+            for (const p of planetasData) {
+                const anguloPlaneta = p.gradosAbsolutos;
+                let despEjeX = 0, despEjeY = 0;
+                for (const eje of ejes) {
+                    let diff = (anguloPlaneta - eje.angulo) % 360;
+                    if (diff > 180) diff -= 360;
+                    if (diff < -180) diff += 360;
+                    if (Math.abs(diff) <= umbralEjes) {
+                        const signo = Math.sign(diff) || 1; // si diff es 0, elegir dirección positiva
+                        const rad = p.radPlaneta;
+                        const tangenteX = -Math.sin(rad) * signo * separacionEjes;
+                        const tangenteY = Math.cos(rad) * signo * separacionEjes;
+                        despEjeX += Math.round(tangenteX);
+                        despEjeY += Math.round(tangenteY);
+                    }
+                }
+                if (despEjeX !== 0 || despEjeY !== 0) {
+                    if (desplazamientos[p.nombre]) {
+                        desplazamientos[p.nombre].dx += despEjeX;
+                        desplazamientos[p.nombre].dy += despEjeY;
+                    } else {
+                        desplazamientos[p.nombre] = { dx: despEjeX, dy: despEjeY };
                     }
                 }
             }
@@ -621,7 +651,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 lineaPosicionAsp.setAttribute("stroke-linecap", "round");
                 lienzoSvg.appendChild(lineaPosicionAsp);
 
-                // ---- OBTENER DESPLAZAMIENTO PARA EL ICONO ----
+                // ---- OBTENER DESPLAZAMIENTO TOTAL PARA EL ICONO ----
                 const desp = desplazamientos[nombre] || { dx: 0, dy: 0 };
                 const xIcono = xPlaneta + desp.dx;
                 const yIcono = yPlaneta + desp.dy;
