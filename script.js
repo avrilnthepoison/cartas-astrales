@@ -14,8 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const RADIO_PLANETAS = 190;
     const RADIO_TEXTO_SIGNOS = 270;
     const RADIO_SIMBOLOS_DECANATOS = 240;
-    // Nuevo radio para la rueda de grados
-    const RADIO_GRADOS = 215; // 10px dentro de decanatos
+    const RADIO_GRADOS = 215; // Rueda de 360°
+    const RADIO_ASPECTOS = 175; // Círculo interno para aspectos
 
     const nombresSignos = [
         "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
@@ -315,11 +315,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 const rad = ajustarAngulo(gradoCentral);
                 const x = Math.round(CENTRO_X + RADIO_SIMBOLOS_DECANATOS * Math.cos(rad));
                 const y = Math.round(CENTRO_Y + RADIO_SIMBOLOS_DECANATOS * Math.sin(rad));
-
                 const nombrePlaneta = decanatosSigno[d];
                 const nombreSVG = nombrePlaneta.toLowerCase().replace('_', '-');
                 const rutaSVG = `svg/${nombreSVG}.svg`;
-
                 const imgDecanato = document.createElementNS("http://www.w3.org/2000/svg", "image");
                 imgDecanato.setAttribute("x", String(x - 8));
                 imgDecanato.setAttribute("y", String(y - 8));
@@ -331,7 +329,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // ---- CAPA 7: Rueda de 360° (marcas de grados) ----
-        // Círculo guía (tenue)
         const circuloGrados = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloGrados.setAttribute("cx", String(CENTRO_X));
         circuloGrados.setAttribute("cy", String(CENTRO_Y));
@@ -342,7 +339,6 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloGrados.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloGrados);
 
-        // Puntos cada 10° (36 puntos)
         for (let g = 0; g < 360; g += 10) {
             const rad = ajustarAngulo(g);
             const x = Math.round(CENTRO_X + RADIO_GRADOS * Math.cos(rad));
@@ -356,7 +352,6 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(punto);
         }
 
-        // Puntos más grandes cada 30° (12 puntos, coinciden con los signos)
         for (let g = 0; g < 360; g += 30) {
             const rad = ajustarAngulo(g);
             const x = Math.round(CENTRO_X + RADIO_GRADOS * Math.cos(rad));
@@ -368,6 +363,74 @@ document.addEventListener("DOMContentLoaded", () => {
             punto.setAttribute("fill", "#111111");
             punto.setAttribute("opacity", "1");
             lienzoSvg.appendChild(punto);
+        }
+
+        // ---- CAPA 8: Aspectos planetarios (NUEVO) ----
+        const circuloAspectos = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circuloAspectos.setAttribute("cx", String(CENTRO_X));
+        circuloAspectos.setAttribute("cy", String(CENTRO_Y));
+        circuloAspectos.setAttribute("r", String(RADIO_ASPECTOS));
+        circuloAspectos.setAttribute("stroke", "#cccccc");
+        circuloAspectos.setAttribute("stroke-width", "0.5");
+        circuloAspectos.setAttribute("stroke-dasharray", "2,2");
+        circuloAspectos.setAttribute("fill", "none");
+        lienzoSvg.appendChild(circuloAspectos);
+
+        // Obtener lista de planetas con posición válida (distinta de 0)
+        const planetasValidos = {};
+        for (const [nombre, pos] of Object.entries(planetas)) {
+            if (pos !== 0) {
+                planetasValidos[nombre] = pos;
+            }
+        }
+
+        const nombres = Object.keys(planetasValidos);
+        if (nombres.length >= 2) {
+            for (let i = 0; i < nombres.length; i++) {
+                for (let j = i + 1; j < nombres.length; j++) {
+                    const p1 = nombres[i];
+                    const p2 = nombres[j];
+                    const pos1 = planetasValidos[p1];
+                    const pos2 = planetasValidos[p2];
+
+                    let diff = Math.abs(pos1 - pos2) % 360;
+                    if (diff > 180) diff = 360 - diff;
+
+                    const orbe = (p1 === 'LUNA' || p2 === 'LUNA') ? 13 : 3;
+
+                    const aspectos = [
+                        { tipo: 'conjuncion', angulo: 0, color: '#FF0000' },
+                        { tipo: 'sextil', angulo: 60, color: '#0000FF' },
+                        { tipo: 'cuadratura', angulo: 90, color: '#FF8C00' },
+                        { tipo: 'trígono', angulo: 120, color: '#008000' },
+                        { tipo: 'oposicion', angulo: 180, color: '#800080' }
+                    ];
+
+                    for (const asp of aspectos) {
+                        if (Math.abs(diff - asp.angulo) <= orbe) {
+                            const rad1 = ajustarAngulo(pos1);
+                            const rad2 = ajustarAngulo(pos2);
+                            const x1 = Math.round(CENTRO_X + RADIO_ASPECTOS * Math.cos(rad1));
+                            const y1 = Math.round(CENTRO_Y + RADIO_ASPECTOS * Math.sin(rad1));
+                            const x2 = Math.round(CENTRO_X + RADIO_ASPECTOS * Math.cos(rad2));
+                            const y2 = Math.round(CENTRO_Y + RADIO_ASPECTOS * Math.sin(rad2));
+
+                            const lineaAspecto = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                            lineaAspecto.setAttribute("x1", String(x1));
+                            lineaAspecto.setAttribute("y1", String(y1));
+                            lineaAspecto.setAttribute("x2", String(x2));
+                            lineaAspecto.setAttribute("y2", String(y2));
+                            lineaAspecto.setAttribute("stroke", asp.color);
+                            lineaAspecto.setAttribute("stroke-width", "1.5");
+                            lineaAspecto.setAttribute("opacity", "0.7");
+                            lienzoSvg.appendChild(lineaAspecto);
+
+                            // Solo dibujar una línea por par (el primer aspecto que coincida)
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         // ---- CAPA 6: Ejes, marcas de posición y planetas ----
