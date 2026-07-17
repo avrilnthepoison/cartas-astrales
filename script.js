@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const RADIO_TEXTO_SIGNOS = 270;
     const RADIO_SIMBOLOS_DECANATOS = 240;
     const RADIO_GRADOS = 215;
-    const RADIO_ASPECTOS = 100;
+    const RADIO_ASPECTOS = 125;
 
     const nombresSignos = [
         "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
