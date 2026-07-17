@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const RADIO_TEXTO_SIGNOS = 270;
     const RADIO_SIMBOLOS_DECANATOS = 240;
     const RADIO_GRADOS = 215; // Rueda de 360°
-    const RADIO_ASPECTOS = 150; // Círculo interno para aspectos
+    const RADIO_ASPECTOS = 100; // Círculo interno para aspectos
 
     const nombresSignos = [
         "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
