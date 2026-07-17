@@ -575,7 +575,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // ---- DESPLAZAMIENTO ADICIONAL POR EJES (ASC y MC) ----
             const umbralEjes = 5; // grados de tolerancia
-            const separacionEjes = 15; // píxeles de separación
+            const separacionEjes = 20; // píxeles de separación
             const ejes = [
                 { nombre: 'ASC', angulo: ascendenteAbs },
                 { nombre: 'MC', angulo: mcAbs }
