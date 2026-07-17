@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const RADIO_PLANETAS = 200;
     const RADIO_TEXTO_SIGNOS = 275;
     const RADIO_SIMBOLOS_DECANATOS = 277.5;
-    const RADIO_GRADOS = 200;
+    const RADIO_GRADOS = 210;
     const RADIO_ASPECTOS = 125;
 
     const nombresSignos = [
