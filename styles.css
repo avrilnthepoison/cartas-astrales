@@ -157,20 +157,22 @@ select {
 }
 
 /* Estilos para el checkbox de retrógrado */
+/* Contenedor principal del checkbox */
 .etiqueta-retrogrado {
     display: inline-flex;
     align-items: center;
     gap: 4px;
     font-size: 12px;
     font-weight: 600;
-    color: #111111;
+    color: #111111;  /* Cambia este color si quieres la "R" de otro color */
     cursor: pointer;
     user-select: none;
     position: relative;
-    padding-left: 22px;
+    padding-left: 22px;  /* Espacio para el checkbox personalizado */
     margin-left: 4px;
 }
 
+/* Ocultar el checkbox nativo */
 .etiqueta-retrogrado input[type="checkbox"] {
     position: absolute;
     opacity: 0;
@@ -179,6 +181,7 @@ select {
     pointer-events: none;
 }
 
+/* Cuadrado del checkbox personalizado */
 .etiqueta-retrogrado::before {
     content: '';
     position: absolute;
@@ -193,10 +196,12 @@ select {
     transition: all 0.2s ease;
 }
 
+/* Cuando el checkbox está marcado: fondo negro */
 .etiqueta-retrogrado:has(input[type="checkbox"]:checked)::before {
     background: #111111;
 }
 
+/* Check (✓) cuando está marcado */
 .etiqueta-retrogrado:has(input[type="checkbox"]:checked)::after {
     content: '✓';
     position: absolute;
@@ -208,13 +213,16 @@ select {
     font-weight: 700;
 }
 
+/* Efecto hover */
 .etiqueta-retrogrado:hover::before {
     background-color: #cecece;
 }
 
+/* Efecto focus (accesibilidad) */
 .etiqueta-retrogrado input[type="checkbox"]:focus + .etiqueta-retrogrado::before {
     box-shadow: 0 0 0 2px rgba(0,0,0,0.2);
 }
+
 
 /* Botón de Generar Gráfico */
 #btn-generar {
@@ -238,6 +246,7 @@ select {
     background-color: #333333;
 }
 
+/* Botón para Restablecer */
 #btn-borrar {
     display: block;
     width: 100%;
@@ -272,46 +281,19 @@ select {
     height: auto;
 }
 
+/* Forzar tipografía Inter en todo el contenido de texto interno del SVG */
 #carta-astral text {
     font-family: 'Inter', sans-serif !important;
     letter-spacing: 1.2px;
 }
 
+/* Ajuste específico para que las líneas mantengan su finura */
 #carta-astral circle,
 #carta-astral line {
     shape-rendering: geometricPrecision;
 }
 
-/* ============================================
-   ESTILOS PARA LOS ÍCONOS DE PLANETAS (SPRITE)
-   ============================================ */
-
-/* Planetas principales (dentro del gráfico) */
-.planeta-principal {
-    --stroke-width: 2.5px;   /* Grosor del trazo */
-    color: #111111;           /* Color del trazo (negro) */
-    fill: none;               /* Sin relleno (depende de tu SVG) */
-}
-
-/* Planetas de los decanatos (en la franja) */
-.planeta-decanato {
-    --stroke-width: 1.5px;   /* Grosor más fino */
-    color: #666666;           /* Color gris */
-    fill: none;
-}
-
-/* Opcional: estilos específicos para planetas individuales */
-/* Ejemplo: si quieres que el Sol tenga un trazo más grueso */
-/* .planeta-principal#sol { --stroke-width: 3.5px; } */
-
-/* Opcional: si quieres que los decanatos tengan un color diferente según el planeta */
-/* .planeta-decanato#marte { color: #cc0000; } */
-
-/*
-==========================================================================
-   5. RESPONSIVE
-==========================================================================
-*/
+/* RESPONSIVE: Si la pantalla es pequeña (celulares), vuelve a una sola columna */
 @media (max-width: 850px) {
     .interfaz-columnas {
         display: block;
