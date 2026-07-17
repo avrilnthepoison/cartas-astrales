@@ -534,7 +534,7 @@ document.addEventListener("DOMContentLoaded", () => {
             planetasData.sort((a, b) => a.gradosAbsolutos - b.gradosAbsolutos);
 
             // ---- AGRUPAR PLANETAS CERCANOS (umbral 2.5 grados) ----
-            const umbral = 2.5;
+            const umbral = 8;
             const grupos = [];
             let grupoActual = [];
             for (let i = 0; i < planetasData.length; i++) {
