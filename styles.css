@@ -29,9 +29,9 @@ body {
 }
 
 .header-astral h1 {
-    font-family: 'Inter', sans-serif;
+    font-family: 'IM Fell DW Pica', serif;
     font-size: 30px;
-    font-weight: 600;
+    font-weight: 400;
     letter-spacing: 4px;
     margin: 0 0 8px 0;
     text-transform: uppercase;
@@ -86,9 +86,9 @@ body {
 }
 
 .bloque-formulario h3 {
-    font-family: 'Inter', sans-serif;
+    font-family: 'IM Fell DW Pica', serif;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 1.5px;
     margin: 0 0 20px 0;
