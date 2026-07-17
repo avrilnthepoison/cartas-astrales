@@ -336,7 +336,7 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloGrados.setAttribute("cx", String(CENTRO_X));
         circuloGrados.setAttribute("cy", String(CENTRO_Y));
         circuloGrados.setAttribute("r", String(RADIO_GRADOS));
-        circuloGrados.setAttribute("stroke", "#999999");
+        circuloGrados.setAttribute("stroke", "#111111");
         circuloGrados.setAttribute("stroke-width", "0.5");
         circuloGrados.setAttribute("stroke-dasharray", "2,2");
         circuloGrados.setAttribute("fill", "none");
@@ -350,9 +350,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const punto = document.createElementNS("http://www.w3.org/2000/svg", "circle");
             punto.setAttribute("cx", String(x));
             punto.setAttribute("cy", String(y));
-            punto.setAttribute("r", "1.5");
-            punto.setAttribute("fill", "#666666");
-            punto.setAttribute("opacity", "0.6");
+            punto.setAttribute("r", "1");
+            punto.setAttribute("fill", "#111111");
+            punto.setAttribute("opacity", "1");
             lienzoSvg.appendChild(punto);
         }
 
@@ -364,9 +364,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const punto = document.createElementNS("http://www.w3.org/2000/svg", "circle");
             punto.setAttribute("cx", String(x));
             punto.setAttribute("cy", String(y));
-            punto.setAttribute("r", "2.5");
+            punto.setAttribute("r", "1.5");
             punto.setAttribute("fill", "#111111");
-            punto.setAttribute("opacity", "0.8");
+            punto.setAttribute("opacity", "1");
             lienzoSvg.appendChild(punto);
         }
 
@@ -458,9 +458,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     const yPlaneta = Math.round(CENTRO_Y + radioPlaneta * Math.sin(radPlaneta));
 
                     // ---- MARCA DE POSICIÓN (línea radial) ----
-                    const xInicio = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radPlaneta));
-                    const yInicio = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radPlaneta));
-                    const radioFinMarca = RADIO_DECANATOS_INTERIOR - 10;
+                    const xInicio = Math.round(CENTRO_X + RADIO_GRADOS * Math.cos(radPlaneta));
+                    const yInicio = Math.round(CENTRO_Y + RADIO_GRADOS * Math.sin(radPlaneta));
+                    const radioFinMarca = RADIO_GRADOS - 10;
                     const xFin = Math.round(CENTRO_X + radioFinMarca * Math.cos(radPlaneta));
                     const yFin = Math.round(CENTRO_Y + radioFinMarca * Math.sin(radPlaneta));
 
