@@ -14,8 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const RADIO_PLANETAS = 190;
     const RADIO_TEXTO_SIGNOS = 270;
     const RADIO_SIMBOLOS_DECANATOS = 240;
-    const RADIO_GRADOS = 215; // Rueda de 360°
-    const RADIO_ASPECTOS = 100; // Círculo interno para aspectos
+    const RADIO_GRADOS = 215;
+    const RADIO_ASPECTOS = 100;
 
     const nombresSignos = [
         "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
@@ -365,7 +365,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(punto);
         }
 
-        // ---- CAPA 8: Aspectos planetarios (NUEVO) ----
+        // ---- CAPA 8: Aspectos planetarios (por grosor y trazado) ----
         const circuloAspectos = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloAspectos.setAttribute("cx", String(CENTRO_X));
         circuloAspectos.setAttribute("cy", String(CENTRO_Y));
@@ -398,12 +398,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     const orbe = (p1 === 'LUNA' || p2 === 'LUNA') ? 13 : 3;
 
+                    // Definición de aspectos con estilo (grosor, trazado, opacidad)
                     const aspectos = [
-                        { tipo: 'conjuncion', angulo: 0, color: '#FF0000' },
-                        { tipo: 'sextil', angulo: 60, color: '#0000FF' },
-                        { tipo: 'cuadratura', angulo: 90, color: '#FF8C00' },
-                        { tipo: 'trígono', angulo: 120, color: '#008000' },
-                        { tipo: 'oposicion', angulo: 180, color: '#800080' }
+                        { tipo: 'conjuncion', angulo: 0, strokeWidth: 3, dasharray: null, opacity: 1 },
+                        { tipo: 'sextil', angulo: 60, strokeWidth: 1.5, dasharray: '5,5', opacity: 0.7 },
+                        { tipo: 'cuadratura', angulo: 90, strokeWidth: 2, dasharray: '8,4', opacity: 0.8 },
+                        { tipo: 'trígono', angulo: 120, strokeWidth: 1.5, dasharray: '10,5', opacity: 0.6 },
+                        { tipo: 'oposicion', angulo: 180, strokeWidth: 2, dasharray: '2,4', opacity: 0.8 }
                     ];
 
                     for (const asp of aspectos) {
@@ -420,9 +421,12 @@ document.addEventListener("DOMContentLoaded", () => {
                             lineaAspecto.setAttribute("y1", String(y1));
                             lineaAspecto.setAttribute("x2", String(x2));
                             lineaAspecto.setAttribute("y2", String(y2));
-                            lineaAspecto.setAttribute("stroke", asp.color);
-                            lineaAspecto.setAttribute("stroke-width", "1.5");
-                            lineaAspecto.setAttribute("opacity", "0.7");
+                            lineaAspecto.setAttribute("stroke", "#444444");
+                            lineaAspecto.setAttribute("stroke-width", String(asp.strokeWidth));
+                            if (asp.dasharray) {
+                                lineaAspecto.setAttribute("stroke-dasharray", asp.dasharray);
+                            }
+                            lineaAspecto.setAttribute("opacity", String(asp.opacity));
                             lienzoSvg.appendChild(lineaAspecto);
 
                             // Solo dibujar una línea por par (el primer aspecto que coincida)
