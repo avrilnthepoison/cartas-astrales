@@ -182,7 +182,8 @@ document.addEventListener("DOMContentLoaded", () => {
             return (desfaceG - gradosOriginales) * (Math.PI / 180);
         }
 
-        // ---- CAPA 1: Círculos base ----
+        // ---- CAPA 1: Círculos base y fondo de la franja de signos ----
+        // Círculo exterior (borde)
         const circuloExterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloExterior.setAttribute("cx", String(CENTRO_X));
         circuloExterior.setAttribute("cy", String(CENTRO_Y));
@@ -192,16 +193,25 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloExterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloExterior);
 
-        // --- NUEVO: Círculo de relleno negro en la franja de los signos ---
-        const circuloRellenoSignos = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circuloRellenoSignos.setAttribute("cx", String(CENTRO_X));
-        circuloRellenoSignos.setAttribute("cy", String(CENTRO_Y));
-        circuloRellenoSignos.setAttribute("r", String(RADIO_SIGNOS_INTERIOR + 2)); // Ajuste fino para cubrir bien
-        circuloRellenoSignos.setAttribute("fill", "#111111");
-        circuloRellenoSignos.setAttribute("stroke", "none");
-        lienzoSvg.appendChild(circuloRellenoSignos);
-        // --------------------------------------------------------------
+        // --- CORONA CIRCULAR: Fondo negro solo en la franja de los signos ---
+        // Usamos un path con fill-rule="evenodd" para crear un anillo
+        const pathCorona = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const dCorona = `
+            M ${CENTRO_X - RADIO_EXTERIOR} ${CENTRO_Y}
+            A ${RADIO_EXTERIOR} ${RADIO_EXTERIOR} 0 1,1 ${CENTRO_X + RADIO_EXTERIOR} ${CENTRO_Y}
+            A ${RADIO_EXTERIOR} ${RADIO_EXTERIOR} 0 1,1 ${CENTRO_X - RADIO_EXTERIOR} ${CENTRO_Y} Z
+            M ${CENTRO_X - RADIO_SIGNOS_INTERIOR} ${CENTRO_Y}
+            A ${RADIO_SIGNOS_INTERIOR} ${RADIO_SIGNOS_INTERIOR} 0 1,0 ${CENTRO_X + RADIO_SIGNOS_INTERIOR} ${CENTRO_Y}
+            A ${RADIO_SIGNOS_INTERIOR} ${RADIO_SIGNOS_INTERIOR} 0 1,0 ${CENTRO_X - RADIO_SIGNOS_INTERIOR} ${CENTRO_Y} Z
+        `;
+        pathCorona.setAttribute("d", dCorona);
+        pathCorona.setAttribute("fill-rule", "evenodd");
+        pathCorona.setAttribute("fill", "#111111");
+        pathCorona.setAttribute("stroke", "none");
+        lienzoSvg.appendChild(pathCorona);
+        // ----------------------------------------------------------------
 
+        // Círculo interior de la franja de signos (borde)
         const circuloSignosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloSignosInterior.setAttribute("cx", String(CENTRO_X));
         circuloSignosInterior.setAttribute("cy", String(CENTRO_Y));
@@ -211,6 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloSignosInterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloSignosInterior);
 
+        // Círculo interior de los decanatos (borde)
         const circuloDecanatosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloDecanatosInterior.setAttribute("cx", String(CENTRO_X));
         circuloDecanatosInterior.setAttribute("cy", String(CENTRO_Y));
@@ -220,6 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloDecanatosInterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloDecanatosInterior);
 
+        // Punto central
         const puntoCentral = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         puntoCentral.setAttribute("cx", String(CENTRO_X));
         puntoCentral.setAttribute("cy", String(CENTRO_Y));
@@ -228,7 +240,7 @@ document.addEventListener("DOMContentLoaded", () => {
         lienzoSvg.appendChild(puntoCentral);
 
         // ---- CAPA 2: Líneas de los SIGNOS (30°) ----
-        // Ahora en color BLANCO
+        // En BLANCO
         for (let i = 0; i < 12; i++) {
             const gradoLinea = i * 30;
             const radLinea = ajustarAngulo(gradoLinea);
@@ -241,13 +253,13 @@ document.addEventListener("DOMContentLoaded", () => {
             linea.setAttribute("y1", String(y1));
             linea.setAttribute("x2", String(x2));
             linea.setAttribute("y2", String(y2));
-            linea.setAttribute("stroke", "#ffffff"); // <--- BLANCO
+            linea.setAttribute("stroke", "#ffffff");
             linea.setAttribute("stroke-width", "2");
             lienzoSvg.appendChild(linea);
         }
 
         // ---- CAPA 3: Líneas de los DECANATOS (0°, 10°, 20° de cada signo) ----
-        // Estas permanecen en negro (sin cambios)
+        // En NEGRO (sin cambios)
         for (let i = 0; i < 12; i++) {
             for (let d = 0; d < 3; d++) {
                 const gradoLinea = i * 30 + d * 10;
@@ -261,14 +273,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 linea.setAttribute("y1", String(y1));
                 linea.setAttribute("x2", String(x2));
                 linea.setAttribute("y2", String(y2));
-                linea.setAttribute("stroke", "#111111"); // Se mantiene negro
+                linea.setAttribute("stroke", "#111111");
                 linea.setAttribute("stroke-width", "2");
                 lienzoSvg.appendChild(linea);
             }
         }
 
         // ---- CAPA 4: Nombres de los signos ----
-        // Ahora en color BLANCO
+        // En BLANCO
         for (let i = 0; i < 12; i++) {
             const gradoInicioArco = i * 30;
             const gradoFinArco = gradoInicioArco + 30;
@@ -291,7 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
             etiquetaTexto.setAttribute("font-family", "'Inter', sans-serif");
             etiquetaTexto.setAttribute("font-size", "14");
             etiquetaTexto.setAttribute("font-weight", "800");
-            etiquetaTexto.setAttribute("fill", "#ffffff"); // <--- BLANCO
+            etiquetaTexto.setAttribute("fill", "#ffffff");
             const trayectoTexto = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
             trayectoTexto.setAttribute("href", `#${idTrayecto}`);
             trayectoTexto.setAttribute("startOffset", "50%");
