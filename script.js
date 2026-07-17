@@ -288,7 +288,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(etiquetaTexto);
         }
 
-        // ---- CAPA 5: Símbolos de los decanatos ----
+        // ---- CAPA 5: Símbolos de los decanatos (usando <use>) ----
         for (let i = 0; i < 12; i++) {
             const decanatosSigno = decanatos[i];
             if (!decanatosSigno) continue;
@@ -297,20 +297,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 const rad = ajustarAngulo(gradoCentral);
                 const x = Math.round(CENTRO_X + RADIO_SIMBOLOS_DECANATOS * Math.cos(rad));
                 const y = Math.round(CENTRO_Y + RADIO_SIMBOLOS_DECANATOS * Math.sin(rad));
+
                 const nombrePlaneta = decanatosSigno[d];
                 const nombreSVG = nombrePlaneta.toLowerCase().replace('_', '-');
-                const rutaSVG = `svg/${nombreSVG}.svg`;
-                const imgDecanato = document.createElementNS("http://www.w3.org/2000/svg", "image");
-                imgDecanato.setAttribute("x", String(x - 8));
-                imgDecanato.setAttribute("y", String(y - 8));
-                imgDecanato.setAttribute("width", "16");
-                imgDecanato.setAttribute("height", "16");
-                imgDecanato.setAttribute("href", rutaSVG);
-                lienzoSvg.appendChild(imgDecanato);
+
+                const useDecanato = document.createElementNS("http://www.w3.org/2000/svg", "use");
+                useDecanato.setAttribute("href", `#${nombreSVG}`);
+                useDecanato.setAttribute("x", String(x - 8));
+                useDecanato.setAttribute("y", String(y - 8));
+                useDecanato.setAttribute("width", "16");
+                useDecanato.setAttribute("height", "16");
+                useDecanato.setAttribute("class", "planeta-decanato");
+                lienzoSvg.appendChild(useDecanato);
             }
         }
 
-        // ---- CAPA 6: Ejes, marcas de posición y planetas ----
+        // ---- CAPA 6: Ejes, marcas de posición y planetas (usando <use>) ----
         if (mostrarContenido) {
             // Eje del Ascendente
             const radAsc = ajustarAngulo(ascendenteAbs);
@@ -415,16 +417,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     lineaPosicion.setAttribute("stroke-linecap", "round");
                     lienzoSvg.appendChild(lineaPosicion);
 
-                    // 1. Símbolo del planeta (SVG)
+                    // 1. Símbolo del planeta usando <use> (en lugar de <image>)
                     const nombreSVG = nombre.toLowerCase().replace('_', '-');
-                    const rutaSVG = `svg/${nombreSVG}.svg`;
-                    const imgPlaneta = document.createElementNS("http://www.w3.org/2000/svg", "image");
-                    imgPlaneta.setAttribute("x", String(xPlaneta - 12));
-                    imgPlaneta.setAttribute("y", String(yPlaneta - 12));
-                    imgPlaneta.setAttribute("width", "20");
-                    imgPlaneta.setAttribute("height", "20");
-                    imgPlaneta.setAttribute("href", rutaSVG);
-                    lienzoSvg.appendChild(imgPlaneta);
+                    const usePlaneta = document.createElementNS("http://www.w3.org/2000/svg", "use");
+                    usePlaneta.setAttribute("href", `#${nombreSVG}`);
+                    usePlaneta.setAttribute("x", String(xPlaneta - 12));
+                    usePlaneta.setAttribute("y", String(yPlaneta - 12));
+                    usePlaneta.setAttribute("width", "24");
+                    usePlaneta.setAttribute("height", "24");
+                    usePlaneta.setAttribute("class", "planeta-principal");
+                    lienzoSvg.appendChild(usePlaneta);
 
                     // 2. Retrógrado (R)
                     const datosPlaneta = datosPlanetasForm[nombre] || { g: 0, m: 0, retrogrado: false };
