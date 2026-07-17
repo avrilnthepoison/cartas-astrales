@@ -351,7 +351,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaAsc.setAttribute("x2", String(xAsc2));
             lineaAsc.setAttribute("y2", String(yAsc2));
             lineaAsc.setAttribute("stroke", "#111111");
-            lineaAsc.setAttribute("stroke-width", "2.5");
+            lineaAsc.setAttribute("stroke-width", "2");
             lineaAsc.setAttribute("stroke-linecap", "round");
             lienzoSvg.appendChild(lineaAsc);
 
@@ -380,7 +380,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lineaMc.setAttribute("x2", String(xMc2));
             lineaMc.setAttribute("y2", String(yMc2));
             lineaMc.setAttribute("stroke", "#111111");
-            lineaMc.setAttribute("stroke-width", "2.5");
+            lineaMc.setAttribute("stroke-width", "2");
             lineaMc.setAttribute("stroke-linecap", "round");
             lienzoSvg.appendChild(lineaMc);
 
