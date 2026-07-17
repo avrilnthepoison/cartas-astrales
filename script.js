@@ -554,7 +554,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (grupoActual.length > 0) grupos.push(grupoActual);
 
             // ---- CALCULAR DESPLAZAMIENTOS PARA CADA GRUPO ----
-            const separacion = 10; // píxeles de separación entre planetas
+            const separacion = 25; // píxeles de separación entre planetas
             const desplazamientos = {};
             for (const grupo of grupos) {
                 const n = grupo.length;
