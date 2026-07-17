@@ -291,6 +291,8 @@ select {
     stroke: #111111 !important;           /* Color del trazo (negro) */
     stroke-width: 2.5px !important;   /* Grosor del trazo */
     fill: none;               /* Sin relleno (depende de tu SVG) */
+    width: 24px !important;
+    height: 24px !important;
 }
 
 /* Planetas de los decanatos (en la franja) */
@@ -298,6 +300,8 @@ select {
     stroke: #666666 !important;           /* Color gris */
     stroke-width: 1.5px !important;   /* Grosor más fino */
     fill: none;
+    width: 16px !important;
+    height: 16px !important;
 }
 
 /* Opcional: estilos específicos para planetas individuales */
