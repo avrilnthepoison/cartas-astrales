@@ -553,7 +553,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if (grupoActual.length > 0) grupos.push(grupoActual);
 
-            // ---- CALCULAR DESPLAZAMIENTOS PARA CADA GRUPO ----
+            // ---- CALCULAR DESPLAZAMIENTOS PARA CADA GRUPO (orden preservado) ----
             const separacionGrupo = 28; // píxeles de separación entre planetas
             const desplazamientos = {};
             for (const grupo of grupos) {
@@ -564,6 +564,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     const radRef = grupo[0].radPlaneta;
                     const tangenteX = -Math.sin(radRef);
                     const tangenteY = Math.cos(radRef);
+                    // Asignar offsets: el primer planeta (menor ángulo) recibe el offset más negativo
+                    // y el último (mayor ángulo) el más positivo, manteniendo el orden.
                     for (let i = 0; i < n; i++) {
                         const offset = (i - (n - 1) / 2) * separacionGrupo;
                         const dx = Math.round(offset * tangenteX);
@@ -573,23 +575,32 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-            // ---- DESPLAZAMIENTO ADICIONAL POR EJES (ASC y MC) ----
+            // ---- DESPLAZAMIENTO ADICIONAL POR EJES (aplicado al grupo completo) ----
             const umbralEjes = 5; // grados de tolerancia
             const separacionEjes = 20; // píxeles de separación
             const ejes = [
                 { nombre: 'ASC', angulo: ascendenteAbs },
                 { nombre: 'MC', angulo: mcAbs }
             ];
-            for (const p of planetasData) {
-                const anguloPlaneta = p.gradosAbsolutos;
+
+            // Para cada grupo, calcular si algún planeta está cerca de un eje
+            // y aplicar el desplazamiento a todo el grupo por igual.
+            for (const grupo of grupos) {
+                // Determinar el centro del grupo (media de ángulos)
+                let anguloCentro = 0;
+                for (const p of grupo) {
+                    anguloCentro += p.gradosAbsolutos;
+                }
+                anguloCentro /= grupo.length;
+
                 let despEjeX = 0, despEjeY = 0;
                 for (const eje of ejes) {
-                    let diff = (anguloPlaneta - eje.angulo) % 360;
+                    let diff = (anguloCentro - eje.angulo) % 360;
                     if (diff > 180) diff -= 360;
                     if (diff < -180) diff += 360;
                     if (Math.abs(diff) <= umbralEjes) {
-                        const signo = Math.sign(diff) || 1; // si diff es 0, elegir dirección positiva
-                        const rad = p.radPlaneta;
+                        const signo = Math.sign(diff) || 1;
+                        const rad = grupo[0].radPlaneta; // todos tienen aproximadamente el mismo rad
                         const tangenteX = -Math.sin(rad) * signo * separacionEjes;
                         const tangenteY = Math.cos(rad) * signo * separacionEjes;
                         despEjeX += Math.round(tangenteX);
@@ -597,11 +608,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 }
                 if (despEjeX !== 0 || despEjeY !== 0) {
-                    if (desplazamientos[p.nombre]) {
-                        desplazamientos[p.nombre].dx += despEjeX;
-                        desplazamientos[p.nombre].dy += despEjeY;
-                    } else {
-                        desplazamientos[p.nombre] = { dx: despEjeX, dy: despEjeY };
+                    for (const p of grupo) {
+                        if (desplazamientos[p.nombre]) {
+                            desplazamientos[p.nombre].dx += despEjeX;
+                            desplazamientos[p.nombre].dy += despEjeY;
+                        } else {
+                            desplazamientos[p.nombre] = { dx: despEjeX, dy: despEjeY };
+                        }
                     }
                 }
             }
@@ -609,7 +622,6 @@ document.addEventListener("DOMContentLoaded", () => {
             // ---- DIBUJAR MARCAS DE POSICIÓN Y PLANETAS ----
             for (const p of planetasData) {
                 const nombre = p.nombre;
-                const gradosAbsolutos = p.gradosAbsolutos;
                 const radPlaneta = p.radPlaneta;
                 const xPlaneta = p.xPlaneta;
                 const yPlaneta = p.yPlaneta;
