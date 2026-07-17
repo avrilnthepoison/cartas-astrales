@@ -17,6 +17,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const RADIO_GRADOS = 230;
     const RADIO_ASPECTOS = 135;
 
+    // ------------------------------------------------------------
+    // CONFIGURACIÓN DE SEPARACIONES (ajusta estos valores)
+    // ------------------------------------------------------------
+    const UMBRAL_AGRUPACION = 8;       // grados para agrupar planetas
+    const SEPARACION_GRUPO = 28;       // píxeles entre planetas en un grupo
+    const UMBRAL_EJES = 8;             // grados de tolerancia con ejes
+    const SEPARACION_EJES = 28;        // píxeles de separación con ejes
+    const INVERTIR_DIRECCION_EJES = false; // cambia a true si el planeta se mueve al revés
+    // ------------------------------------------------------------
+
     const nombresSignos = [
         "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
         "LEO", "VIRGO", "LIBRA", "ESCORPIO",
@@ -530,7 +540,6 @@ document.addEventListener("DOMContentLoaded", () => {
             planetasData.sort((a, b) => a.gradosAbsolutos - b.gradosAbsolutos);
 
             // ---- 1. SEPARACIÓN ENTRE PLANETAS (AGRUPACIÓN) ----
-            const umbral = 8;
             const grupos = [];
             let grupoActual = [];
             for (let i = 0; i < planetasData.length; i++) {
@@ -539,7 +548,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     const ultimo = grupoActual[grupoActual.length - 1];
                     const diff = planetasData[i].gradosAbsolutos - ultimo.gradosAbsolutos;
-                    if (diff <= umbral) {
+                    if (diff <= UMBRAL_AGRUPACION) {
                         grupoActual.push(planetasData[i]);
                     } else {
                         grupos.push(grupoActual);
@@ -549,7 +558,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if (grupoActual.length > 0) grupos.push(grupoActual);
 
-            const separacionGrupo = 28;
             const desplazamientos = {};
             for (const grupo of grupos) {
                 const n = grupo.length;
@@ -560,7 +568,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const tangenteX = -Math.sin(radRef);
                     const tangenteY = Math.cos(radRef);
                     for (let i = 0; i < n; i++) {
-                        const offset = ((n - 1) / 2 - i) * separacionGrupo;
+                        const offset = ((n - 1) / 2 - i) * SEPARACION_GRUPO;
                         const dx = Math.round(offset * tangenteX);
                         const dy = Math.round(offset * tangenteY);
                         desplazamientos[grupo[i].nombre] = { dx, dy };
@@ -568,41 +576,49 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-            // ---- 2. SEPARACIÓN CON EJES (INDIVIDUAL PARA CADA PLANETA) ----
-            const umbralEjes = 8;
-            const separacionEjes = 20;
+            // ---- 2. SEPARACIÓN CON EJES (usando la misma lógica de agrupación) ----
             const ejes = [
                 { nombre: 'ASC', angulo: ascendenteAbs },
                 { nombre: 'MC', angulo: mcAbs }
             ];
 
-            for (const p of planetasData) {
-                const anguloPlaneta = p.gradosAbsolutos;
-                let despEjeX = 0, despEjeY = 0;
-                for (const eje of ejes) {
-                    let diff = (anguloPlaneta - eje.angulo) % 360;
+            for (const eje of ejes) {
+                // Para cada eje, creamos una "agrupación" virtual con el eje y todos los planetas que están dentro del umbral
+                // Pero solo aplicamos desplazamiento a los planetas.
+                const planetasCerca = [];
+                for (const p of planetasData) {
+                    let diff = (p.gradosAbsolutos - eje.angulo) % 360;
                     if (diff > 180) diff -= 360;
                     if (diff < -180) diff += 360;
-                    if (Math.abs(diff) <= umbralEjes) {
-                        const signo = Math.sign(diff) || 1;
-                        // Si el planeta está en grado mayor (diff > 0), se mueve en dirección de ángulo creciente (tangente positiva)
-                        // Si está en grado menor (diff < 0), se mueve en dirección de ángulo decreciente (tangente negativa)
-                        // Esto preserva el orden: mayor grado a la derecha, menor a la izquierda.
-                        // Si la dirección sale invertida, descomenta la línea de abajo y comenta la de arriba.
-                        // const signo = -Math.sign(diff) || -1;
-                        const rad = p.radPlaneta;
-                        const tangenteX = -Math.sin(rad) * signo * separacionEjes;
-                        const tangenteY = Math.cos(rad) * signo * separacionEjes;
-                        despEjeX += Math.round(tangenteX);
-                        despEjeY += Math.round(tangenteY);
+                    if (Math.abs(diff) <= UMBRAL_EJES) {
+                        planetasCerca.push(p);
                     }
                 }
-                if (despEjeX !== 0 || despEjeY !== 0) {
+               
+                const n = planetasCerca.length;
+                if (n === 0) continue;
+                // Ordenar los planetas por su grado (ya están ordenados globalmente, pero confirmamos)
+                // Determinamos la posición del eje en el orden: si el planeta tiene menor grado que el eje, está antes; si mayor, después.
+                // Vamos a calcular el offset manualmente: si diff < 0 (planeta antes), queremos mover a la izquierda -> tangente negativa.
+                // Si diff > 0 (planeta después), mover a la derecha -> tangente positiva.
+                // Esto es equivalente a signo = -Math.sign(diff) si el usuario quiere invertir.
+                for (const p of planetasCerca) {
+                    let diff = (p.gradosAbsolutos - eje.angulo) % 360;
+                    if (diff > 180) diff -= 360;
+                    if (diff < -180) diff += 360;
+                    // Si diff es 0, no mover (ya que coinciden)
+                    if (Math.abs(diff) < 0.001) continue;
+                    const signo = Math.sign(diff) * (INVERTIR_DIRECCION_EJES ? -1 : 1);
+                    const rad = p.radPlaneta;
+                    const tangenteX = -Math.sin(rad) * signo * SEPARACION_EJES;
+                    const tangenteY = Math.cos(rad) * signo * SEPARACION_EJES;
+                    const dx = Math.round(tangenteX);
+                    const dy = Math.round(tangenteY);
                     if (desplazamientos[p.nombre]) {
-                        desplazamientos[p.nombre].dx += despEjeX;
-                        desplazamientos[p.nombre].dy += despEjeY;
+                        desplazamientos[p.nombre].dx += dx;
+                        desplazamientos[p.nombre].dy += dy;
                     } else {
-                        desplazamientos[p.nombre] = { dx: despEjeX, dy: despEjeY };
+                        desplazamientos[p.nombre] = { dx, dy };
                     }
                 }
             }
