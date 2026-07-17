@@ -192,6 +192,16 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloExterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloExterior);
 
+        // --- NUEVO: Círculo de relleno negro en la franja de los signos ---
+        const circuloRellenoSignos = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circuloRellenoSignos.setAttribute("cx", String(CENTRO_X));
+        circuloRellenoSignos.setAttribute("cy", String(CENTRO_Y));
+        circuloRellenoSignos.setAttribute("r", String(RADIO_SIGNOS_INTERIOR + 2)); // Ajuste fino para cubrir bien
+        circuloRellenoSignos.setAttribute("fill", "#111111");
+        circuloRellenoSignos.setAttribute("stroke", "none");
+        lienzoSvg.appendChild(circuloRellenoSignos);
+        // --------------------------------------------------------------
+
         const circuloSignosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloSignosInterior.setAttribute("cx", String(CENTRO_X));
         circuloSignosInterior.setAttribute("cy", String(CENTRO_Y));
@@ -218,6 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
         lienzoSvg.appendChild(puntoCentral);
 
         // ---- CAPA 2: Líneas de los SIGNOS (30°) ----
+        // Ahora en color BLANCO
         for (let i = 0; i < 12; i++) {
             const gradoLinea = i * 30;
             const radLinea = ajustarAngulo(gradoLinea);
@@ -230,12 +241,13 @@ document.addEventListener("DOMContentLoaded", () => {
             linea.setAttribute("y1", String(y1));
             linea.setAttribute("x2", String(x2));
             linea.setAttribute("y2", String(y2));
-            linea.setAttribute("stroke", "#111111");
+            linea.setAttribute("stroke", "#ffffff"); // <--- BLANCO
             linea.setAttribute("stroke-width", "2");
             lienzoSvg.appendChild(linea);
         }
 
         // ---- CAPA 3: Líneas de los DECANATOS (0°, 10°, 20° de cada signo) ----
+        // Estas permanecen en negro (sin cambios)
         for (let i = 0; i < 12; i++) {
             for (let d = 0; d < 3; d++) {
                 const gradoLinea = i * 30 + d * 10;
@@ -249,13 +261,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 linea.setAttribute("y1", String(y1));
                 linea.setAttribute("x2", String(x2));
                 linea.setAttribute("y2", String(y2));
-                linea.setAttribute("stroke", "#111111");
+                linea.setAttribute("stroke", "#111111"); // Se mantiene negro
                 linea.setAttribute("stroke-width", "2");
                 lienzoSvg.appendChild(linea);
             }
         }
 
         // ---- CAPA 4: Nombres de los signos ----
+        // Ahora en color BLANCO
         for (let i = 0; i < 12; i++) {
             const gradoInicioArco = i * 30;
             const gradoFinArco = gradoInicioArco + 30;
@@ -278,7 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
             etiquetaTexto.setAttribute("font-family", "'Inter', sans-serif");
             etiquetaTexto.setAttribute("font-size", "14");
             etiquetaTexto.setAttribute("font-weight", "800");
-            etiquetaTexto.setAttribute("fill", "#111111");
+            etiquetaTexto.setAttribute("fill", "#ffffff"); // <--- BLANCO
             const trayectoTexto = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
             trayectoTexto.setAttribute("href", `#${idTrayecto}`);
             trayectoTexto.setAttribute("startOffset", "50%");
@@ -288,7 +301,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(etiquetaTexto);
         }
 
-        // ---- CAPA 5: Símbolos de los decanatos ----
+        // ---- CAPA 5: Símbolos de los decanatos (sin cambios) ----
         for (let i = 0; i < 12; i++) {
             const decanatosSigno = decanatos[i];
             if (!decanatosSigno) continue;
@@ -297,9 +310,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 const rad = ajustarAngulo(gradoCentral);
                 const x = Math.round(CENTRO_X + RADIO_SIMBOLOS_DECANATOS * Math.cos(rad));
                 const y = Math.round(CENTRO_Y + RADIO_SIMBOLOS_DECANATOS * Math.sin(rad));
+
                 const nombrePlaneta = decanatosSigno[d];
                 const nombreSVG = nombrePlaneta.toLowerCase().replace('_', '-');
                 const rutaSVG = `svg/${nombreSVG}.svg`;
+
                 const imgDecanato = document.createElementNS("http://www.w3.org/2000/svg", "image");
                 imgDecanato.setAttribute("x", String(x - 8));
                 imgDecanato.setAttribute("y", String(y - 8));
@@ -310,7 +325,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // ---- CAPA 6: Ejes, marcas de posición y planetas ----
+        // ---- CAPA 6: Ejes, marcas de posición y planetas (sin cambios) ----
         if (mostrarContenido) {
             // Eje del Ascendente
             const radAsc = ajustarAngulo(ascendenteAbs);
