@@ -23,8 +23,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const UMBRAL_AGRUPACION = 8;       // grados para agrupar planetas
     const SEPARACION_GRUPO = 28;       // píxeles entre planetas en un grupo
     const UMBRAL_EJES = 8;             // grados de tolerancia con ejes
-    const SEPARACION_EJES = 28;        // píxeles de separación con ejes
-    const INVERTIR_DIRECCION_EJES = false; // cambia a true si el planeta se mueve al revés
+    const SEPARACION_EJES = 20;        // píxeles de separación con ejes
+    const INVERTIR_DIRECCION_EJES = true; // cambia a true si el planeta se mueve al revés
     // ------------------------------------------------------------
 
     const nombresSignos = [
