@@ -301,14 +301,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 const nombrePlaneta = decanatosSigno[d];
                 const nombreSVG = nombrePlaneta.toLowerCase().replace('_', '-');
 
+                const wrapperSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                wrapperSvg.setAttribute("x", String(x - 8));
+                wrapperSvg.setAttribute("y", String(y - 8));
+                wrapperSvg.setAttribute("width", "16");
+                wrapperSvg.setAttribute("height", "16");
+                wrapperSvg.setAttribute("viewBox", "0 0 45 45");
+                wrapperSvg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+                wrapperSvg.setAttribute("class", "planeta-decanato");
                 const useDecanato = document.createElementNS("http://www.w3.org/2000/svg", "use");
                 useDecanato.setAttribute("href", `#${nombreSVG}`);
-                useDecanato.setAttribute("x", String(x - 8));
-                useDecanato.setAttribute("y", String(y - 8));
-                useDecanato.setAttribute("width", "16");
-                useDecanato.setAttribute("height", "16");
-                useDecanato.setAttribute("class", "planeta-decanato");
-                lienzoSvg.appendChild(useDecanato);
+                wrapperSvg.appendChild(useDecanato);
+                lienzoSvg.appendChild(wrapperSvg);
             }
         }
 
@@ -419,14 +423,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     // 1. Símbolo del planeta usando <use> (en lugar de <image>)
                     const nombreSVG = nombre.toLowerCase().replace('_', '-');
+                    const wrapperSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                    wrapperSvg.setAttribute("x", String(xPlaneta - 12));
+                    wrapperSvg.setAttribute("y", String(yPlaneta - 12));
+                    wrapperSvg.setAttribute("width", "20");
+                    wrapperSvg.setAttribute("height", "20");
+                    wrapperSvg.setAttribute("viewBox", "0 0 45 45");
+                    wrapperSvg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+                    wrapperSvg.setAttribute("class", "planeta-principal");
                     const usePlaneta = document.createElementNS("http://www.w3.org/2000/svg", "use");
                     usePlaneta.setAttribute("href", `#${nombreSVG}`);
-                    usePlaneta.setAttribute("x", String(xPlaneta - 12));
-                    usePlaneta.setAttribute("y", String(yPlaneta - 12));
-                    usePlaneta.setAttribute("width", "20");
-                    usePlaneta.setAttribute("height", "20");
-                    usePlaneta.setAttribute("class", "planeta-principal");
-                    lienzoSvg.appendChild(usePlaneta);
+                    wrapperSvg.appendChild(usePlaneta);
+                    lienzoSvg.appendChild(wrapperSvg);
 
                     // 2. Retrógrado (R)
                     const datosPlaneta = datosPlanetasForm[nombre] || { g: 0, m: 0, retrogrado: false };
