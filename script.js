@@ -400,11 +400,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     // Definición de aspectos con estilo (grosor, trazado, opacidad)
                     const aspectos = [
-                        { tipo: 'conjuncion', angulo: 0, strokeWidth: 3, dasharray: null, opacity: 1 },
-                        { tipo: 'sextil', angulo: 60, strokeWidth: 1.5, dasharray: '5,5', opacity: 0.7 },
-                        { tipo: 'cuadratura', angulo: 90, strokeWidth: 2, dasharray: '8,4', opacity: 0.8 },
-                        { tipo: 'trígono', angulo: 120, strokeWidth: 1.5, dasharray: '10,5', opacity: 0.6 },
-                        { tipo: 'oposicion', angulo: 180, strokeWidth: 2, dasharray: '2,4', opacity: 0.8 }
+                        { tipo: 'conjuncion', angulo: 0, strokeWidth: 1.5, dasharray: null, opacity: 1 },
+                        { tipo: 'sextil', angulo: 60, strokeWidth: 2, dasharray: '5,5', opacity: 0.5 },
+                        { tipo: 'cuadratura', angulo: 90, strokeWidth: 2, dasharray: null, opacity: 0.8 },
+                        { tipo: 'trígono', angulo: 120, strokeWidth: 2, dasharray: '10,5', opacity: 1 },
+                        { tipo: 'oposicion', angulo: 180, strokeWidth: 3, dasharray: null, opacity: 1 }
                     ];
 
                     for (const asp of aspectos) {
@@ -421,7 +421,9 @@ document.addEventListener("DOMContentLoaded", () => {
                             lineaAspecto.setAttribute("y1", String(y1));
                             lineaAspecto.setAttribute("x2", String(x2));
                             lineaAspecto.setAttribute("y2", String(y2));
-                            lineaAspecto.setAttribute("stroke", "#444444");
+                            lineaAspecto.setAttribute("stroke", "#111111");
+                            lineaAspecto.setAttribute("stroke-linecap", "round");
+                            lineaAspecto.setAttribute("stroke-linejoin", "round");
                             lineaAspecto.setAttribute("stroke-width", String(asp.strokeWidth));
                             if (asp.dasharray) {
                                 lineaAspecto.setAttribute("stroke-dasharray", asp.dasharray);
