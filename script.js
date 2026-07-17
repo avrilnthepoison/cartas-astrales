@@ -569,7 +569,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             // ---- 2. SEPARACIÓN CON EJES (INDIVIDUAL PARA CADA PLANETA) ----
-            const umbralEjes = 5;
+            const umbralEjes = 8;
             const separacionEjes = 20;
             const ejes = [
                 { nombre: 'ASC', angulo: ascendenteAbs },
@@ -585,6 +585,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (diff < -180) diff += 360;
                     if (Math.abs(diff) <= umbralEjes) {
                         const signo = Math.sign(diff) || 1;
+                        // Si el planeta está en grado mayor (diff > 0), se mueve en dirección de ángulo creciente (tangente positiva)
+                        // Si está en grado menor (diff < 0), se mueve en dirección de ángulo decreciente (tangente negativa)
+                        // Esto preserva el orden: mayor grado a la derecha, menor a la izquierda.
+                        // Si la dirección sale invertida, descomenta la línea de abajo y comenta la de arriba.
+                        // const signo = -Math.sign(diff) || -1;
                         const rad = p.radPlaneta;
                         const tangenteX = -Math.sin(rad) * signo * separacionEjes;
                         const tangenteY = Math.cos(rad) * signo * separacionEjes;
