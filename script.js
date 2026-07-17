@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const RADIO_EXTERIOR = 295;
     const RADIO_SIGNOS_INTERIOR = 265;
     const RADIO_DECANATOS_INTERIOR = 240;
-    const RADIO_PLANETAS = 190;
+    const RADIO_PLANETAS = 200;
     const RADIO_TEXTO_SIGNOS = 275;
     const RADIO_SIMBOLOS_DECANATOS = 253;
     const RADIO_GRADOS = 230;
@@ -194,7 +194,6 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloExterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloExterior);
 
-        // Corona circular para fondo negro de la franja de signos
         const pathCorona = document.createElementNS("http://www.w3.org/2000/svg", "path");
         const dCorona = `
             M ${CENTRO_X - RADIO_EXTERIOR} ${CENTRO_Y}
@@ -368,7 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloAspectos.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloAspectos);
 
-        // Obtener lista de planetas con posición válida (distinta de 0)
+        // ---- Aspectos ----
         const planetasValidos = {};
         for (const [nombre, pos] of Object.entries(planetas)) {
             if (pos !== 0) {
@@ -421,8 +420,6 @@ document.addEventListener("DOMContentLoaded", () => {
                             }
                             lineaAspecto.setAttribute("opacity", String(asp.opacity));
                             lienzoSvg.appendChild(lineaAspecto);
-
-                            // Solo dibujar una línea por par (el primer aspecto que coincida)
                             break;
                         }
                     }
@@ -430,7 +427,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // ---- CAPA 6: Ejes, marcas de posición y planetas (CON SEPARACIÓN DE PLANETAS CERCANOS Y EJES) ----
+        // ---- CAPA 6: Ejes, marcas de posición y planetas (CON ORDEN CORREGIDO) ----
         if (mostrarContenido) {
             // Eje del Ascendente
             const radAsc = ajustarAngulo(ascendenteAbs);
@@ -553,7 +550,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if (grupoActual.length > 0) grupos.push(grupoActual);
 
-            // ---- CALCULAR DESPLAZAMIENTOS PARA CADA GRUPO (orden preservado) ----
+            // ---- CALCULAR DESPLAZAMIENTOS PARA CADA GRUPO (orden corregido) ----
             const separacionGrupo = 28; // píxeles de separación entre planetas
             const desplazamientos = {};
             for (const grupo of grupos) {
@@ -564,10 +561,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     const radRef = grupo[0].radPlaneta;
                     const tangenteX = -Math.sin(radRef);
                     const tangenteY = Math.cos(radRef);
-                    // Asignar offsets: el primer planeta (menor ángulo) recibe el offset más negativo
-                    // y el último (mayor ángulo) el más positivo, manteniendo el orden.
+                    // Asignar offsets: el primer planeta (menor ángulo) recibe el offset MÁS POSITIVO,
+                    // el último (mayor ángulo) el más negativo, para que en el gráfico el orden visual
+                    // sea el mismo que el orden angular (el menor grado a la izquierda).
                     for (let i = 0; i < n; i++) {
-                        const offset = (i - (n - 1) / 2) * separacionGrupo;
+                        const offset = ((n - 1) / 2 - i) * separacionGrupo;
                         const dx = Math.round(offset * tangenteX);
                         const dy = Math.round(offset * tangenteY);
                         desplazamientos[grupo[i].nombre] = { dx, dy };
@@ -576,17 +574,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             // ---- DESPLAZAMIENTO ADICIONAL POR EJES (aplicado al grupo completo) ----
-            const umbralEjes = 5; // grados de tolerancia
-            const separacionEjes = 20; // píxeles de separación
+            const umbralEjes = 5;
+            const separacionEjes = 20;
             const ejes = [
                 { nombre: 'ASC', angulo: ascendenteAbs },
                 { nombre: 'MC', angulo: mcAbs }
             ];
 
-            // Para cada grupo, calcular si algún planeta está cerca de un eje
-            // y aplicar el desplazamiento a todo el grupo por igual.
             for (const grupo of grupos) {
-                // Determinar el centro del grupo (media de ángulos)
                 let anguloCentro = 0;
                 for (const p of grupo) {
                     anguloCentro += p.gradosAbsolutos;
@@ -600,7 +595,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (diff < -180) diff += 360;
                     if (Math.abs(diff) <= umbralEjes) {
                         const signo = Math.sign(diff) || 1;
-                        const rad = grupo[0].radPlaneta; // todos tienen aproximadamente el mismo rad
+                        const rad = grupo[0].radPlaneta;
                         const tangenteX = -Math.sin(rad) * signo * separacionEjes;
                         const tangenteY = Math.cos(rad) * signo * separacionEjes;
                         despEjeX += Math.round(tangenteX);
@@ -672,7 +667,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const nombreSVG = nombre.toLowerCase().replace('_', '-');
                 const rutaSVG = `svg/${nombreSVG}.svg`;
                 const imgPlaneta = document.createElementNS("http://www.w3.org/2000/svg", "image");
-                imgPlaneta.setAttribute("x", String(xIcono - 10)); // 20/2 = 10
+                imgPlaneta.setAttribute("x", String(xIcono - 10));
                 imgPlaneta.setAttribute("y", String(yIcono - 10));
                 imgPlaneta.setAttribute("width", "20");
                 imgPlaneta.setAttribute("height", "20");
