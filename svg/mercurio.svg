@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 41">
+<svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 44">
   <defs>
     <style>
       .cls-1 {
         fill: none;
         stroke: #111;
-        stroke-width: 4px;
         stroke-linecap: round;
         stroke-linejoin: round;
+        stroke-width: 4px;
       }
     </style>
   </defs>
   <g id="iconos">
     <g id="mercurio">
-      <circle class="cls-1" cx="10.5" cy="17.17" r="10"/>
-      <line class="cls-1" x1="10.5" y1="27.17" x2="10.5" y2="40.5"/>
-      <line class="cls-1" x1="3.83" y1="33.83" x2="17.17" y2="33.83"/>
-      <path class="cls-1" d="m17.17.5c0,3.68-2.98,6.67-6.67,6.67S3.83,4.18,3.83.5"/>
+      <circle class="cls-1" cx="12" cy="18.67" r="10"/>
+      <line class="cls-1" x1="12" y1="28.67" x2="12" y2="42"/>
+      <line class="cls-1" x1="5.33" y1="35.33" x2="18.67" y2="35.33"/>
+      <path class="cls-1" d="m18.67,2c0,3.68-2.98,6.67-6.67,6.67s-6.67-2.98-6.67-6.67"/>
     </g>
   </g>
 </svg>

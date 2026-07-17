@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34.33 41">
+<svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37.33 44">
   <defs>
     <style>
       .cls-1 {
         fill: none;
         stroke: #111;
-        stroke-width: 4px;
         stroke-linecap: round;
         stroke-linejoin: round;
+        stroke-width: 4px;
       }
     </style>
   </defs>
   <g id="iconos">
     <g id="urano">
-      <line class="cls-1" x1="10.5" y1="10.5" x2="23.83" y2="10.5"/>
-      <path class="cls-1" d="m.5.5c5.52,0,10,4.48,10,10S6.02,20.5.5,20.5"/>
-      <path class="cls-1" d="m33.83,20.5c-5.52,0-10-4.48-10-10S28.31.5,33.83.5"/>
-      <line class="cls-1" x1="17.17" y1=".5" x2="17.17" y2="27.17"/>
-      <circle class="cls-1" cx="17.17" cy="33.83" r="6.67"/>
+      <line class="cls-1" x1="12" y1="12" x2="25.33" y2="12"/>
+      <path class="cls-1" d="m2,2c5.52,0,10,4.48,10,10s-4.48,10-10,10"/>
+      <path class="cls-1" d="m35.33,22c-5.52,0-10-4.48-10-10s4.48-10,10-10"/>
+      <line class="cls-1" x1="18.67" y1="2" x2="18.67" y2="28.67"/>
+      <circle class="cls-1" cx="18.67" cy="35.33" r="6.67"/>
     </g>
   </g>
 </svg>
