@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloExterior.setAttribute("cy", String(CENTRO_Y));
         circuloExterior.setAttribute("r", String(RADIO_EXTERIOR));
         circuloExterior.setAttribute("stroke", "#111111");
-        circuloExterior.setAttribute("stroke-width", "2");
+        circuloExterior.setAttribute("stroke-width", "1.5");
         circuloExterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloExterior);
 
@@ -217,7 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloSignosInterior.setAttribute("cy", String(CENTRO_Y));
         circuloSignosInterior.setAttribute("r", String(RADIO_SIGNOS_INTERIOR));
         circuloSignosInterior.setAttribute("stroke", "#111111");
-        circuloSignosInterior.setAttribute("stroke-width", "2");
+        circuloSignosInterior.setAttribute("stroke-width", "1.5");
         circuloSignosInterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloSignosInterior);
 
@@ -227,7 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloDecanatosInterior.setAttribute("cy", String(CENTRO_Y));
         circuloDecanatosInterior.setAttribute("r", String(RADIO_DECANATOS_INTERIOR));
         circuloDecanatosInterior.setAttribute("stroke", "#111111");
-        circuloDecanatosInterior.setAttribute("stroke-width", "2");
+        circuloDecanatosInterior.setAttribute("stroke-width", "1.5");
         circuloDecanatosInterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloDecanatosInterior);
 
@@ -254,7 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
             linea.setAttribute("x2", String(x2));
             linea.setAttribute("y2", String(y2));
             linea.setAttribute("stroke", "#ffffff");
-            linea.setAttribute("stroke-width", "2");
+            linea.setAttribute("stroke-width", "1.5");
             lienzoSvg.appendChild(linea);
         }
 
@@ -274,7 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 linea.setAttribute("x2", String(x2));
                 linea.setAttribute("y2", String(y2));
                 linea.setAttribute("stroke", "#111111");
-                linea.setAttribute("stroke-width", "2");
+                linea.setAttribute("stroke-width", "1.5");
                 lienzoSvg.appendChild(linea);
             }
         }
@@ -465,7 +465,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         txtRetro.setAttribute("y", String(yR));
                         txtRetro.setAttribute("font-family", "'IM Fell DW Pica', serif");
                         txtRetro.setAttribute("font-style", "italic");
-                        txtRetro.setAttribute("font-size", "10");
+                        txtRetro.setAttribute("font-size", "12");
                         txtRetro.setAttribute("font-weight", "400");
                         txtRetro.setAttribute("text-anchor", "start");
                         txtRetro.setAttribute("dominant-baseline", "central");
