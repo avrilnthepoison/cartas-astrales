@@ -370,9 +370,8 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloAspectos.setAttribute("cx", String(CENTRO_X));
         circuloAspectos.setAttribute("cy", String(CENTRO_Y));
         circuloAspectos.setAttribute("r", String(RADIO_ASPECTOS));
-        circuloAspectos.setAttribute("stroke", "#cccccc");
-        circuloAspectos.setAttribute("stroke-width", "0.5");
-        circuloAspectos.setAttribute("stroke-dasharray", "2,2");
+        circuloAspectos.setAttribute("stroke", "none");
+        circuloAspectos.setAttribute("stroke-width", "0");
         circuloAspectos.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloAspectos);
 
@@ -398,7 +397,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     const orbe = (p1 === 'LUNA' || p2 === 'LUNA') ? 13 : 3;
 
-                    // Definición de aspectos con estilo (grosor, trazado, opacidad)
                     const aspectos = [
                         { tipo: 'conjuncion', angulo: 0, strokeWidth: 1.5, dasharray: null, opacity: 1 },
                         { tipo: 'sextil', angulo: 60, strokeWidth: 1.5, dasharray: '2,5', opacity: 0.5 },
@@ -526,7 +524,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const xPlaneta = Math.round(CENTRO_X + radioPlaneta * Math.cos(radPlaneta));
                     const yPlaneta = Math.round(CENTRO_Y + radioPlaneta * Math.sin(radPlaneta));
 
-                    // ---- MARCA DE POSICIÓN (línea radial) ----
+                    // ---- MARCA DE POSICIÓN (desde rueda de grados) ----
                     const xInicio = Math.round(CENTRO_X + RADIO_GRADOS * Math.cos(radPlaneta));
                     const yInicio = Math.round(CENTRO_Y + RADIO_GRADOS * Math.sin(radPlaneta));
                     const radioFinMarca = RADIO_GRADOS - 10;
@@ -543,6 +541,24 @@ document.addEventListener("DOMContentLoaded", () => {
                     lineaPosicion.setAttribute("opacity", "1");
                     lineaPosicion.setAttribute("stroke-linecap", "round");
                     lienzoSvg.appendChild(lineaPosicion);
+
+                    // ---- MARCA DE POSICIÓN (desde rueda de aspectos) ----
+                    const xInicioAsp = Math.round(CENTRO_X + RADIO_ASPECTOS * Math.cos(radPlaneta));
+                    const yInicioAsp = Math.round(CENTRO_Y + RADIO_ASPECTOS * Math.sin(radPlaneta));
+                    const radioFinAsp = RADIO_ASPECTOS + 10;
+                    const xFinAsp = Math.round(CENTRO_X + radioFinAsp * Math.cos(radPlaneta));
+                    const yFinAsp = Math.round(CENTRO_Y + radioFinAsp * Math.sin(radPlaneta));
+
+                    const lineaPosicionAsp = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    lineaPosicionAsp.setAttribute("x1", String(xInicioAsp));
+                    lineaPosicionAsp.setAttribute("y1", String(yInicioAsp));
+                    lineaPosicionAsp.setAttribute("x2", String(xFinAsp));
+                    lineaPosicionAsp.setAttribute("y2", String(yFinAsp));
+                    lineaPosicionAsp.setAttribute("stroke", "#111111");
+                    lineaPosicionAsp.setAttribute("stroke-width", "1.5");
+                    lineaPosicionAsp.setAttribute("opacity", "1");
+                    lineaPosicionAsp.setAttribute("stroke-linecap", "round");
+                    lienzoSvg.appendChild(lineaPosicionAsp);
 
                     // 1. Símbolo del planeta (SVG)
                     const nombreSVG = nombre.toLowerCase().replace('_', '-');
