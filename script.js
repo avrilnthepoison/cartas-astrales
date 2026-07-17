@@ -357,7 +357,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(punto);
         }
 
-        // ---- CAPA 8: Aspectos planetarios (por grosor y trazado) ----
+        // ---- CAPA 8: Aspectos planetarios ----
         const circuloAspectos = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloAspectos.setAttribute("cx", String(CENTRO_X));
         circuloAspectos.setAttribute("cy", String(CENTRO_Y));
@@ -367,7 +367,6 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloAspectos.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloAspectos);
 
-        // ---- Aspectos ----
         const planetasValidos = {};
         for (const [nombre, pos] of Object.entries(planetas)) {
             if (pos !== 0) {
@@ -427,7 +426,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // ---- CAPA 6: Ejes, marcas de posición y planetas (CON ORDEN CORREGIDO) ----
+        // ---- CAPA 6: Ejes, marcas de posición y planetas ----
         if (mostrarContenido) {
             // Eje del Ascendente
             const radAsc = ajustarAngulo(ascendenteAbs);
@@ -530,7 +529,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // ---- ORDENAR POR POSICIÓN ANGULAR ----
             planetasData.sort((a, b) => a.gradosAbsolutos - b.gradosAbsolutos);
 
-            // ---- AGRUPAR PLANETAS CERCANOS (umbral 8 grados) ----
+            // ---- 1. SEPARACIÓN ENTRE PLANETAS (AGRUPACIÓN) ----
             const umbral = 8;
             const grupos = [];
             let grupoActual = [];
@@ -550,8 +549,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if (grupoActual.length > 0) grupos.push(grupoActual);
 
-            // ---- CALCULAR DESPLAZAMIENTOS PARA CADA GRUPO (orden corregido) ----
-            const separacionGrupo = 28; // píxeles de separación entre planetas
+            const separacionGrupo = 28;
             const desplazamientos = {};
             for (const grupo of grupos) {
                 const n = grupo.length;
@@ -561,9 +559,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     const radRef = grupo[0].radPlaneta;
                     const tangenteX = -Math.sin(radRef);
                     const tangenteY = Math.cos(radRef);
-                    // Asignar offsets: el primer planeta (menor ángulo) recibe el offset MÁS POSITIVO,
-                    // el último (mayor ángulo) el más negativo, para que en el gráfico el orden visual
-                    // sea el mismo que el orden angular (el menor grado a la izquierda).
                     for (let i = 0; i < n; i++) {
                         const offset = ((n - 1) / 2 - i) * separacionGrupo;
                         const dx = Math.round(offset * tangenteX);
@@ -573,7 +568,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-            // ---- DESPLAZAMIENTO ADICIONAL POR EJES (aplicado al grupo completo) ----
+            // ---- 2. SEPARACIÓN CON EJES (INDIVIDUAL PARA CADA PLANETA) ----
             const umbralEjes = 5;
             const separacionEjes = 20;
             const ejes = [
@@ -581,21 +576,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 { nombre: 'MC', angulo: mcAbs }
             ];
 
-            for (const grupo of grupos) {
-                let anguloCentro = 0;
-                for (const p of grupo) {
-                    anguloCentro += p.gradosAbsolutos;
-                }
-                anguloCentro /= grupo.length;
-
+            for (const p of planetasData) {
+                const anguloPlaneta = p.gradosAbsolutos;
                 let despEjeX = 0, despEjeY = 0;
                 for (const eje of ejes) {
-                    let diff = (anguloCentro - eje.angulo) % 360;
+                    let diff = (anguloPlaneta - eje.angulo) % 360;
                     if (diff > 180) diff -= 360;
                     if (diff < -180) diff += 360;
                     if (Math.abs(diff) <= umbralEjes) {
                         const signo = Math.sign(diff) || 1;
-                        const rad = grupo[0].radPlaneta;
+                        const rad = p.radPlaneta;
                         const tangenteX = -Math.sin(rad) * signo * separacionEjes;
                         const tangenteY = Math.cos(rad) * signo * separacionEjes;
                         despEjeX += Math.round(tangenteX);
@@ -603,13 +593,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 }
                 if (despEjeX !== 0 || despEjeY !== 0) {
-                    for (const p of grupo) {
-                        if (desplazamientos[p.nombre]) {
-                            desplazamientos[p.nombre].dx += despEjeX;
-                            desplazamientos[p.nombre].dy += despEjeY;
-                        } else {
-                            desplazamientos[p.nombre] = { dx: despEjeX, dy: despEjeY };
-                        }
+                    if (desplazamientos[p.nombre]) {
+                        desplazamientos[p.nombre].dx += despEjeX;
+                        desplazamientos[p.nombre].dy += despEjeY;
+                    } else {
+                        desplazamientos[p.nombre] = { dx: despEjeX, dy: despEjeY };
                     }
                 }
             }
