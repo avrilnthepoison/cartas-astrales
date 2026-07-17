@@ -430,7 +430,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // ---- CAPA 6: Ejes, marcas de posición y planetas ----
+        // ---- CAPA 6: Ejes, marcas de posición y planetas (CON SEPARACIÓN DE PLANETAS CERCANOS) ----
         if (mostrarContenido) {
             // Eje del Ascendente
             const radAsc = ajustarAngulo(ascendenteAbs);
@@ -510,80 +510,151 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const radioPlaneta = RADIO_PLANETAS;
 
+            // ---- RECOPILAR DATOS DE PLANETAS ----
+            const planetasData = [];
             for (const nombre of cuerpos) {
                 if (planetas.hasOwnProperty(nombre)) {
                     const gradosAbsolutos = planetas[nombre];
                     const radPlaneta = ajustarAngulo(gradosAbsolutos);
                     const xPlaneta = Math.round(CENTRO_X + radioPlaneta * Math.cos(radPlaneta));
                     const yPlaneta = Math.round(CENTRO_Y + radioPlaneta * Math.sin(radPlaneta));
-
-                    // ---- MARCA DE POSICIÓN (desde rueda de grados) ----
-                    const xInicio = Math.round(CENTRO_X + RADIO_GRADOS * Math.cos(radPlaneta));
-                    const yInicio = Math.round(CENTRO_Y + RADIO_GRADOS * Math.sin(radPlaneta));
-                    const radioFinMarca = RADIO_GRADOS - 10;
-                    const xFin = Math.round(CENTRO_X + radioFinMarca * Math.cos(radPlaneta));
-                    const yFin = Math.round(CENTRO_Y + radioFinMarca * Math.sin(radPlaneta));
-
-                    const lineaPosicion = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    lineaPosicion.setAttribute("x1", String(xInicio));
-                    lineaPosicion.setAttribute("y1", String(yInicio));
-                    lineaPosicion.setAttribute("x2", String(xFin));
-                    lineaPosicion.setAttribute("y2", String(yFin));
-                    lineaPosicion.setAttribute("stroke", "#111111");
-                    lineaPosicion.setAttribute("stroke-width", "1.5");
-                    lineaPosicion.setAttribute("opacity", "1");
-                    lineaPosicion.setAttribute("stroke-linecap", "round");
-                    lienzoSvg.appendChild(lineaPosicion);
-
-                    // ---- MARCA DE POSICIÓN (desde rueda de aspectos) ----
-                    const xInicioAsp = Math.round(CENTRO_X + RADIO_ASPECTOS * Math.cos(radPlaneta));
-                    const yInicioAsp = Math.round(CENTRO_Y + RADIO_ASPECTOS * Math.sin(radPlaneta));
-                    const radioFinAsp = RADIO_ASPECTOS + 10;
-                    const xFinAsp = Math.round(CENTRO_X + radioFinAsp * Math.cos(radPlaneta));
-                    const yFinAsp = Math.round(CENTRO_Y + radioFinAsp * Math.sin(radPlaneta));
-
-                    const lineaPosicionAsp = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    lineaPosicionAsp.setAttribute("x1", String(xInicioAsp));
-                    lineaPosicionAsp.setAttribute("y1", String(yInicioAsp));
-                    lineaPosicionAsp.setAttribute("x2", String(xFinAsp));
-                    lineaPosicionAsp.setAttribute("y2", String(yFinAsp));
-                    lineaPosicionAsp.setAttribute("stroke", "#111111");
-                    lineaPosicionAsp.setAttribute("stroke-width", "1.5");
-                    lineaPosicionAsp.setAttribute("opacity", "1");
-                    lineaPosicionAsp.setAttribute("stroke-linecap", "round");
-                    lienzoSvg.appendChild(lineaPosicionAsp);
-
-                    // 1. Símbolo del planeta (SVG)
-                    const nombreSVG = nombre.toLowerCase().replace('_', '-');
-                    const rutaSVG = `svg/${nombreSVG}.svg`;
-                    const imgPlaneta = document.createElementNS("http://www.w3.org/2000/svg", "image");
-                    imgPlaneta.setAttribute("x", String(xPlaneta - 12));
-                    imgPlaneta.setAttribute("y", String(yPlaneta - 12));
-                    imgPlaneta.setAttribute("width", "20");
-                    imgPlaneta.setAttribute("height", "20");
-                    imgPlaneta.setAttribute("href", rutaSVG);
-                    lienzoSvg.appendChild(imgPlaneta);
-
-                    // 2. Retrógrado (R)
                     const datosPlaneta = datosPlanetasForm[nombre] || { g: 0, m: 0, retrogrado: false };
-                    if (datosPlaneta.retrogrado) {
-                        const offsetX = 10;
-                        const offsetY = 10;
-                        const xR = xPlaneta + offsetX;
-                        const yR = yPlaneta + offsetY;
-                        const txtRetro = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                        txtRetro.setAttribute("x", String(xR));
-                        txtRetro.setAttribute("y", String(yR));
-                        txtRetro.setAttribute("font-family", "'IM Fell DW Pica', serif");
-                        txtRetro.setAttribute("font-style", "italic");
-                        txtRetro.setAttribute("font-size", "12");
-                        txtRetro.setAttribute("font-weight", "400");
-                        txtRetro.setAttribute("text-anchor", "start");
-                        txtRetro.setAttribute("dominant-baseline", "central");
-                        txtRetro.setAttribute("fill", "#111111");
-                        txtRetro.textContent = "R";
-                        lienzoSvg.appendChild(txtRetro);
+                    planetasData.push({
+                        nombre,
+                        gradosAbsolutos,
+                        radPlaneta,
+                        xPlaneta,
+                        yPlaneta,
+                        datosPlaneta
+                    });
+                }
+            }
+
+            // ---- ORDENAR POR POSICIÓN ANGULAR ----
+            planetasData.sort((a, b) => a.gradosAbsolutos - b.gradosAbsolutos);
+
+            // ---- AGRUPAR PLANETAS CERCANOS (umbral 2.5 grados) ----
+            const umbral = 2.5;
+            const grupos = [];
+            let grupoActual = [];
+            for (let i = 0; i < planetasData.length; i++) {
+                if (grupoActual.length === 0) {
+                    grupoActual.push(planetasData[i]);
+                } else {
+                    const ultimo = grupoActual[grupoActual.length - 1];
+                    const diff = planetasData[i].gradosAbsolutos - ultimo.gradosAbsolutos;
+                    if (diff <= umbral) {
+                        grupoActual.push(planetasData[i]);
+                    } else {
+                        grupos.push(grupoActual);
+                        grupoActual = [planetasData[i]];
                     }
+                }
+            }
+            if (grupoActual.length > 0) grupos.push(grupoActual);
+
+            // ---- CALCULAR DESPLAZAMIENTOS PARA CADA GRUPO ----
+            const separacion = 10; // píxeles de separación entre planetas
+            const desplazamientos = {};
+            for (const grupo of grupos) {
+                const n = grupo.length;
+                if (n === 1) {
+                    desplazamientos[grupo[0].nombre] = { dx: 0, dy: 0 };
+                } else {
+                    // Para cada planeta en el grupo, calcular desplazamiento a lo largo de la tangente
+                    // La tangente en el ángulo rad es (-sin(rad), cos(rad))
+                    // Usamos el rad del primer planeta como referencia (todos están muy cerca)
+                    const radRef = grupo[0].radPlaneta;
+                    const tangenteX = -Math.sin(radRef);
+                    const tangenteY = Math.cos(radRef);
+                    for (let i = 0; i < n; i++) {
+                        const offset = (i - (n - 1) / 2) * separacion;
+                        const dx = Math.round(offset * tangenteX);
+                        const dy = Math.round(offset * tangenteY);
+                        desplazamientos[grupo[i].nombre] = { dx, dy };
+                    }
+                }
+            }
+
+            // ---- DIBUJAR MARCAS DE POSICIÓN Y PLANETAS ----
+            for (const p of planetasData) {
+                const nombre = p.nombre;
+                const gradosAbsolutos = p.gradosAbsolutos;
+                const radPlaneta = p.radPlaneta;
+                const xPlaneta = p.xPlaneta;
+                const yPlaneta = p.yPlaneta;
+                const datosPlaneta = p.datosPlaneta;
+
+                // ---- MARCA DE POSICIÓN (desde rueda de grados) ----
+                const xInicio = Math.round(CENTRO_X + RADIO_GRADOS * Math.cos(radPlaneta));
+                const yInicio = Math.round(CENTRO_Y + RADIO_GRADOS * Math.sin(radPlaneta));
+                const radioFinMarca = RADIO_GRADOS - 10;
+                const xFin = Math.round(CENTRO_X + radioFinMarca * Math.cos(radPlaneta));
+                const yFin = Math.round(CENTRO_Y + radioFinMarca * Math.sin(radPlaneta));
+
+                const lineaPosicion = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                lineaPosicion.setAttribute("x1", String(xInicio));
+                lineaPosicion.setAttribute("y1", String(yInicio));
+                lineaPosicion.setAttribute("x2", String(xFin));
+                lineaPosicion.setAttribute("y2", String(yFin));
+                lineaPosicion.setAttribute("stroke", "#111111");
+                lineaPosicion.setAttribute("stroke-width", "1.5");
+                lineaPosicion.setAttribute("opacity", "1");
+                lineaPosicion.setAttribute("stroke-linecap", "round");
+                lienzoSvg.appendChild(lineaPosicion);
+
+                // ---- MARCA DE POSICIÓN (desde rueda de aspectos) ----
+                const xInicioAsp = Math.round(CENTRO_X + RADIO_ASPECTOS * Math.cos(radPlaneta));
+                const yInicioAsp = Math.round(CENTRO_Y + RADIO_ASPECTOS * Math.sin(radPlaneta));
+                const radioFinAsp = RADIO_ASPECTOS + 10;
+                const xFinAsp = Math.round(CENTRO_X + radioFinAsp * Math.cos(radPlaneta));
+                const yFinAsp = Math.round(CENTRO_Y + radioFinAsp * Math.sin(radPlaneta));
+
+                const lineaPosicionAsp = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                lineaPosicionAsp.setAttribute("x1", String(xInicioAsp));
+                lineaPosicionAsp.setAttribute("y1", String(yInicioAsp));
+                lineaPosicionAsp.setAttribute("x2", String(xFinAsp));
+                lineaPosicionAsp.setAttribute("y2", String(yFinAsp));
+                lineaPosicionAsp.setAttribute("stroke", "#111111");
+                lineaPosicionAsp.setAttribute("stroke-width", "1.5");
+                lineaPosicionAsp.setAttribute("opacity", "1");
+                lineaPosicionAsp.setAttribute("stroke-linecap", "round");
+                lienzoSvg.appendChild(lineaPosicionAsp);
+
+                // ---- OBTENER DESPLAZAMIENTO PARA EL ICONO ----
+                const desp = desplazamientos[nombre] || { dx: 0, dy: 0 };
+                const xIcono = xPlaneta + desp.dx;
+                const yIcono = yPlaneta + desp.dy;
+
+                // 1. Símbolo del planeta (SVG)
+                const nombreSVG = nombre.toLowerCase().replace('_', '-');
+                const rutaSVG = `svg/${nombreSVG}.svg`;
+                const imgPlaneta = document.createElementNS("http://www.w3.org/2000/svg", "image");
+                imgPlaneta.setAttribute("x", String(xIcono - 10)); // 20/2 = 10
+                imgPlaneta.setAttribute("y", String(yIcono - 10));
+                imgPlaneta.setAttribute("width", "20");
+                imgPlaneta.setAttribute("height", "20");
+                imgPlaneta.setAttribute("href", rutaSVG);
+                lienzoSvg.appendChild(imgPlaneta);
+
+                // 2. Retrógrado (R)
+                if (datosPlaneta.retrogrado) {
+                    const offsetX = 10;
+                    const offsetY = 10;
+                    const xR = xIcono + offsetX;
+                    const yR = yIcono + offsetY;
+                    const txtRetro = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    txtRetro.setAttribute("x", String(xR));
+                    txtRetro.setAttribute("y", String(yR));
+                    txtRetro.setAttribute("font-family", "'IM Fell DW Pica', serif");
+                    txtRetro.setAttribute("font-style", "italic");
+                    txtRetro.setAttribute("font-size", "12");
+                    txtRetro.setAttribute("font-weight", "400");
+                    txtRetro.setAttribute("text-anchor", "start");
+                    txtRetro.setAttribute("dominant-baseline", "central");
+                    txtRetro.setAttribute("fill", "#111111");
+                    txtRetro.textContent = "R";
+                    lienzoSvg.appendChild(txtRetro);
                 }
             }
         }
