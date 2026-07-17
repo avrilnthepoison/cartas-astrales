@@ -290,7 +290,7 @@ select {
 .planeta-principal {
     fill: none;                 /* Sin relleno (depende de tu SVG) */
     stroke: #111111;          /* Color del trazo (negro) */
-    stroke-width: 2.5px;        /* Grosor del trazo */            
+    stroke-width: 3px;        /* Grosor del trazo */            
     stroke-linecap: round;
     stroke-linejoin: round;
 }
@@ -298,8 +298,8 @@ select {
 /* Planetas de los decanatos (en la franja) */
 .planeta-decanato {
     fill: none;
-    stroke: #666666;        /* Color gris */
-    stroke-width: 1.5px;      /* Grosor más fino */
+    stroke: #111111;
+    stroke-width: 3px;      /* Grosor más fino */
     stroke-linecap: round;
     stroke-linejoin: round;
 }

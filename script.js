@@ -423,8 +423,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     usePlaneta.setAttribute("href", `#${nombreSVG}`);
                     usePlaneta.setAttribute("x", String(xPlaneta - 12));
                     usePlaneta.setAttribute("y", String(yPlaneta - 12));
-                    usePlaneta.setAttribute("width", "24");
-                    usePlaneta.setAttribute("height", "24");
+                    usePlaneta.setAttribute("width", "20");
+                    usePlaneta.setAttribute("height", "20");
                     usePlaneta.setAttribute("class", "planeta-principal");
                     lienzoSvg.appendChild(usePlaneta);
 
