@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34.33 41">
-  <defs>
-    <style>
-      .cls-1 {
-        fill: none;
-        stroke: #111;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-      }
-    </style>
-  </defs>
   <g id="iconos">
     <g id="urano">
       <line class="cls-1" x1="10.5" y1="10.5" x2="23.83" y2="10.5"/>

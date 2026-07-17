@@ -288,16 +288,20 @@ select {
 
 /* Planetas principales (dentro del gráfico) */
 .planeta-principal {
-    stroke: #111111 !important;           /* Color del trazo (negro) */
-    stroke-width: 2.5px !important;   /* Grosor del trazo */
-    fill: none;               /* Sin relleno (depende de tu SVG) */
+    fill: none;                 /* Sin relleno (depende de tu SVG) */
+    stroke: #111111;          /* Color del trazo (negro) */
+    stroke-width: 2.5px;        /* Grosor del trazo */            
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 /* Planetas de los decanatos (en la franja) */
 .planeta-decanato {
-    stroke: #666666 !important;           /* Color gris */
-    stroke-width: 1.5px !important;   /* Grosor más fino */
     fill: none;
+    stroke: #666666;        /* Color gris */
+    stroke-width: 1.5px;      /* Grosor más fino */
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 /* Opcional: estilos específicos para planetas individuales */
