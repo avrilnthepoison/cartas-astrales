@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const RADIO_PLANETAS = 200;
     const RADIO_TEXTO_SIGNOS = 270;
     const RADIO_SIMBOLOS_DECANATOS = 240;
+    // Nuevo radio para la rueda de grados
+    const RADIO_GRADOS = 215; // 10px dentro de decanatos
 
     const nombresSignos = [
         "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
@@ -183,7 +185,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // ---- CAPA 1: Círculos base y fondo de la franja de signos ----
-        // Círculo exterior (borde)
         const circuloExterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloExterior.setAttribute("cx", String(CENTRO_X));
         circuloExterior.setAttribute("cy", String(CENTRO_Y));
@@ -193,8 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloExterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloExterior);
 
-        // --- CORONA CIRCULAR: Fondo negro solo en la franja de los signos ---
-        // Usamos un path con fill-rule="evenodd" para crear un anillo
+        // Corona circular para fondo negro de la franja de signos
         const pathCorona = document.createElementNS("http://www.w3.org/2000/svg", "path");
         const dCorona = `
             M ${CENTRO_X - RADIO_EXTERIOR} ${CENTRO_Y}
@@ -209,9 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
         pathCorona.setAttribute("fill", "#111111");
         pathCorona.setAttribute("stroke", "none");
         lienzoSvg.appendChild(pathCorona);
-        // ----------------------------------------------------------------
 
-        // Círculo interior de la franja de signos (borde)
         const circuloSignosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloSignosInterior.setAttribute("cx", String(CENTRO_X));
         circuloSignosInterior.setAttribute("cy", String(CENTRO_Y));
@@ -221,7 +219,6 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloSignosInterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloSignosInterior);
 
-        // Círculo interior de los decanatos (borde)
         const circuloDecanatosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloDecanatosInterior.setAttribute("cx", String(CENTRO_X));
         circuloDecanatosInterior.setAttribute("cy", String(CENTRO_Y));
@@ -231,7 +228,6 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloDecanatosInterior.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloDecanatosInterior);
 
-        // Punto central
         const puntoCentral = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         puntoCentral.setAttribute("cx", String(CENTRO_X));
         puntoCentral.setAttribute("cy", String(CENTRO_Y));
@@ -240,7 +236,6 @@ document.addEventListener("DOMContentLoaded", () => {
         lienzoSvg.appendChild(puntoCentral);
 
         // ---- CAPA 2: Líneas de los SIGNOS (30°) ----
-        // En BLANCO
         for (let i = 0; i < 12; i++) {
             const gradoLinea = i * 30;
             const radLinea = ajustarAngulo(gradoLinea);
@@ -259,7 +254,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // ---- CAPA 3: Líneas de los DECANATOS (0°, 10°, 20° de cada signo) ----
-        // En NEGRO (sin cambios)
         for (let i = 0; i < 12; i++) {
             for (let d = 0; d < 3; d++) {
                 const gradoLinea = i * 30 + d * 10;
@@ -280,7 +274,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // ---- CAPA 4: Nombres de los signos ----
-        // En BLANCO
         for (let i = 0; i < 12; i++) {
             const gradoInicioArco = i * 30;
             const gradoFinArco = gradoInicioArco + 30;
@@ -313,7 +306,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(etiquetaTexto);
         }
 
-        // ---- CAPA 5: Símbolos de los decanatos (sin cambios) ----
+        // ---- CAPA 5: Símbolos de los decanatos ----
         for (let i = 0; i < 12; i++) {
             const decanatosSigno = decanatos[i];
             if (!decanatosSigno) continue;
@@ -337,7 +330,47 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // ---- CAPA 6: Ejes, marcas de posición y planetas (sin cambios) ----
+        // ---- CAPA 7: Rueda de 360° (marcas de grados) ----
+        // Círculo guía (tenue)
+        const circuloGrados = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circuloGrados.setAttribute("cx", String(CENTRO_X));
+        circuloGrados.setAttribute("cy", String(CENTRO_Y));
+        circuloGrados.setAttribute("r", String(RADIO_GRADOS));
+        circuloGrados.setAttribute("stroke", "#999999");
+        circuloGrados.setAttribute("stroke-width", "0.5");
+        circuloGrados.setAttribute("stroke-dasharray", "2,2");
+        circuloGrados.setAttribute("fill", "none");
+        lienzoSvg.appendChild(circuloGrados);
+
+        // Puntos cada 10° (36 puntos)
+        for (let g = 0; g < 360; g += 10) {
+            const rad = ajustarAngulo(g);
+            const x = Math.round(CENTRO_X + RADIO_GRADOS * Math.cos(rad));
+            const y = Math.round(CENTRO_Y + RADIO_GRADOS * Math.sin(rad));
+            const punto = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            punto.setAttribute("cx", String(x));
+            punto.setAttribute("cy", String(y));
+            punto.setAttribute("r", "1.5");
+            punto.setAttribute("fill", "#666666");
+            punto.setAttribute("opacity", "0.6");
+            lienzoSvg.appendChild(punto);
+        }
+
+        // Puntos más grandes cada 30° (12 puntos, coinciden con los signos)
+        for (let g = 0; g < 360; g += 30) {
+            const rad = ajustarAngulo(g);
+            const x = Math.round(CENTRO_X + RADIO_GRADOS * Math.cos(rad));
+            const y = Math.round(CENTRO_Y + RADIO_GRADOS * Math.sin(rad));
+            const punto = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            punto.setAttribute("cx", String(x));
+            punto.setAttribute("cy", String(y));
+            punto.setAttribute("r", "2.5");
+            punto.setAttribute("fill", "#111111");
+            punto.setAttribute("opacity", "0.8");
+            lienzoSvg.appendChild(punto);
+        }
+
+        // ---- CAPA 6: Ejes, marcas de posición y planetas ----
         if (mostrarContenido) {
             // Eje del Ascendente
             const radAsc = ajustarAngulo(ascendenteAbs);
