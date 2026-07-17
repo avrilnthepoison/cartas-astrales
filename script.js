@@ -11,10 +11,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const RADIO_EXTERIOR = 295;
     const RADIO_SIGNOS_INTERIOR = 265;
     const RADIO_DECANATOS_INTERIOR = 240;
-    const RADIO_PLANETAS = 190;
+    const RADIO_PLANETAS = 200;
     const RADIO_TEXTO_SIGNOS = 275;
-    const RADIO_SIMBOLOS_DECANATOS = 255;
-    const RADIO_GRADOS = 215;
+    const RADIO_SIMBOLOS_DECANATOS = 250;
+    const RADIO_GRADOS = 230;
     const RADIO_ASPECTOS = 125;
 
     const nombresSignos = [
@@ -314,8 +314,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 const imgDecanato = document.createElementNS("http://www.w3.org/2000/svg", "image");
                 imgDecanato.setAttribute("x", String(x - 8));
                 imgDecanato.setAttribute("y", String(y - 8));
-                imgDecanato.setAttribute("width", "16");
-                imgDecanato.setAttribute("height", "16");
+                imgDecanato.setAttribute("width", "14");
+                imgDecanato.setAttribute("height", "14");
                 imgDecanato.setAttribute("href", rutaSVG);
                 lienzoSvg.appendChild(imgDecanato);
             }
