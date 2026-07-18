@@ -17,15 +17,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const RADIO_GRADOS = 230;
     const RADIO_ASPECTOS = 135;
 
-    // ------------------------------------------------------------
-    // CONFIGURACIÓN DE SEPARACIONES (ajusta estos valores)
-    // ------------------------------------------------------------
-    const UMBRAL_AGRUPACION = 8;       // grados para agrupar planetas
-    const SEPARACION_GRUPO = 28;       // píxeles entre planetas en un grupo
-    const UMBRAL_EJES = 8;             // grados de tolerancia con ejes
-    const SEPARACION_EJES = 20;        // píxeles de separación con ejes
-    const INVERTIR_DIRECCION_EJES = true; // cambia a true si el planeta se mueve al revés
-    // ------------------------------------------------------------
+    // Configuración de separaciones
+    const UMBRAL_AGRUPACION = 8;     // grados para agrupar planetas
+    const SEPARACION_GRUPO = 28;     // píxeles entre planetas en un grupo
+    const UMBRAL_EJES = 5;           // grados de tolerancia con ejes
+    const SEPARACION_EJES = 25;      // píxeles de separación con ejes
 
     const nombresSignos = [
         "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
@@ -367,7 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lienzoSvg.appendChild(punto);
         }
 
-        // ---- CAPA 8: Aspectos planetarios ----
+        // ---- CAPA 8: Aspectos planetarios (por grosor y trazado) ----
         const circuloAspectos = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circuloAspectos.setAttribute("cx", String(CENTRO_X));
         circuloAspectos.setAttribute("cy", String(CENTRO_Y));
@@ -377,6 +373,7 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloAspectos.setAttribute("fill", "none");
         lienzoSvg.appendChild(circuloAspectos);
 
+        // ---- Aspectos ----
         const planetasValidos = {};
         for (const [nombre, pos] of Object.entries(planetas)) {
             if (pos !== 0) {
@@ -436,7 +433,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // ---- CAPA 6: Ejes, marcas de posición y planetas ----
+        // ---- CAPA 6: Ejes, marcas de posición y planetas (CON ORDEN CORREGIDO Y SEPARACIÓN DE EJES) ----
         if (mostrarContenido) {
             // Eje del Ascendente
             const radAsc = ajustarAngulo(ascendenteAbs);
@@ -567,6 +564,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     const radRef = grupo[0].radPlaneta;
                     const tangenteX = -Math.sin(radRef);
                     const tangenteY = Math.cos(radRef);
+                    // Asignar offsets: el primer planeta (menor ángulo) recibe el offset MÁS POSITIVO,
+                    // el último (mayor ángulo) el más negativo, para que en el gráfico el orden visual
+                    // sea el mismo que el orden angular (el menor grado a la izquierda).
                     for (let i = 0; i < n; i++) {
                         const offset = ((n - 1) / 2 - i) * SEPARACION_GRUPO;
                         const dx = Math.round(offset * tangenteX);
@@ -576,49 +576,36 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-            // ---- 2. SEPARACIÓN CON EJES (usando la misma lógica de agrupación) ----
+            // ---- 2. SEPARACIÓN CON EJES (ASC y MC) ----
             const ejes = [
                 { nombre: 'ASC', angulo: ascendenteAbs },
                 { nombre: 'MC', angulo: mcAbs }
             ];
 
-            for (const eje of ejes) {
-                // Para cada eje, creamos una "agrupación" virtual con el eje y todos los planetas que están dentro del umbral
-                // Pero solo aplicamos desplazamiento a los planetas.
-                const planetasCerca = [];
-                for (const p of planetasData) {
-                    let diff = (p.gradosAbsolutos - eje.angulo) % 360;
+            for (const p of planetasData) {
+                const anguloPlaneta = p.gradosAbsolutos;
+                let despEjeX = 0, despEjeY = 0;
+                for (const eje of ejes) {
+                    let diff = (anguloPlaneta - eje.angulo) % 360;
                     if (diff > 180) diff -= 360;
                     if (diff < -180) diff += 360;
-                    if (Math.abs(diff) <= UMBRAL_EJES) {
-                        planetasCerca.push(p);
+                    if (Math.abs(diff) <= UMBRAL_EJES && Math.abs(diff) > 0.001) {
+                        const signo = Math.sign(diff);
+                        const rad = p.radPlaneta;
+                        const tangenteX = -Math.sin(rad);
+                        const tangenteY = Math.cos(rad);
+                        const dx = Math.round(tangenteX * signo * SEPARACION_EJES);
+                        const dy = Math.round(tangenteY * signo * SEPARACION_EJES);
+                        despEjeX += dx;
+                        despEjeY += dy;
                     }
                 }
-               
-                const n = planetasCerca.length;
-                if (n === 0) continue;
-                // Ordenar los planetas por su grado (ya están ordenados globalmente, pero confirmamos)
-                // Determinamos la posición del eje en el orden: si el planeta tiene menor grado que el eje, está antes; si mayor, después.
-                // Vamos a calcular el offset manualmente: si diff < 0 (planeta antes), queremos mover a la izquierda -> tangente negativa.
-                // Si diff > 0 (planeta después), mover a la derecha -> tangente positiva.
-                // Esto es equivalente a signo = -Math.sign(diff) si el usuario quiere invertir.
-                for (const p of planetasCerca) {
-                    let diff = (p.gradosAbsolutos - eje.angulo) % 360;
-                    if (diff > 180) diff -= 360;
-                    if (diff < -180) diff += 360;
-                    // Si diff es 0, no mover (ya que coinciden)
-                    if (Math.abs(diff) < 0.001) continue;
-                    const signo = Math.sign(diff) * (INVERTIR_DIRECCION_EJES ? -1 : 1);
-                    const rad = p.radPlaneta;
-                    const tangenteX = -Math.sin(rad) * signo * SEPARACION_EJES;
-                    const tangenteY = Math.cos(rad) * signo * SEPARACION_EJES;
-                    const dx = Math.round(tangenteX);
-                    const dy = Math.round(tangenteY);
+                if (despEjeX !== 0 || despEjeY !== 0) {
                     if (desplazamientos[p.nombre]) {
-                        desplazamientos[p.nombre].dx += dx;
-                        desplazamientos[p.nombre].dy += dy;
+                        desplazamientos[p.nombre].dx += despEjeX;
+                        desplazamientos[p.nombre].dy += despEjeY;
                     } else {
-                        desplazamientos[p.nombre] = { dx, dy };
+                        desplazamientos[p.nombre] = { dx: despEjeX, dy: despEjeY };
                     }
                 }
             }
