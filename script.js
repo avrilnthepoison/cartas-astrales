@@ -184,48 +184,48 @@ document.addEventListener("DOMContentLoaded", () => {
             return (desfaceG - gradosOriginales) * (Math.PI / 180);
         }
 
-        // ---- CAPA 1: Círculos base y fondo de la franja de signos ----
-        const circuloExterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circuloExterior.setAttribute("cx", String(CENTRO_X));
-        circuloExterior.setAttribute("cy", String(CENTRO_Y));
-        circuloExterior.setAttribute("r", String(RADIO_EXTERIOR));
-        circuloExterior.setAttribute("stroke", "#111111");
-        circuloExterior.setAttribute("stroke-width", "1.5");
-        circuloExterior.setAttribute("fill", "none");
-        lienzoSvg.appendChild(circuloExterior);
+        // ---- CAPA 1: Círculos base y fondo de la franja de signos ----
+        const circuloExterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circuloExterior.setAttribute("cx", String(CENTRO_X));
+        circuloExterior.setAttribute("cy", String(CENTRO_Y));
+        circuloExterior.setAttribute("r", String(RADIO_EXTERIOR));
+        circuloExterior.setAttribute("stroke", "#111111");
+        circuloExterior.setAttribute("stroke-width", "1.5");
+        circuloExterior.setAttribute("fill", "none");
+        lienzoSvg.appendChild(circuloExterior);
 
-        const pathCorona = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        const dCorona = `
-            M ${CENTRO_X - RADIO_EXTERIOR} ${CENTRO_Y}
-            A ${RADIO_EXTERIOR} ${RADIO_EXTERIOR} 0 1,1 ${CENTRO_X + RADIO_EXTERIOR} ${CENTRO_Y}
-            A ${RADIO_EXTERIOR} ${RADIO_EXTERIOR} 0 1,1 ${CENTRO_X - RADIO_EXTERIOR} ${CENTRO_Y} Z
-            M ${CENTRO_X - RADIO_SIGNOS_INTERIOR} ${CENTRO_Y}
-            A ${RADIO_SIGNOS_INTERIOR} ${RADIO_SIGNOS_INTERIOR} 0 1,0 ${CENTRO_X + RADIO_SIGNOS_INTERIOR} ${CENTRO_Y}
-            A ${RADIO_SIGNOS_INTERIOR} ${RADIO_SIGNOS_INTERIOR} 0 1,0 ${CENTRO_X - RADIO_SIGNOS_INTERIOR} ${CENTRO_Y} Z
-        `;
-        pathCorona.setAttribute("d", dCorona);
-        pathCorona.setAttribute("fill-rule", "evenodd");
-        pathCorona.setAttribute("fill", "#111111");
-        pathCorona.setAttribute("stroke", "none");
-        lienzoSvg.appendChild(pathCorona);
+        const pathCorona = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const dCorona = `
+            M ${CENTRO_X - RADIO_EXTERIOR} ${CENTRO_Y}
+            A ${RADIO_EXTERIOR} ${RADIO_EXTERIOR} 0 1,1 ${CENTRO_X + RADIO_EXTERIOR} ${CENTRO_Y}
+            A ${RADIO_EXTERIOR} ${RADIO_EXTERIOR} 0 1,1 ${CENTRO_X - RADIO_EXTERIOR} ${CENTRO_Y} Z
+            M ${CENTRO_X - RADIO_SIGNOS_INTERIOR} ${CENTRO_Y}
+            A ${RADIO_SIGNOS_INTERIOR} ${RADIO_SIGNOS_INTERIOR} 0 1,0 ${CENTRO_X + RADIO_SIGNOS_INTERIOR} ${CENTRO_Y}
+            A ${RADIO_SIGNOS_INTERIOR} ${RADIO_SIGNOS_INTERIOR} 0 1,0 ${CENTRO_X - RADIO_SIGNOS_INTERIOR} ${CENTRO_Y} Z
+        `;
+        pathCorona.setAttribute("d", dCorona);
+        pathCorona.setAttribute("fill-rule", "evenodd");
+        pathCorona.setAttribute("fill", "#111111");
+        pathCorona.setAttribute("stroke", "none");
+        lienzoSvg.appendChild(pathCorona);
 
-        const circuloSignosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circuloSignosInterior.setAttribute("cx", String(CENTRO_X));
-        circuloSignosInterior.setAttribute("cy", String(CENTRO_Y));
-        circuloSignosInterior.setAttribute("r", String(RADIO_SIGNOS_INTERIOR));
-        circuloSignosInterior.setAttribute("stroke", "#111111");
-        circuloSignosInterior.setAttribute("stroke-width", "1.5");
-        circuloSignosInterior.setAttribute("fill", "none");
-        lienzoSvg.appendChild(circuloSignosInterior);
+        const circuloSignosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circuloSignosInterior.setAttribute("cx", String(CENTRO_X));
+        circuloSignosInterior.setAttribute("cy", String(CENTRO_Y));
+        circuloSignosInterior.setAttribute("r", String(RADIO_SIGNOS_INTERIOR));
+        circuloSignosInterior.setAttribute("stroke", "#111111");
+        circuloSignosInterior.setAttribute("stroke-width", "1.5");
+        circuloSignosInterior.setAttribute("fill", "none");
+        lienzoSvg.appendChild(circuloSignosInterior);
 
-        const circuloDecanatosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circuloDecanatosInterior.setAttribute("cx", String(CENTRO_X));
-        circuloDecanatosInterior.setAttribute("cy", String(CENTRO_Y));
-        circuloDecanatosInterior.setAttribute("r", String(RADIO_DECANATOS_INTERIOR));
-        circuloDecanatosInterior.setAttribute("stroke", "#111111");
-        circuloDecanatosInterior.setAttribute("stroke-width", "1.5");
-        circuloDecanatosInterior.setAttribute("fill", "none");
-        lienzoSvg.appendChild(circuloDecanatosInterior);
+        const circuloDecanatosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circuloDecanatosInterior.setAttribute("cx", String(CENTRO_X));
+        circuloDecanatosInterior.setAttribute("cy", String(CENTRO_Y));
+        circuloDecanatosInterior.setAttribute("r", String(RADIO_DECANATOS_INTERIOR));
+        circuloDecanatosInterior.setAttribute("stroke", "#111111");
+        circuloDecanatosInterior.setAttribute("stroke-width", "1.5");
+        circuloDecanatosInterior.setAttribute("fill", "none");
+        lienzoSvg.appendChild(circuloDecanatosInterior);
 
         // ---- CAPA 2: Líneas de los SIGNOS (30°) ----
         for (let i = 0; i < 12; i++) {
