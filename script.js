@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const botonGenerar = document.getElementById("btn-generar");
   const botonBorrar = document.getElementById("btn-borrar");
-  const botonDescargarSVG = document.getElementById("btn-descargar-svg");
+  const botonDescargarPNG = document.getElementById("btn-descargar-png");
   const lienzoSvg = document.getElementById("carta-astral");
 
   const CENTRO_X = 300;
@@ -167,31 +167,52 @@ document.addEventListener("DOMContentLoaded", () => {
   botonGenerar.addEventListener("click", procesarYGenerarCarta);
   botonBorrar.addEventListener("click", restablecerTodoACero);
 
-  // NUEVO: evento para descargar SVG
-  botonDescargarSVG.addEventListener("click", descargarSVG);
+  // NUEVO: evento para descargar PNG
+  botonDescargarPNG.addEventListener("click", descargarPNG);
 
   cargarValoresGuardados();
 
   // ------------------------------------------------------------
-  //  FUNCIÓN PARA DESCARGAR EL SVG COMO ARCHIVO .svg
+  //  FUNCIÓN PARA DESCARGAR EL SVG COMO PNG CON FONDO TRANSPARENTE
   // ------------------------------------------------------------
-  function descargarSVG() {
+  function descargarPNG() {
     const svg = document.getElementById("carta-astral");
     // Clonamos el SVG para no modificar el original
     const clon = svg.cloneNode(true);
-    // Aseguramos que el SVG tenga un fondo blanco (opcional)
-    // Podríamos añadir un rectángulo de fondo, pero no es necesario si el CSS ya lo hace.
+    // Aseguramos que el SVG tenga las dimensiones correctas (viewBox ya está)
     // Serializamos
     const svgData = new XMLSerializer().serializeToString(clon);
-    const blob = new Blob([svgData], { type: "image/svg+xml" });
+    const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.download = "carta_astral.svg";
-    link.href = url;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+
+    // Creamos una imagen para cargar el SVG
+    const img = new Image();
+    img.onload = function() {
+      // Una vez cargado, dibujamos en canvas con fondo transparente
+      const canvas = document.createElement("canvas");
+      canvas.width = 600; // según viewBox
+      canvas.height = 600;
+      const ctx = canvas.getContext("2d");
+      // Limpiamos con transparencia (por defecto ya está transparente)
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      // Exportamos como PNG
+      const pngUrl = canvas.toDataURL("image/png");
+      // Descargamos
+      const link = document.createElement("a");
+      link.download = "carta_astral.png";
+      link.href = pngUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      // Limpieza
+      URL.revokeObjectURL(url);
+    };
+    img.onerror = function() {
+      console.error("Error al cargar el SVG para generar PNG.");
+      URL.revokeObjectURL(url);
+    };
+    img.src = url;
   }
 
   // ------------------------------------------------------------

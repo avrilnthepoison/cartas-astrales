@@ -261,8 +261,8 @@ select {
   color: #ffffff;
 }
 
-/* NUEVO: Botón Descargar SVG */
-#btn-descargar-svg {
+/* NUEVO: Botón Descargar PNG */
+#btn-descargar-png {
   display: block;
   width: 100%;
   margin-top: 12px;
@@ -280,7 +280,7 @@ select {
   transition: background-color 0.2s ease;
 }
 
-#btn-descargar-svg:hover {
+#btn-descargar-png:hover {
   background-color: #111111;
   color: #ffffff;
 }
