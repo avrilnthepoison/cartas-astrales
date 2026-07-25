@@ -166,50 +166,84 @@ document.addEventListener("DOMContentLoaded", () => {
 
   botonGenerar.addEventListener("click", procesarYGenerarCarta);
   botonBorrar.addEventListener("click", restablecerTodoACero);
-
-  // NUEVO: evento para descargar PNG
   botonDescargarPNG.addEventListener("click", descargarPNG);
 
   cargarValoresGuardados();
 
   // ------------------------------------------------------------
-  //  FUNCIÓN PARA DESCARGAR EL SVG COMO PNG CON FONDO TRANSPARENTE
+  //  FUNCIÓN PARA DESCARGAR PNG CON IMÁGENES INCRUSTADAS
   // ------------------------------------------------------------
-  function descargarPNG() {
-    const svg = document.getElementById("carta-astral");
-    // Clonamos el SVG para no modificar el original
-    const clon = svg.cloneNode(true);
-    // Aseguramos que el SVG tenga las dimensiones correctas (viewBox ya está)
-    // Serializamos
+  async function descargarPNG() {
+    const svgOriginal = document.getElementById("carta-astral");
+    const clon = svgOriginal.cloneNode(true);
+
+    // Encontrar todas las imágenes del SVG clonado
+    const imagenes = clon.querySelectorAll("image");
+    // Mapa de caché para no leer varias veces el mismo archivo
+    const cacheDataURI = new Map();
+
+    // Función para obtener una imagen como data URI
+    async function obtenerDataURI(ruta) {
+      if (cacheDataURI.has(ruta)) {
+        return cacheDataURI.get(ruta);
+      }
+      try {
+        const response = await fetch(ruta);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const text = await response.text();
+        // Codificamos el contenido SVG como data URI
+        const dataURI = `data:image/svg+xml;utf8,${encodeURIComponent(text)}`;
+        cacheDataURI.set(ruta, dataURI);
+        return dataURI;
+      } catch (error) {
+        console.warn(`No se pudo cargar la imagen: ${ruta}`, error);
+        return null;
+      }
+    }
+
+    // Recorrer todas las imágenes y reemplazar href por data URI
+    const promesas = [];
+    imagenes.forEach(img => {
+      const href = img.getAttribute("href");
+      if (href && href.endsWith(".svg")) {
+        promesas.push(
+          obtenerDataURI(href).then(dataURI => {
+            if (dataURI) {
+              img.setAttribute("href", dataURI);
+            }
+          })
+        );
+      }
+    });
+
+    // Esperar a que todas las imágenes se hayan incrustado
+    await Promise.all(promesas);
+
+    // Ahora serializar el SVG modificado
     const svgData = new XMLSerializer().serializeToString(clon);
     const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
 
-    // Creamos una imagen para cargar el SVG
+    // Cargar la imagen y dibujar en canvas
     const img = new Image();
     img.onload = function() {
-      // Una vez cargado, dibujamos en canvas con fondo transparente
       const canvas = document.createElement("canvas");
-      canvas.width = 600; // según viewBox
+      canvas.width = 600;
       canvas.height = 600;
       const ctx = canvas.getContext("2d");
-      // Limpiamos con transparencia (por defecto ya está transparente)
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      // Exportamos como PNG
       const pngUrl = canvas.toDataURL("image/png");
-      // Descargamos
       const link = document.createElement("a");
       link.download = "carta_astral.png";
       link.href = pngUrl;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      // Limpieza
       URL.revokeObjectURL(url);
     };
     img.onerror = function() {
-      console.error("Error al cargar el SVG para generar PNG.");
+      console.error("Error al cargar el SVG con imágenes incrustadas.");
       URL.revokeObjectURL(url);
     };
     img.src = url;
