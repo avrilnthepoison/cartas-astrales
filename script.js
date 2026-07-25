@@ -569,7 +569,7 @@ document.addEventListener("DOMContentLoaded", () => {
             planetasData.sort((a, b) => a.gradosAbsolutos - b.gradosAbsolutos);
 
             // ---- Separación entre planetas ----
-            const umbral = 8;
+            const umbral = 12;
             const grupos = [];
             let grupoActual = [];
             for (let i = 0; i < planetasData.length; i++) {
