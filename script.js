@@ -321,15 +321,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // ---- CAPA 7: Rueda de 360° (marcas de grados) ----
-        const circuloGrados = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circuloGrados.setAttribute("cx", String(CENTRO_X));
-        circuloGrados.setAttribute("cy", String(CENTRO_Y));
-        circuloGrados.setAttribute("r", String(RADIO_GRADOS));
-        circuloGrados.setAttribute("stroke", "#111111");
-        circuloGrados.setAttribute("stroke-width", "0.5");
-        circuloGrados.setAttribute("stroke-dasharray", "2,2");
-        circuloGrados.setAttribute("fill", "none");
-        lienzoSvg.appendChild(circuloGrados);
+        const circuloGradosExterno = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circuloGradosExterno.setAttribute("cx", String(CENTRO_X));
+        circuloGradosExterno.setAttribute("cy", String(CENTRO_Y));
+        circuloGradosExterno.setAttribute("r", String(RADIO_GRADOS));
+        circuloGradosExterno.setAttribute("stroke", "#111111");
+        circuloGradosExterno.setAttribute("stroke-width", "0.5");
+        circuloGradosExterno.setAttribute("stroke-dasharray", "2,2");
+        circuloGradosExterno.setAttribute("fill", "none");
+        lienzoSvg.appendChild(circuloGradosExterno);
 
         for (let g = 0; g < 360; g += 10) {
             const rad = ajustarAngulo(g);
@@ -348,6 +348,42 @@ document.addEventListener("DOMContentLoaded", () => {
             const rad = ajustarAngulo(g);
             const x = Math.round(CENTRO_X + RADIO_GRADOS * Math.cos(rad));
             const y = Math.round(CENTRO_Y + RADIO_GRADOS * Math.sin(rad));
+            const punto = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            punto.setAttribute("cx", String(x));
+            punto.setAttribute("cy", String(y));
+            punto.setAttribute("r", "1.5");
+            punto.setAttribute("fill", "#111111");
+            punto.setAttribute("opacity", "1");
+            lienzoSvg.appendChild(punto);
+        }
+
+        const circuloGradosInterno = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circuloGradosInterno.setAttribute("cx", String(CENTRO_X));
+        circuloGradosInterno.setAttribute("cy", String(CENTRO_Y));
+        circuloGradosInterno.setAttribute("r", String(RADIO_ASPECTOS));
+        circuloGradosInterno.setAttribute("stroke", "#111111");
+        circuloGradosInterno.setAttribute("stroke-width", "0.5");
+        circuloGradosInterno.setAttribute("stroke-dasharray", "2,2");
+        circuloGradosInterno.setAttribute("fill", "none");
+        lienzoSvg.appendChild(circuloGrados);
+
+        for (let g = 0; g < 360; g += 10) {
+            const rad = ajustarAngulo(g);
+            const x = Math.round(CENTRO_X + RADIO_ASPECTOS * Math.cos(rad));
+            const y = Math.round(CENTRO_Y + RADIO_ASPECTOS * Math.sin(rad));
+            const punto = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            punto.setAttribute("cx", String(x));
+            punto.setAttribute("cy", String(y));
+            punto.setAttribute("r", "1");
+            punto.setAttribute("fill", "#111111");
+            punto.setAttribute("opacity", "1");
+            lienzoSvg.appendChild(punto);
+        }
+
+        for (let g = 0; g < 360; g += 30) {
+            const rad = ajustarAngulo(g);
+            const x = Math.round(CENTRO_X + RADIO_ASPECTOS * Math.cos(rad));
+            const y = Math.round(CENTRO_Y + RADIO_ASPECTOS * Math.sin(rad));
             const punto = document.createElementNS("http://www.w3.org/2000/svg", "circle");
             punto.setAttribute("cx", String(x));
             punto.setAttribute("cy", String(y));
@@ -433,21 +469,21 @@ document.addEventListener("DOMContentLoaded", () => {
             const radAsc = ajustarAngulo(ascendenteAbs);
             const xAsc1 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radAsc));
             const yAsc1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radAsc));
-            const xAsc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 55) * Math.cos(radAsc));
-            const yAsc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 55) * Math.sin(radAsc));
+            const xAsc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 50) * Math.cos(radAsc));
+            const yAsc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 50) * Math.sin(radAsc));
             const lineaAsc = document.createElementNS("http://www.w3.org/2000/svg", "line");
             lineaAsc.setAttribute("x1", String(xAsc1));
             lineaAsc.setAttribute("y1", String(yAsc1));
             lineaAsc.setAttribute("x2", String(xAsc2));
             lineaAsc.setAttribute("y2", String(yAsc2));
             lineaAsc.setAttribute("stroke", "#111111");
-            lineaAsc.setAttribute("opacity", "0.7")
+            lineaAsc.setAttribute("opacity", "0.6")
             lineaAsc.setAttribute("stroke-width", "2");
             lineaAsc.setAttribute("stroke-linecap", "round");
             lienzoSvg.appendChild(lineaAsc);
 
-            const xAscTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 75) * Math.cos(radAsc));
-            const yAscTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 75) * Math.sin(radAsc)) + 6;
+            const xAscTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 70) * Math.cos(radAsc));
+            const yAscTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 70) * Math.sin(radAsc)) + 6;
             const txtAsc = document.createElementNS("http://www.w3.org/2000/svg", "text");
             txtAsc.setAttribute("x", String(xAscTxt));
             txtAsc.setAttribute("y", String(yAscTxt));
@@ -463,21 +499,21 @@ document.addEventListener("DOMContentLoaded", () => {
             const radMc = ajustarAngulo(mcAbs);
             const xMc1 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radMc));
             const yMc1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radMc));
-            const xMc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 55) * Math.cos(radMc));
-            const yMc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 55) * Math.sin(radMc));
+            const xMc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 50) * Math.cos(radMc));
+            const yMc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 50) * Math.sin(radMc));
             const lineaMc = document.createElementNS("http://www.w3.org/2000/svg", "line");
             lineaMc.setAttribute("x1", String(xMc1));
             lineaMc.setAttribute("y1", String(yMc1));
             lineaMc.setAttribute("x2", String(xMc2));
             lineaMc.setAttribute("y2", String(yMc2));
             lineaMc.setAttribute("stroke", "#111111");
-            lineaMc.setAttribute("opacity", "0.7")
+            lineaMc.setAttribute("opacity", "0.6")
             lineaMc.setAttribute("stroke-width", "2");
             lineaMc.setAttribute("stroke-linecap", "round");
             lienzoSvg.appendChild(lineaMc);
 
-            const xMcTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 75) * Math.cos(radMc));
-            const yMcTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 75) * Math.sin(radMc)) + 6;
+            const xMcTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 70) * Math.cos(radMc));
+            const yMcTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 70) * Math.sin(radMc)) + 6;
             const txtMc = document.createElementNS("http://www.w3.org/2000/svg", "text");
             txtMc.setAttribute("x", String(xMcTxt));
             txtMc.setAttribute("y", String(yMcTxt));
@@ -552,7 +588,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if (grupoActual.length > 0) grupos.push(grupoActual);
 
-            const separacionGrupo = 28; // píxeles de separación entre planetas
+            const separacionGrupo = 25; // píxeles de separación entre planetas
             const desplazamientos = {};
             for (const grupo of grupos) {
                 const n = grupo.length;
