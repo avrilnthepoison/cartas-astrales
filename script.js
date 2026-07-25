@@ -365,7 +365,7 @@ document.addEventListener("DOMContentLoaded", () => {
         circuloGradosInterno.setAttribute("stroke-width", "0.5");
         circuloGradosInterno.setAttribute("stroke-dasharray", "2,2");
         circuloGradosInterno.setAttribute("fill", "none");
-        lienzoSvg.appendChild(circuloGrados);
+        lienzoSvg.appendChild(circuloGradosInterno);
 
         for (let g = 0; g < 360; g += 10) {
             const rad = ajustarAngulo(g);
