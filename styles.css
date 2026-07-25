@@ -1,306 +1,340 @@
-/* ==========================================================================
-   1. VARIABLES Y CONFIGURACIÓN GLOBAL
-   ========================================================================== */
+/*
+==========================================================================
+1. VARIABLES Y CONFIGURACIÓN GLOBAL
+==========================================================================
+*/
 *, *::before, *::after {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
-    background-color: #ffffff;
-    color: #111111;
-    font-family: 'Inter', sans-serif;
-    margin: 0;
-    padding: 0;
-    line-height: 1.5;
+  background-color: #ffffff;
+  color: #111111;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
 }
 
-/* ==========================================================================
-   2. ESTRUCTURA DE LA INTERFAZ (DOS COLUMNAS)
-   ========================================================================== */
+/*
+==========================================================================
+2. ESTRUCTURA DE LA INTERFAZ (DOS COLUMNAS)
+==========================================================================
+*/
 .contenedor-principal {
-    max-width: 1300px;
-    margin: 0 auto;
-    padding: 40px 20px;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 40px 20px;
 }
 
 .header-astral {
-    text-align: center;
-    margin-bottom: 50px;
+  text-align: center;
+  margin-bottom: 50px;
 }
 
 .header-astral h1 {
-    font-family: 'IM Fell DW Pica', serif;
-    font-size: 30px;
-    font-weight: 400;
-    letter-spacing: 4px;
-    margin: 0 0 8px 0;
-    text-transform: uppercase;
+  font-family: 'IM Fell DW Pica', serif;
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: 4px;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
 }
 
 .header-astral .subtitulo {
-    font-size: 12px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: #666666;
-    margin: 0;
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #666666;
+  margin: 0;
 }
 
 .interfaz-columnas {
-    display: table;
-    width: 100%;
-    table-layout: fixed;
+  display: table;
+  width: 100%;
+  table-layout: fixed;
 }
 
 /* Columna Izquierda: Formulario */
 .seccion-formulario {
-    display: table-cell;
-    width: 45%;
-    padding-right: 5%;
-    vertical-align: top;
+  display: table-cell;
+  width: 45%;
+  padding-right: 5%;
+  vertical-align: top;
 }
 
 /* Columna Derecha: Gráfico */
 .seccion-mapa {
-    display: table-cell;
-    width: 55%;
-    vertical-align: top;
+  display: table-cell;
+  width: 55%;
+  vertical-align: top;
 }
 
 .contenedor-sticky-mapa {
-    position: sticky;
-    top: 40px;
-    width: 100%;
-    max-width: 550px;
-    margin: 0 auto;
+  position: sticky;
+  top: 40px;
+  width: 100%;
+  max-width: 550px;
+  margin: 0 auto;
 }
 
-/* ==========================================================================
-   3. COMPONENTES DEL FORMULARIO
-   ========================================================================== */
+/*
+==========================================================================
+3. COMPONENTES DEL FORMULARIO
+==========================================================================
+*/
 .bloque-formulario {
-    border: none;
-    padding: 25px;
-    margin-bottom: 30px;
-    background-color: #f5f4f2;
-    border-radius: 12px;
+  border: none;
+  padding: 25px;
+  margin-bottom: 30px;
+  background-color: #f5f4f2;
+  border-radius: 12px;
 }
 
 .bloque-formulario h3 {
-    font-family: 'IM Fell DW Pica', serif;
-    font-size: 14px;
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin: 0 0 20px 0;
-    border-bottom: 1px solid #cecece;
-    padding-bottom: 8px;
+  font-family: 'IM Fell DW Pica', serif;
+  font-size: 14px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 0 0 20px 0;
+  border-bottom: 1px solid #cecece;
+  padding-bottom: 8px;
 }
 
 /* Filas de entrada */
 .fila-eje, .fila-planeta {
-    display: table;
-    width: 100%;
-    margin-bottom: 15px;
+  display: table;
+  width: 100%;
+  margin-bottom: 15px;
 }
 
 .fila-eje:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .fila-planeta:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .nombre-eje, .nombre-astro {
-    display: table-cell;
-    width: 30%;
-    vertical-align: middle;
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 400;
-    letter-spacing: 1px;
+  display: table-cell;
+  width: 30%;
+  vertical-align: middle;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 1px;
 }
 
 .campos-posicion {
-    display: table-cell;
-    width: 70%;
-    text-align: right;
+  display: table-cell;
+  width: 70%;
+  text-align: right;
 }
 
 /* Inputs y Selects */
 input[type="number"], select {
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    color: #111111;
-    border: none;
-    border-radius: 12px;
-    padding: 6px 6px;
-    background-color: #ffffff;
-    outline: none;
-    vertical-align: middle;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: #111111;
+  border: none;
+  border-radius: 12px;
+  padding: 6px 6px;
+  background-color: #ffffff;
+  outline: none;
+  vertical-align: middle;
 }
 
 input[type="number"] {
-    width: 50px;
-    margin-right: 8px;
-    text-align: center;
+  width: 50px;
+  margin-right: 8px;
+  text-align: center;
 }
 
 select {
-    width: 110px;
+  width: 110px;
 }
 
 /* Estilos para el checkbox de retrógrado */
 .etiqueta-retrogrado {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #111111;
-    cursor: pointer;
-    user-select: none;
-    position: relative;
-    padding-left: 22px;
-    margin-left: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #111111;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-left: 22px;
+  margin-left: 4px;
 }
 
 .etiqueta-retrogrado input[type="checkbox"] {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-    pointer-events: none;
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
 }
 
 .etiqueta-retrogrado::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 16px;
-    height: 16px;
-    border: none;
-    border-radius: 4px;
-    background: #ffffff;
-    transition: all 0.2s ease;
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border: none;
+  border-radius: 4px;
+  background: #ffffff;
+  transition: all 0.2s ease;
 }
 
 .etiqueta-retrogrado:has(input[type="checkbox"]:checked)::before {
-    background: #111111;
+  background: #111111;
 }
 
 .etiqueta-retrogrado:has(input[type="checkbox"]:checked)::after {
-    content: '✓';
-    position: absolute;
-    left: 3px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 700;
+  content: '✓';
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .etiqueta-retrogrado:hover::before {
-    background-color: #cecece;
+  background-color: #cecece;
 }
 
 .etiqueta-retrogrado input[type="checkbox"]:focus + .etiqueta-retrogrado::before {
-    box-shadow: 0 0 0 2px rgba(0,0,0,0.2);
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.2);
 }
 
 /* Botón de Generar Gráfico */
 #btn-generar {
-    display: block;
-    width: 100%;
-    background-color: #111111;
-    border-radius: 12px;
-    color: #ffffff;
-    border: none;
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 16px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+  display: block;
+  width: 100%;
+  background-color: #111111;
+  border-radius: 12px;
+  color: #ffffff;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 #btn-generar:hover {
-    background-color: #333333;
+  background-color: #333333;
 }
 
 #btn-borrar {
-    display: block;
-    width: 100%;
-    margin-top: 12px;
-    background-color: #f5f4f2;
-    border-radius: 12px;
-    color: #111111;
-    border: none;
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 12px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  background-color: #f5f4f2;
+  border-radius: 12px;
+  color: #111111;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 #btn-borrar:hover {
-    background-color: #111111;
-    color: #ffffff;
+  background-color: #111111;
+  color: #ffffff;
 }
 
-/* ==========================================================================
-   4. ESTILOS DEL GRÁFICO SVG (RADIX)
-   ========================================================================== */
+/* NUEVO: Botón Descargar SVG */
+#btn-descargar-svg {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  background-color: #f5f4f2;
+  border-radius: 12px;
+  color: #111111;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#btn-descargar-svg:hover {
+  background-color: #111111;
+  color: #ffffff;
+}
+
+/*
+==========================================================================
+4. ESTILOS DEL GRÁFICO SVG (RADIX)
+==========================================================================
+*/
 #carta-astral {
-    display: block;
-    width: 100%;
-    height: auto;
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 #carta-astral text {
-    letter-spacing: 1.2px !important;
+  letter-spacing: 1.2px !important;
 }
 
 #carta-astral circle,
 #carta-astral line {
-    shape-rendering: geometricPrecision;
+  shape-rendering: geometricPrecision;
 }
 
-/* ==========================================================================
-   5. RESPONSIVE
-   ========================================================================== */
+/*
+==========================================================================
+5. RESPONSIVE
+==========================================================================
+*/
 @media (max-width: 850px) {
-    .interfaz-columnas {
-        display: block;
-        width: 100%;
-    }
-    .seccion-formulario,
-    .seccion-mapa {
-        display: block;
-        width: 100%;
-        padding-right: 0;
-    }
-    .contenedor-sticky-mapa {
-        position: relative;
-        top: 0;
-    }
+  .interfaz-columnas {
+    display: block;
+    width: 100%;
+  }
+  .seccion-formulario,
+  .seccion-mapa {
+    display: block;
+    width: 100%;
+    padding-right: 0;
+  }
+  .contenedor-sticky-mapa {
+    position: relative;
+    top: 0;
+  }
 }
 
 @media (max-width: 500px) {
-    .campos-posicion input[type="number"] {
-        width: 35px;
-    }
-    .campos-posicion select {
-        width: 65px;
-    }
-    .etiqueta-retrogrado {
-        font-size: 9px;
-    }
+  .campos-posicion input[type="number"] {
+    width: 35px;
+  }
+  .campos-posicion select {
+    width: 65px;
+  }
+  .etiqueta-retrogrado {
+    font-size: 9px;
+  }
 }
