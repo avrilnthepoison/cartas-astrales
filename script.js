@@ -699,7 +699,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (grupoActual.length > 0) grupos.push(grupoActual);
 
       // Calcular desplazamientos (los ejes siempre tendrán offset 0)
-      const separacionGrupo = 25;
+      const separacionGrupo = 10;
       const desplazamientos = {};
 
       for (const grupo of grupos) {
