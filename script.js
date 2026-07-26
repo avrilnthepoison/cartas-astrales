@@ -567,10 +567,13 @@ document.addEventListener("DOMContentLoaded", () => {
       lineaAsc.setAttribute("stroke-linecap", "round");
       lienzoSvg.appendChild(lineaAsc);
 
-      // Ícono ASC (SVG) – colocado en el extremo interior de la línea
+      // Ícono ASC (SVG)
+      const xAscIcono = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 75) * Math.cos(radAsc));
+      const yAscIcono = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 75) * Math.sin(radAsc));
+
       const imgAsc = document.createElementNS("http://www.w3.org/2000/svg", "image");
-      imgAsc.setAttribute("x", String(xAsc2 - 30));
-      imgAsc.setAttribute("y", String(yAsc2 - 30));
+      imgAsc.setAttribute("x", String(xAscIcono - 10)); // centrado (20x20)
+      imgAsc.setAttribute("y", String(yAscIcono - 10));
       imgAsc.setAttribute("width", "20");
       imgAsc.setAttribute("height", "20");
       imgAsc.setAttribute("href", "svg/asc.svg");
@@ -594,10 +597,13 @@ document.addEventListener("DOMContentLoaded", () => {
       lineaMc.setAttribute("stroke-linecap", "round");
       lienzoSvg.appendChild(lineaMc);
 
-      // Ícono MC (SVG) – colocado en el extremo interior de la línea
+      // Ícono MC (SVG)
+      const xMcTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 75) * Math.cos(radMc));
+      const yMcTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 75) * Math.sin(radMc));
+
       const imgMc = document.createElementNS("http://www.w3.org/2000/svg", "image");
-      imgMc.setAttribute("x", String(xMc2 - 30));
-      imgMc.setAttribute("y", String(yMc2 - 30));
+      imgMc.setAttribute("x", String(xMcTxt - 10));
+      imgMc.setAttribute("y", String(yMcTxt - 10));
       imgMc.setAttribute("width", "20");
       imgMc.setAttribute("height", "20");
       imgMc.setAttribute("href", "svg/mc.svg");
