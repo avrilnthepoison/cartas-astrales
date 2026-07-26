@@ -284,10 +284,8 @@ select {
   color: #ffffff;
 }
 
-/* PLACEHOLDERS con color de fondo de bloques */
-input::placeholder,
-input::-webkit-input-placeholder,
-input::-moz-placeholder {
+/* PLACEHOLDERS */
+::placeholder{
   color: #e8ecf6;
   opacity: 1;
 }
