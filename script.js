@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ------------------------------------------------------------
   //  FUNCIÓN PARA OBTENER FUENTE DE GOOGLE FONTS Y CONVERTIRLA A BASE64
-  //  Ahora parsea el CSS para extraer el font-style exacto.
+  //  Ahora incluye font-display: block para forzar carga.
   // ------------------------------------------------------------
   async function obtenerFuenteBase64(urlCss) {
     try {
@@ -183,18 +183,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const css = await respuestaCss.text();
 
       // Extraer bloques @font-face completos y sus URLs
-      // Patrón para capturar cada @font-face con su contenido
       const regexFontFace = /\@font-face\s*\{([^}]*)\}/g;
       const fontFaces = [];
       let match;
       while ((match = regexFontFace.exec(css)) !== null) {
         const bloque = match[1];
-        // Extraer la URL de la fuente (woff2)
         const urlMatch = /url\(([^)]+)\)/.exec(bloque);
         if (!urlMatch) continue;
         let url = urlMatch[1].replace(/^["']|["']$/g, '');
         if (url.startsWith('http://')) url = url.replace('http://', 'https://');
-        // Extraer font-style
         const styleMatch = /font-style\s*:\s*([^;]+)/.exec(bloque);
         const estilo = styleMatch ? styleMatch[1].trim() : 'normal';
         fontFaces.push({ url, estilo });
@@ -205,7 +202,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return null;
       }
 
-      // Descargar cada fuente y convertir a base64
       const fuentesBase64 = [];
       for (const ff of fontFaces) {
         try {
@@ -221,10 +217,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (fuentesBase64.length === 0) return null;
 
-      // Generar @font-face para cada una
       let fontFace = '';
       for (const fuente of fuentesBase64) {
-        fontFace += `@font-face { font-family: 'IM Fell DW Pica'; font-display: swap; `;
+        fontFace += `@font-face { font-family: 'IM Fell DW Pica'; font-display: block; `;
         fontFace += `src: url('data:font/woff2;base64,${fuente.base64}') format('woff2'); `;
         fontFace += `font-weight: 400; font-style: ${fuente.estilo}; }\n`;
       }
@@ -240,19 +235,19 @@ document.addEventListener("DOMContentLoaded", () => {
   //  FUNCIÓN PARA DESCARGAR PNG (con o sin fondo) - ALTA RESOLUCIÓN Y FUENTE CORRECTA
   // ------------------------------------------------------------
   async function descargarPNG(conFondo = false) {
-    // 1. Obtener la fuente de Google Fonts incrustada como base64
+    // 1. Cargar la fuente en el documento principal para que esté disponible en el canvas
+    try {
+      await document.fonts.load('1em "IM Fell DW Pica"');
+    } catch (e) {
+      console.warn("No se pudo cargar la fuente en el documento principal:", e);
+    }
+
+    // 2. Obtener la fuente de Google Fonts incrustada como base64
     const urlGoogleFonts = 'https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica:ital,wght@0,400;1,400&display=swap';
     let fuenteCSS = await obtenerFuenteBase64(urlGoogleFonts);
     if (!fuenteCSS) {
       console.warn("No se pudo obtener la fuente de Google Fonts. Se usará la fuente por defecto.");
       fuenteCSS = `text { font-family: serif; }`;
-    }
-
-    // 2. Asegurar que la fuente esté cargada en el documento (para el canvas)
-    try {
-      await document.fonts.load('1em "IM Fell DW Pica"');
-    } catch (e) {
-      // Si falla, no importa, la fuente ya está incrustada en el SVG
     }
 
     const ESCALA = 3;
@@ -262,13 +257,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const svgOriginal = document.getElementById("carta-astral");
     const clon = svgOriginal.cloneNode(true);
 
-    // 3. Inyectar la fuente incrustada en el SVG clonado.
-    // Solo incluimos el @font-face y una regla básica para font-family.
+    // 3. Inyectar la fuente incrustada en el SVG clonado,
+    //    con font-display: block y reglas para normal/italic
     const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
     style.textContent = `
       ${fuenteCSS}
       text {
-        font-family: 'IM Fell DW Pica', serif;
+        font-family: 'IM Fell DW Pica', serif !important;
+      }
+      text[font-style="normal"] {
+        font-style: normal !important;
+      }
+      text[font-style="italic"] {
+        font-style: italic !important;
       }
     `;
     clon.insertBefore(style, clon.firstChild);
@@ -316,7 +317,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const url = URL.createObjectURL(blob);
 
     const img = new Image();
+    // Añadir un timeout para evitar que se quede colgado si la fuente no carga
+    const timeoutId = setTimeout(() => {
+      console.warn("Timeout al cargar la imagen SVG. Se procederá con la descarga.");
+      URL.revokeObjectURL(url);
+    }, 10000);
+
     img.onload = function() {
+      clearTimeout(timeoutId);
       const canvas = document.createElement("canvas");
       canvas.width = ANCHO_FINAL;
       canvas.height = ALTO_FINAL;
@@ -350,6 +358,7 @@ document.addEventListener("DOMContentLoaded", () => {
       URL.revokeObjectURL(url);
     };
     img.onerror = function() {
+      clearTimeout(timeoutId);
       console.error("Error al cargar el SVG para PNG.");
       URL.revokeObjectURL(url);
     };
@@ -893,8 +902,7 @@ document.addEventListener("DOMContentLoaded", () => {
           txtRetro.setAttribute("x", String(xR));
           txtRetro.setAttribute("y", String(yR));
           txtRetro.setAttribute("font-family", "'IM Fell DW Pica', serif");
-          // FORZAMOS ESTILO ITÁLICA CON style EN LÍNEA
-          txtRetro.setAttribute("style", "font-style: italic !important; font-family: 'IM Fell DW Pica', serif !important;");
+          txtRetro.setAttribute("font-style", "italic");
           txtRetro.setAttribute("font-size", "12");
           txtRetro.setAttribute("font-weight", "400");
           txtRetro.setAttribute("text-anchor", "start");
