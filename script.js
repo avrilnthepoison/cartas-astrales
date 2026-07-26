@@ -307,7 +307,7 @@ document.addEventListener("DOMContentLoaded", () => {
     pathCoronaInterior.setAttribute("fill-rule", "evenodd");
     pathCoronaInterior.setAttribute("fill", "#1038a2");
     pathCoronaInterior.setAttribute("stroke", "none");
-    pathCoronaInterior.setAttribute("opacity", "0.6");
+    pathCoronaInterior.setAttribute("opacity", "0.4");
     lienzoSvg.appendChild(pathCoronaInterior);
 
     const circuloDecanatosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -515,7 +515,7 @@ document.addEventListener("DOMContentLoaded", () => {
             { tipo: 'conjuncion', angulo: 0, strokeWidth: 1.5, dasharray: null, opacity: 0.8 },
             { tipo: 'sextil', angulo: 60, strokeWidth: 1.5, dasharray: '2,5', opacity: 0.6 },
             { tipo: 'cuadratura', angulo: 90, strokeWidth: 1.5, dasharray: null, opacity: 0.6 },
-            { tipo: 'trígono', angulo: 120, strokeWidth: 1.5, dasharray: '5,10', opacity: 0.8 },
+            { tipo: 'trígono', angulo: 120, strokeWidth: 1.5, dasharray: '5,10', opacity: 1 },
             { tipo: 'oposicion', angulo: 180, strokeWidth: 1.5, dasharray: null, opacity: 0.8 }
           ];
           for (const asp of aspectos) {
@@ -651,7 +651,7 @@ document.addEventListener("DOMContentLoaded", () => {
       planetasData.sort((a, b) => a.gradosAbsolutos - b.gradosAbsolutos);
 
       // Separación entre planetas
-      const umbral = 12;
+      const umbral = 8;
       const grupos = [];
       let grupoActual = [];
       for (let i = 0; i < planetasData.length; i++) {
