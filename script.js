@@ -174,17 +174,32 @@ document.addEventListener("DOMContentLoaded", () => {
   cargarValoresGuardados();
 
   // ------------------------------------------------------------
-  //  FUNCIÓN PARA DESCARGAR PNG (con o sin fondo) - ALTA RESOLUCIÓN
+  //  FUNCIÓN PARA DESCARGAR PNG (con o sin fondo) - ALTA RESOLUCIÓN Y FUENTE CORRECTA
   // ------------------------------------------------------------
   async function descargarPNG(conFondo = false) {
-    // Factor de escala para aumentar la resolución (3x → 1800x1800)
-    // Cambia este valor si deseas más o menos resolución
-    const ESCALA = 3; 
+    // 1. Asegurar que la fuente "IM Fell DW Pica" esté cargada
+    try {
+      await document.fonts.load('1em "IM Fell DW Pica"');
+    } catch (e) {
+      console.warn("No se pudo cargar la fuente 'IM Fell DW Pica'", e);
+    }
+
+    // Factor de escala para aumentar la resolución
+    const ESCALA = 3;
     const ANCHO_FINAL = 600 * ESCALA;
     const ALTO_FINAL = 600 * ESCALA;
 
     const svgOriginal = document.getElementById("carta-astral");
     const clon = svgOriginal.cloneNode(true);
+
+    // Inyectar el enlace a la fuente dentro del SVG clonado (para que sea autónomo)
+    const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
+    style.textContent = `
+      @import url('https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica:ital,wght@0,400;1,400&display=swap');
+      text { font-family: 'IM Fell DW Pica', serif !important; }
+    `;
+    // Insertar al principio del SVG
+    clon.insertBefore(style, clon.firstChild);
 
     // Incrustar imágenes SVG
     const imagenes = clon.querySelectorAll("image");
@@ -235,7 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
       canvas.height = ALTO_FINAL;
       const ctx = canvas.getContext("2d");
 
-      // Fondo (blanco o transparente)
+      // Fondo
       if (conFondo) {
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -243,11 +258,9 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
 
-      // Dibujar la imagen escalada al tamaño del canvas
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       const pngUrl = canvas.toDataURL("image/png");
 
-      // Obtener nombre del input
       const nombreInput = document.getElementById("nombre-carta-input");
       let nombreArchivo = "carta_astral";
       if (nombreInput && nombreInput.value.trim() !== "") {
