@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const botonGenerar = document.getElementById("btn-generar");
   const botonBorrar = document.getElementById("btn-borrar");
   const botonDescargarPNG = document.getElementById("btn-descargar-png");
+  const botonDescargarPNGFondo = document.getElementById("btn-descargar-png-fondo");
   const lienzoSvg = document.getElementById("carta-astral");
 
   const CENTRO_X = 300;
@@ -166,17 +167,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   botonGenerar.addEventListener("click", procesarYGenerarCarta);
   botonBorrar.addEventListener("click", restablecerTodoACero);
-  botonDescargarPNG.addEventListener("click", descargarPNG);
+
+  // Asignar eventos a los botones de descarga
+  botonDescargarPNG.addEventListener("click", () => descargarPNG(false));
+  botonDescargarPNGFondo.addEventListener("click", () => descargarPNG(true));
 
   cargarValoresGuardados();
 
   // ------------------------------------------------------------
-  //  FUNCIÓN PARA DESCARGAR PNG CON IMÁGENES INCRUSTADAS
+  //  FUNCIÓN PARA DESCARGAR PNG (con o sin fondo)
   // ------------------------------------------------------------
-  async function descargarPNG() {
+  async function descargarPNG(conFondo = false) {
     const svgOriginal = document.getElementById("carta-astral");
     const clon = svgOriginal.cloneNode(true);
 
+    // Incrustar imágenes SVG
     const imagenes = clon.querySelectorAll("image");
     const cacheDataURI = new Map();
 
@@ -213,6 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     await Promise.all(promesas);
 
+    // Serializar SVG
     const svgData = new XMLSerializer().serializeToString(clon);
     const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -223,11 +229,30 @@ document.addEventListener("DOMContentLoaded", () => {
       canvas.width = 600;
       canvas.height = 600;
       const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Si se pide fondo blanco, rellenar; si no, transparente
+      if (conFondo) {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       const pngUrl = canvas.toDataURL("image/png");
+
+      // Obtener nombre del input
+      const nombreInput = document.getElementById("nombre-carta-input");
+      let nombreArchivo = "carta_astral";
+      if (nombreInput && nombreInput.value.trim() !== "") {
+        nombreArchivo = nombreInput.value.trim();
+      }
+      // Añadir sufijo según fondo
+      const sufijo = conFondo ? "_con_fondo" : "_sin_fondo";
+      const nombreCompleto = nombreArchivo + sufijo + ".png";
+
       const link = document.createElement("a");
-      link.download = "carta_astral.png";
+      link.download = nombreCompleto;
       link.href = pngUrl;
       document.body.appendChild(link);
       link.click();
@@ -235,7 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
       URL.revokeObjectURL(url);
     };
     img.onerror = function() {
-      console.error("Error al cargar el SVG con imágenes incrustadas.");
+      console.error("Error al cargar el SVG para PNG.");
       URL.revokeObjectURL(url);
     };
     img.src = url;
@@ -248,7 +273,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // LEER VALORES DE UMBRAL Y SEPARACIÓN DESDE LOS INPUTS
     const umbralInput = document.getElementById("umbral-input");
     const separacionInput = document.getElementById("separacion-input");
-    // Convertir a número, con fallback a valores por defecto
     let umbral = parseFloat(umbralInput.value);
     if (isNaN(umbral) || umbral < 0) umbral = 8;
     let separacionGrupo = parseFloat(separacionInput.value);
@@ -558,7 +582,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- CAPA 8: Ejes, marcas de posición y planetas ---
     if (mostrarContenido) {
-      // Eje ASC (línea y marcador)
+      // Eje ASC
       const radAsc = ajustarAngulo(ascendenteAbs);
       const xAsc1 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radAsc));
       const yAsc1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radAsc));
@@ -576,7 +600,6 @@ document.addEventListener("DOMContentLoaded", () => {
       lineaAsc.setAttribute("stroke-linecap", "round");
       lienzoSvg.appendChild(lineaAsc);
 
-      // Ícono ASC (SVG)
       const xAscIcono = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 75) * Math.cos(radAsc));
       const yAscIcono = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 75) * Math.sin(radAsc));
       const imgAsc = document.createElementNS("http://www.w3.org/2000/svg", "image");
@@ -587,7 +610,7 @@ document.addEventListener("DOMContentLoaded", () => {
       imgAsc.setAttribute("href", "svg/asc.svg");
       lienzoSvg.appendChild(imgAsc);
 
-      // Eje MC (línea y marcador)
+      // Eje MC
       const radMc = ajustarAngulo(mcAbs);
       const xMc1 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radMc));
       const yMc1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radMc));
@@ -605,7 +628,6 @@ document.addEventListener("DOMContentLoaded", () => {
       lineaMc.setAttribute("stroke-linecap", "round");
       lienzoSvg.appendChild(lineaMc);
 
-      // Ícono MC (SVG)
       const xMcIcono = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 75) * Math.cos(radMc));
       const yMcIcono = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 75) * Math.sin(radMc));
       const imgMc = document.createElementNS("http://www.w3.org/2000/svg", "image");
@@ -617,8 +639,6 @@ document.addEventListener("DOMContentLoaded", () => {
       lienzoSvg.appendChild(imgMc);
 
       // --- OBTENER DATOS DE PLANETAS Y EJES PARA LA SEPARACIÓN ---
-
-      // 1. Datos de planetas
       let datosPlanetasForm = {};
       try {
         const raw = localStorage.getItem("datosRadixManual");
@@ -657,7 +677,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // 2. Datos de ejes (ASC y MC) – usando el extremo interior de la línea
       const ejesData = [
         {
           nombre: 'ASC',
@@ -679,13 +698,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       ];
 
-      // 3. Unir todos los puntos (planetas + ejes)
       const todosLosPuntos = [...planetasData, ...ejesData];
-
-      // Ordenar por posición angular
       todosLosPuntos.sort((a, b) => a.gradosAbsolutos - b.gradosAbsolutos);
 
-      // Agrupar por umbral (valor dinámico)
       const grupos = [];
       let grupoActual = [];
       for (let i = 0; i < todosLosPuntos.length; i++) {
@@ -704,9 +719,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (grupoActual.length > 0) grupos.push(grupoActual);
 
-      // Calcular desplazamientos (los ejes siempre tendrán offset 0)
       const desplazamientos = {};
-
       for (const grupo of grupos) {
         const n = grupo.length;
         if (n === 1) {
@@ -715,15 +728,12 @@ document.addEventListener("DOMContentLoaded", () => {
           const radRef = grupo[0].radPlaneta;
           const tangenteX = -Math.sin(radRef);
           const tangenteY = Math.cos(radRef);
-
           for (let i = 0; i < n; i++) {
             const offset = ((n - 1) / 2 - i) * separacionGrupo;
             const dx = Math.round(offset * tangenteX);
             const dy = Math.round(offset * tangenteY);
             desplazamientos[grupo[i].nombre] = { dx, dy };
           }
-
-          // Forzar offset (0,0) para los ejes
           for (const punto of grupo) {
             if (punto.tipo === 'eje') {
               desplazamientos[punto.nombre] = { dx: 0, dy: 0 };
@@ -732,7 +742,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // --- DIBUJAR MARCAS DE POSICIÓN Y PLANETAS ---
+      // Dibujar planetas
       for (const p of planetasData) {
         const nombre = p.nombre;
         const radPlaneta = p.radPlaneta;
@@ -740,7 +750,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const yPlaneta = p.yPlaneta;
         const datosPlaneta = p.datosPlaneta;
 
-        // Marca desde rueda de grados
         const xInicio = Math.round(CENTRO_X + RADIO_GRADOS * Math.cos(radPlaneta));
         const yInicio = Math.round(CENTRO_Y + RADIO_GRADOS * Math.sin(radPlaneta));
         const radioFinMarca = RADIO_GRADOS - 10;
@@ -757,7 +766,6 @@ document.addEventListener("DOMContentLoaded", () => {
         lineaPosicion.setAttribute("stroke-linecap", "round");
         lienzoSvg.appendChild(lineaPosicion);
 
-        // Marca desde rueda de aspectos
         const xInicioAsp = Math.round(CENTRO_X + RADIO_ASPECTOS * Math.cos(radPlaneta));
         const yInicioAsp = Math.round(CENTRO_Y + RADIO_ASPECTOS * Math.sin(radPlaneta));
         const radioFinAsp = RADIO_ASPECTOS + 10;
@@ -774,12 +782,10 @@ document.addEventListener("DOMContentLoaded", () => {
         lineaPosicionAsp.setAttribute("stroke-linecap", "round");
         lienzoSvg.appendChild(lineaPosicionAsp);
 
-        // Desplazamiento para icono
         const desp = desplazamientos[nombre] || { dx: 0, dy: 0 };
         const xIcono = xPlaneta + desp.dx;
         const yIcono = yPlaneta + desp.dy;
 
-        // Símbolo del planeta (SVG)
         const nombreSVG = nombre.toLowerCase().replace('_', '-');
         const rutaSVG = `svg/${nombreSVG}.svg`;
         const imgPlaneta = document.createElementNS("http://www.w3.org/2000/svg", "image");
@@ -790,7 +796,6 @@ document.addEventListener("DOMContentLoaded", () => {
         imgPlaneta.setAttribute("href", rutaSVG);
         lienzoSvg.appendChild(imgPlaneta);
 
-        // Retrógrado
         if (datosPlaneta.retrogrado) {
           const offsetX = 10;
           const offsetY = 10;
