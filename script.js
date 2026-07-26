@@ -270,7 +270,7 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloExterior.setAttribute("cx", String(CENTRO_X));
     circuloExterior.setAttribute("cy", String(CENTRO_Y));
     circuloExterior.setAttribute("r", String(RADIO_EXTERIOR));
-    circuloExterior.setAttribute("stroke", "#111111");
+    circuloExterior.setAttribute("stroke", "#1038a2");
     circuloExterior.setAttribute("stroke-width", "1.5");
     circuloExterior.setAttribute("fill", "none");
     lienzoSvg.appendChild(circuloExterior);
@@ -286,7 +286,8 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
     pathCorona.setAttribute("d", dCorona);
     pathCorona.setAttribute("fill-rule", "evenodd");
-    pathCorona.setAttribute("fill", "#111111");
+    pathCorona.setAttribute("fill", "#1038a2");
+    pathCorona.setAttribute("opacity", "0.8")
     pathCorona.setAttribute("stroke", "none");
     lienzoSvg.appendChild(pathCorona);
 
@@ -294,16 +295,32 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloSignosInterior.setAttribute("cx", String(CENTRO_X));
     circuloSignosInterior.setAttribute("cy", String(CENTRO_Y));
     circuloSignosInterior.setAttribute("r", String(RADIO_SIGNOS_INTERIOR));
-    circuloSignosInterior.setAttribute("stroke", "#111111");
+    circuloSignosInterior.setAttribute("stroke", "#1038a2");
     circuloSignosInterior.setAttribute("stroke-width", "1.5");
     circuloSignosInterior.setAttribute("fill", "none");
     lienzoSvg.appendChild(circuloSignosInterior);
+
+    const pathCorona = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    const dCorona = `
+      M ${CENTRO_X - RADIO_SIGNOS_INTERIOR} ${CENTRO_Y}
+      A ${RADIO_SIGNOS_INTERIOR} ${RADIO_SIGNOS_INTERIOR} 0 1,1 ${CENTRO_X + RADIO_SIGNOS_INTERIOR} ${CENTRO_Y}
+      A ${RADIO_SIGNOS_INTERIOR} ${RADIO_SIGNOS_INTERIOR} 0 1,1 ${CENTRO_X - RADIO_SIGNOS_INTERIOR} ${CENTRO_Y} Z
+      M ${CENTRO_X - RADIO_DECANATOS_INTERIOR} ${CENTRO_Y}
+      A ${RADIO_DECANATOS_INTERIOR} ${RADIO_DECANATOS_INTERIOR} 0 1,0 ${CENTRO_X + RADIO_DECANATOS_INTERIOR} ${CENTRO_Y}
+      A ${RADIO_DECANATOS_INTERIOR} ${RADIO_DECANATOS_INTERIOR} 0 1,0 ${CENTRO_X - RADIO_DECANATOS_INTERIOR} ${CENTRO_Y} Z
+    `;
+    pathCorona.setAttribute("d", dCorona);
+    pathCorona.setAttribute("fill-rule", "evenodd");
+    pathCorona.setAttribute("fill", "#1038a2");
+    pathCorona.setAttribute("opacity", "0.6")
+    pathCorona.setAttribute("stroke", "none");
+    lienzoSvg.appendChild(pathCorona);
 
     const circuloDecanatosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloDecanatosInterior.setAttribute("cx", String(CENTRO_X));
     circuloDecanatosInterior.setAttribute("cy", String(CENTRO_Y));
     circuloDecanatosInterior.setAttribute("r", String(RADIO_DECANATOS_INTERIOR));
-    circuloDecanatosInterior.setAttribute("stroke", "#111111");
+    circuloDecanatosInterior.setAttribute("stroke", "#1038a2");
     circuloDecanatosInterior.setAttribute("stroke-width", "1.5");
     circuloDecanatosInterior.setAttribute("fill", "none");
     lienzoSvg.appendChild(circuloDecanatosInterior);
@@ -321,7 +338,7 @@ document.addEventListener("DOMContentLoaded", () => {
       linea.setAttribute("y1", String(y1));
       linea.setAttribute("x2", String(x2));
       linea.setAttribute("y2", String(y2));
-      linea.setAttribute("stroke", "#ffffff");
+      linea.setAttribute("stroke", "#1038a2");
       linea.setAttribute("stroke-width", "1.5");
       lienzoSvg.appendChild(linea);
     }
@@ -340,7 +357,7 @@ document.addEventListener("DOMContentLoaded", () => {
         linea.setAttribute("y1", String(y1));
         linea.setAttribute("x2", String(x2));
         linea.setAttribute("y2", String(y2));
-        linea.setAttribute("stroke", "#111111");
+        linea.setAttribute("stroke", "#1038a2");
         linea.setAttribute("stroke-width", "1.5");
         lienzoSvg.appendChild(linea);
       }
@@ -407,7 +424,7 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloGradosExterno.setAttribute("cx", String(CENTRO_X));
     circuloGradosExterno.setAttribute("cy", String(CENTRO_Y));
     circuloGradosExterno.setAttribute("r", String(RADIO_GRADOS));
-    circuloGradosExterno.setAttribute("stroke", "#111111");
+    circuloGradosExterno.setAttribute("stroke", "#1038a2");
     circuloGradosExterno.setAttribute("stroke-width", "0.5");
     circuloGradosExterno.setAttribute("stroke-dasharray", "2,2");
     circuloGradosExterno.setAttribute("fill", "none");
@@ -421,7 +438,7 @@ document.addEventListener("DOMContentLoaded", () => {
       punto.setAttribute("cx", String(x));
       punto.setAttribute("cy", String(y));
       punto.setAttribute("r", "1");
-      punto.setAttribute("fill", "#111111");
+      punto.setAttribute("fill", "#1038a2");
       punto.setAttribute("opacity", "1");
       lienzoSvg.appendChild(punto);
     }
@@ -433,7 +450,7 @@ document.addEventListener("DOMContentLoaded", () => {
       punto.setAttribute("cx", String(x));
       punto.setAttribute("cy", String(y));
       punto.setAttribute("r", "1.5");
-      punto.setAttribute("fill", "#111111");
+      punto.setAttribute("fill", "#1038a2");
       punto.setAttribute("opacity", "1");
       lienzoSvg.appendChild(punto);
     }
@@ -442,7 +459,7 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloGradosInterno.setAttribute("cx", String(CENTRO_X));
     circuloGradosInterno.setAttribute("cy", String(CENTRO_Y));
     circuloGradosInterno.setAttribute("r", String(RADIO_ASPECTOS));
-    circuloGradosInterno.setAttribute("stroke", "#111111");
+    circuloGradosInterno.setAttribute("stroke", "#1038a2");
     circuloGradosInterno.setAttribute("stroke-width", "0.5");
     circuloGradosInterno.setAttribute("stroke-dasharray", "2,2");
     circuloGradosInterno.setAttribute("fill", "none");
@@ -456,7 +473,7 @@ document.addEventListener("DOMContentLoaded", () => {
       punto.setAttribute("cx", String(x));
       punto.setAttribute("cy", String(y));
       punto.setAttribute("r", "1");
-      punto.setAttribute("fill", "#111111");
+      punto.setAttribute("fill", "#1038a2");
       punto.setAttribute("opacity", "1");
       lienzoSvg.appendChild(punto);
     }
@@ -468,7 +485,7 @@ document.addEventListener("DOMContentLoaded", () => {
       punto.setAttribute("cx", String(x));
       punto.setAttribute("cy", String(y));
       punto.setAttribute("r", "1.5");
-      punto.setAttribute("fill", "#111111");
+      punto.setAttribute("fill", "#1038a2");
       punto.setAttribute("opacity", "1");
       lienzoSvg.appendChild(punto);
     }
@@ -502,9 +519,9 @@ document.addEventListener("DOMContentLoaded", () => {
           const orbe = (p1 === 'LUNA' || p2 === 'LUNA') ? 13 : 3;
           const aspectos = [
             { tipo: 'conjuncion', angulo: 0, strokeWidth: 1.5, dasharray: null, opacity: 1 },
-            { tipo: 'sextil', angulo: 60, strokeWidth: 1.5, dasharray: '2,5', opacity: 0.5 },
-            { tipo: 'cuadratura', angulo: 90, strokeWidth: 1.5, dasharray: null, opacity: 0.5 },
-            { tipo: 'trígono', angulo: 120, strokeWidth: 1.5, dasharray: '5,10', opacity: 0.5 },
+            { tipo: 'sextil', angulo: 60, strokeWidth: 1.5, dasharray: '2,5', opacity: 0.6 },
+            { tipo: 'cuadratura', angulo: 90, strokeWidth: 1.5, dasharray: null, opacity: 0.6 },
+            { tipo: 'trígono', angulo: 120, strokeWidth: 1.5, dasharray: '5,10', opacity: 0.8 },
             { tipo: 'oposicion', angulo: 180, strokeWidth: 1.5, dasharray: null, opacity: 1 }
           ];
           for (const asp of aspectos) {
@@ -520,7 +537,7 @@ document.addEventListener("DOMContentLoaded", () => {
               lineaAspecto.setAttribute("y1", String(y1));
               lineaAspecto.setAttribute("x2", String(x2));
               lineaAspecto.setAttribute("y2", String(y2));
-              lineaAspecto.setAttribute("stroke", "#111111");
+              lineaAspecto.setAttribute("stroke", "#1038a2");
               lineaAspecto.setAttribute("stroke-linecap", "round");
               lineaAspecto.setAttribute("stroke-linejoin", "round");
               lineaAspecto.setAttribute("stroke-width", String(asp.strokeWidth));
@@ -549,8 +566,8 @@ document.addEventListener("DOMContentLoaded", () => {
       lineaAsc.setAttribute("y1", String(yAsc1));
       lineaAsc.setAttribute("x2", String(xAsc2));
       lineaAsc.setAttribute("y2", String(yAsc2));
-      lineaAsc.setAttribute("stroke", "#111111");
-      lineaAsc.setAttribute("opacity", "0.6");
+      lineaAsc.setAttribute("stroke", "#1038a2");
+      lineaAsc.setAttribute("opacity", "0.8");
       lineaAsc.setAttribute("stroke-width", "2");
       lineaAsc.setAttribute("stroke-linecap", "round");
       lienzoSvg.appendChild(lineaAsc);
@@ -564,7 +581,7 @@ document.addEventListener("DOMContentLoaded", () => {
       txtAsc.setAttribute("font-size", "12");
       txtAsc.setAttribute("font-weight", "400");
       txtAsc.setAttribute("text-anchor", "middle");
-      txtAsc.setAttribute("fill", "#111111");
+      txtAsc.setAttribute("fill", "#1038a2");
       txtAsc.textContent = "ASC";
       lienzoSvg.appendChild(txtAsc);
 
@@ -579,8 +596,8 @@ document.addEventListener("DOMContentLoaded", () => {
       lineaMc.setAttribute("y1", String(yMc1));
       lineaMc.setAttribute("x2", String(xMc2));
       lineaMc.setAttribute("y2", String(yMc2));
-      lineaMc.setAttribute("stroke", "#111111");
-      lineaMc.setAttribute("opacity", "0.6");
+      lineaMc.setAttribute("stroke", "#1038a2");
+      lineaMc.setAttribute("opacity", "0.8");
       lineaMc.setAttribute("stroke-width", "2");
       lineaMc.setAttribute("stroke-linecap", "round");
       lienzoSvg.appendChild(lineaMc);
@@ -594,7 +611,7 @@ document.addEventListener("DOMContentLoaded", () => {
       txtMc.setAttribute("font-size", "12");
       txtMc.setAttribute("font-weight", "400");
       txtMc.setAttribute("text-anchor", "middle");
-      txtMc.setAttribute("fill", "#111111");
+      txtMc.setAttribute("fill", "#1038a2");
       txtMc.textContent = "MC";
       lienzoSvg.appendChild(txtMc);
 
@@ -697,9 +714,9 @@ document.addEventListener("DOMContentLoaded", () => {
         lineaPosicion.setAttribute("y1", String(yInicio));
         lineaPosicion.setAttribute("x2", String(xFin));
         lineaPosicion.setAttribute("y2", String(yFin));
-        lineaPosicion.setAttribute("stroke", "#111111");
+        lineaPosicion.setAttribute("stroke", "#1038a2");
         lineaPosicion.setAttribute("stroke-width", "1.5");
-        lineaPosicion.setAttribute("opacity", "1");
+        lineaPosicion.setAttribute("opacity", "0.8");
         lineaPosicion.setAttribute("stroke-linecap", "round");
         lienzoSvg.appendChild(lineaPosicion);
 
@@ -714,9 +731,9 @@ document.addEventListener("DOMContentLoaded", () => {
         lineaPosicionAsp.setAttribute("y1", String(yInicioAsp));
         lineaPosicionAsp.setAttribute("x2", String(xFinAsp));
         lineaPosicionAsp.setAttribute("y2", String(yFinAsp));
-        lineaPosicionAsp.setAttribute("stroke", "#111111");
+        lineaPosicionAsp.setAttribute("stroke", "#1038a2");
         lineaPosicionAsp.setAttribute("stroke-width", "1.5");
-        lineaPosicionAsp.setAttribute("opacity", "1");
+        lineaPosicionAsp.setAttribute("opacity", "0.8");
         lineaPosicionAsp.setAttribute("stroke-linecap", "round");
         lienzoSvg.appendChild(lineaPosicionAsp);
 
@@ -751,7 +768,8 @@ document.addEventListener("DOMContentLoaded", () => {
           txtRetro.setAttribute("font-weight", "400");
           txtRetro.setAttribute("text-anchor", "start");
           txtRetro.setAttribute("dominant-baseline", "central");
-          txtRetro.setAttribute("fill", "#111111");
+          txtRetro.setAttribute("fill", "#1038a2");
+          txtRetro.setAttribute("opacity", "0.8")
           txtRetro.textContent = "R";
           lienzoSvg.appendChild(txtRetro);
         }
