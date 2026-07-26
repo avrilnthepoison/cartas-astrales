@@ -264,6 +264,8 @@ document.addEventListener("DOMContentLoaded", () => {
       ${fuenteCSS}
       text {
         font-family: 'IM Fell DW Pica', serif !important;
+      }
+      text[font-style="normal"] {
         font-style: normal !important;
       }
       text[font-style="italic"],
