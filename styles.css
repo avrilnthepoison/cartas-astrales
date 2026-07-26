@@ -296,7 +296,7 @@ select {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  margin-bottom: 15px;
+  margin-bottom: 0px;
   gap: 8px;
 }
 
@@ -328,7 +328,7 @@ select {
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 5px;
+  margin-bottom: 0;
 }
 
 .fila-nombre label {
