@@ -177,20 +177,17 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------------------------------------
   async function obtenerFuenteBase64(urlCss) {
     try {
-      // 1. Obtener el CSS de Google Fonts
       const respuestaCss = await fetch(urlCss);
       if (!respuestaCss.ok) throw new Error(`HTTP ${respuestaCss.status}`);
       const css = await respuestaCss.text();
 
-      // 2. Extraer la URL del .woff2 (regular e italic)
+      // Extraer todas las URLs de fuentes (.woff2)
       const regexWoff2 = /url\(([^)]+)\)/g;
       const urls = [];
       let match;
       while ((match = regexWoff2.exec(css)) !== null) {
         let url = match[1];
-        // Limpiar la URL (quitar comillas y espacios)
         url = url.replace(/^["']|["']$/g, '');
-        // Asegurar que sea HTTPS
         if (url.startsWith('http://')) url = url.replace('http://', 'https://');
         urls.push(url);
       }
@@ -200,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return null;
       }
 
-      // 3. Descargar cada fuente y convertir a base64
+      // Descargar cada fuente y convertir a base64
       const fuentesBase64 = [];
       for (const url of urls) {
         try {
@@ -208,29 +205,23 @@ document.addEventListener("DOMContentLoaded", () => {
           if (!respuestaFuente.ok) throw new Error(`HTTP ${respuestaFuente.status}`);
           const buffer = await respuestaFuente.arrayBuffer();
           const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
-          // Detectar si es italic o regular (por el nombre del archivo o por la URL)
-          const esItalic = url.includes('italic') || url.includes('i') || css.includes('italic');
-          const estilo = esItalic ? 'italic' : 'normal';
-          fuentesBase64.push({
-            base64,
-            estilo,
-            formato: 'woff2'
-          });
+          fuentesBase64.push({ base64 });
         } catch (e) {
           console.warn(`Error al descargar fuente: ${url}`, e);
         }
       }
 
-      // 4. Construir el @font-face
       if (fuentesBase64.length === 0) return null;
-      let fontFace = `@font-face { font-family: 'IM Fell DW Pica'; font-display: swap; `;
-      const regular = fuentesBase64.find(f => f.estilo === 'normal') || fuentesBase64[0];
-      const italic = fuentesBase64.find(f => f.estilo === 'italic') || fuentesBase64[0];
 
+      // Asignar estilos: la primera es regular, la segunda (si existe) es itálica
+      const regular = fuentesBase64[0];
+      const italic = fuentesBase64.length > 1 ? fuentesBase64[1] : null;
+
+      let fontFace = `@font-face { font-family: 'IM Fell DW Pica'; font-display: swap; `;
       fontFace += `src: url('data:font/woff2;base64,${regular.base64}') format('woff2'); `;
       fontFace += `font-weight: 400; font-style: normal; }\n`;
 
-      if (italic && italic !== regular) {
+      if (italic) {
         fontFace += `@font-face { font-family: 'IM Fell DW Pica'; font-display: swap; `;
         fontFace += `src: url('data:font/woff2;base64,${italic.base64}') format('woff2'); `;
         fontFace += `font-weight: 400; font-style: italic; }\n`;
@@ -251,7 +242,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const urlGoogleFonts = 'https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica:ital,wght@0,400;1,400&display=swap';
     let fuenteCSS = await obtenerFuenteBase64(urlGoogleFonts);
     if (!fuenteCSS) {
-      // Fallback: usar la fuente del sistema (Times New Roman)
       console.warn("No se pudo obtener la fuente de Google Fonts. Se usará la fuente por defecto.");
       fuenteCSS = `text { font-family: serif; }`;
     }
@@ -270,11 +260,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const svgOriginal = document.getElementById("carta-astral");
     const clon = svgOriginal.cloneNode(true);
 
-    // 3. Inyectar la fuente incrustada en el SVG clonado
+    // 3. Inyectar la fuente incrustada en el SVG clonado, con estilos para normal e itálica
     const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
     style.textContent = `
       ${fuenteCSS}
-      text { font-family: 'IM Fell DW Pica', serif !important; }
+      text {
+        font-family: 'IM Fell DW Pica', serif !important;
+        font-style: normal !important;
+      }
+      text[font-style="italic"] {
+        font-style: italic !important;
+      }
     `;
     clon.insertBefore(style, clon.firstChild);
 
