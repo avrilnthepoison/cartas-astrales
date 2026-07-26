@@ -268,7 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
         font-family: 'IM Fell DW Pica', serif !important;
         font-style: normal !important;
       }
-      text[font-style="italic"] {
+      .retrogrado {
         font-style: italic !important;
       }
     `;
@@ -900,6 +900,7 @@ document.addEventListener("DOMContentLoaded", () => {
           txtRetro.setAttribute("dominant-baseline", "central");
           txtRetro.setAttribute("fill", "#1038a2");
           txtRetro.setAttribute("opacity", "0.6");
+          txtRetro.setAttribute("class", "retrogrado"); // <-- AÑADIDA LA CLASE
           txtRetro.textContent = "R";
           lienzoSvg.appendChild(txtRetro);
         }
