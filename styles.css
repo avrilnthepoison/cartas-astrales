@@ -404,6 +404,11 @@ select {
     position: relative;
     top: 0;
   }
+
+  /* Separación del gráfico de los botones en móvil */
+  #carta-astral {
+    margin-bottom: 30px;
+  }
 }
 
 @media (max-width: 500px) {
@@ -416,27 +421,32 @@ select {
   .etiqueta-retrogrado {
     font-size: 9px;
   }
+
   .fila-ajuste {
     flex-direction: column;
     align-items: stretch;
   }
   .fila-ajuste label {
     min-width: auto;
-    margin-right: 0;
   }
   .fila-ajuste input[type="number"] {
     width: 100%;
     max-width: 80px;
   }
+
   .fila-nombre {
     flex-direction: column;
     align-items: stretch;
   }
   .fila-nombre label {
     min-width: auto;
-    margin-right: 0;
   }
   .fila-nombre input[type="text"] {
     width: 100%;
+  }
+
+  /* Ajuste fino en móvil muy pequeño */
+  #carta-astral {
+    margin-bottom: 20px;
   }
 }
