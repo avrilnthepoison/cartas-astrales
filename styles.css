@@ -205,10 +205,6 @@ select {
   font-weight: 700;
 }
 
-.etiqueta-retrogrado:hover::before {
-  background-color: #7088c7;
-}
-
 .etiqueta-retrogrado input[type="checkbox"]:focus + .etiqueta-retrogrado::before {
   box-shadow: 0 0 0 2px rgba(0,0,0,0.2);
 }
@@ -231,10 +227,6 @@ select {
   transition: background-color 0.2s ease;
 }
 
-#btn-generar:hover {
-  background-color: #7088c7;
-}
-
 #btn-borrar {
   display: block;
   width: 100%;
@@ -251,11 +243,6 @@ select {
   padding: 12px;
   cursor: pointer;
   transition: background-color 0.2s ease;
-}
-
-#btn-borrar:hover {
-  background-color: #1038a2;
-  color: #ffffff;
 }
 
 /* Botones de descarga (dos botones) */
@@ -278,18 +265,14 @@ select {
   transition: background-color 0.2s ease;
 }
 
-#btn-descargar-png:hover,
-#btn-descargar-png-fondo:hover {
-  background-color: #1038a2;
-  color: #ffffff;
-}
-
-/* PLACEHOLDERS (incluye navegadores antiguos) */
-::-webkit-input-placeholder { color: #7088c7; opacity: 1; } /* Chrome, Safari, Edge */
-::-moz-placeholder { color: #7088c7; opacity: 1; }          /* Firefox 19+ */
-:-ms-input-placeholder { color: #7088c7; opacity: 1; }      /* IE 10-11 */
-::-ms-input-placeholder { color: #7088c7; opacity: 1; }     /* Edge antiguo */
-::placeholder { color: #7088c7; opacity: 1; }               /* Estándar moderno */
+/* ============================================
+   PLACEHOLDERS (con color visible)
+   ============================================ */
+::-webkit-input-placeholder { color: #7088c7; opacity: 1; }
+::-moz-placeholder { color: #7088c7; opacity: 1; }
+:-ms-input-placeholder { color: #7088c7; opacity: 1; }
+::-ms-input-placeholder { color: #7088c7; opacity: 1; }
+::placeholder { color: #7088c7; opacity: 1; }
 
 /*
 ==========================================================================
@@ -460,5 +443,35 @@ select {
 
   .contenedor-sticky-mapa {
     margin-top: 30px;
+  }
+}
+
+/*
+==========================================================================
+7. ESTILOS HOVER (SOLO PARA DISPOSITIVOS CON CAPACIDAD DE HOVER)
+==========================================================================
+*/
+@media (hover: hover) {
+  /* Hover del checkbox de retrógrado */
+  .etiqueta-retrogrado:hover::before {
+    background-color: #7088c7;
+  }
+
+  /* Hover del botón Generar */
+  #btn-generar:hover {
+    background-color: #7088c7;
+  }
+
+  /* Hover del botón Restablecer */
+  #btn-borrar:hover {
+    background-color: #1038a2;
+    color: #ffffff;
+  }
+
+  /* Hover de los botones de descarga */
+  #btn-descargar-png:hover,
+  #btn-descargar-png-fondo:hover {
+    background-color: #1038a2;
+    color: #ffffff;
   }
 }
