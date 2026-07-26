@@ -362,6 +362,12 @@ select {
 
 #carta-astral text {
   letter-spacing: 1.2px !important;
+  font-family: 'IM Fell DW Pica', serif !important;
+  font-style: normal !important;
+}
+
+#carta-astral text[font-style="italic"] {
+  font-style: italic !important;
 }
 
 #carta-astral circle,
