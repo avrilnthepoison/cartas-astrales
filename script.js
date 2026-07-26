@@ -177,12 +177,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const svgOriginal = document.getElementById("carta-astral");
     const clon = svgOriginal.cloneNode(true);
 
-    // Encontrar todas las imágenes del SVG clonado
     const imagenes = clon.querySelectorAll("image");
-    // Mapa de caché para no leer varias veces el mismo archivo
     const cacheDataURI = new Map();
 
-    // Función para obtener una imagen como data URI
     async function obtenerDataURI(ruta) {
       if (cacheDataURI.has(ruta)) {
         return cacheDataURI.get(ruta);
@@ -191,7 +188,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const response = await fetch(ruta);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const text = await response.text();
-        // Codificamos el contenido SVG como data URI
         const dataURI = `data:image/svg+xml;utf8,${encodeURIComponent(text)}`;
         cacheDataURI.set(ruta, dataURI);
         return dataURI;
@@ -201,7 +197,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Recorrer todas las imágenes y reemplazar href por data URI
     const promesas = [];
     imagenes.forEach(img => {
       const href = img.getAttribute("href");
@@ -216,15 +211,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Esperar a que todas las imágenes se hayan incrustado
     await Promise.all(promesas);
 
-    // Ahora serializar el SVG modificado
     const svgData = new XMLSerializer().serializeToString(clon);
     const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
 
-    // Cargar la imagen y dibujar en canvas
     const img = new Image();
     img.onload = function() {
       const canvas = document.createElement("canvas");
@@ -250,7 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------------
-  //  FUNCIÓN PRINCIPAL DE DIBUJO
+  //  FUNCIÓN PRINCIPAL DE DIBUJO (CON DOS CORONAS)
   // ------------------------------------------------------------
   function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
     while (lienzoSvg.firstChild) {
@@ -275,8 +267,9 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloExterior.setAttribute("fill", "none");
     lienzoSvg.appendChild(circuloExterior);
 
-    const pathCorona = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    const dCorona = `
+    // PRIMERA CORONA (exterior, entre RADIO_EXTERIOR y RADIO_SIGNOS_INTERIOR)
+    const pathCoronaExterior = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    const dCoronaExterior = `
       M ${CENTRO_X - RADIO_EXTERIOR} ${CENTRO_Y}
       A ${RADIO_EXTERIOR} ${RADIO_EXTERIOR} 0 1,1 ${CENTRO_X + RADIO_EXTERIOR} ${CENTRO_Y}
       A ${RADIO_EXTERIOR} ${RADIO_EXTERIOR} 0 1,1 ${CENTRO_X - RADIO_EXTERIOR} ${CENTRO_Y} Z
@@ -284,12 +277,12 @@ document.addEventListener("DOMContentLoaded", () => {
       A ${RADIO_SIGNOS_INTERIOR} ${RADIO_SIGNOS_INTERIOR} 0 1,0 ${CENTRO_X + RADIO_SIGNOS_INTERIOR} ${CENTRO_Y}
       A ${RADIO_SIGNOS_INTERIOR} ${RADIO_SIGNOS_INTERIOR} 0 1,0 ${CENTRO_X - RADIO_SIGNOS_INTERIOR} ${CENTRO_Y} Z
     `;
-    pathCorona.setAttribute("d", dCorona);
-    pathCorona.setAttribute("fill-rule", "evenodd");
-    pathCorona.setAttribute("fill", "#1038a2");
-    pathCorona.setAttribute("stroke", "none");
-    pathCorona.setAttribute("opacity", "0.8")
-    lienzoSvg.appendChild(pathCorona);
+    pathCoronaExterior.setAttribute("d", dCoronaExterior);
+    pathCoronaExterior.setAttribute("fill-rule", "evenodd");
+    pathCoronaExterior.setAttribute("fill", "#1038a2");
+    pathCoronaExterior.setAttribute("stroke", "none");
+    pathCoronaExterior.setAttribute("opacity", "0.8");
+    lienzoSvg.appendChild(pathCoronaExterior);
 
     const circuloSignosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloSignosInterior.setAttribute("cx", String(CENTRO_X));
@@ -300,8 +293,9 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloSignosInterior.setAttribute("fill", "none");
     lienzoSvg.appendChild(circuloSignosInterior);
 
-    const pathCorona = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    const dCorona = `
+    // SEGUNDA CORONA (interior, entre RADIO_SIGNOS_INTERIOR y RADIO_DECANATOS_INTERIOR)
+    const pathCoronaInterior = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    const dCoronaInterior = `
       M ${CENTRO_X - RADIO_SIGNOS_INTERIOR} ${CENTRO_Y}
       A ${RADIO_SIGNOS_INTERIOR} ${RADIO_SIGNOS_INTERIOR} 0 1,1 ${CENTRO_X + RADIO_SIGNOS_INTERIOR} ${CENTRO_Y}
       A ${RADIO_SIGNOS_INTERIOR} ${RADIO_SIGNOS_INTERIOR} 0 1,1 ${CENTRO_X - RADIO_SIGNOS_INTERIOR} ${CENTRO_Y} Z
@@ -309,12 +303,12 @@ document.addEventListener("DOMContentLoaded", () => {
       A ${RADIO_DECANATOS_INTERIOR} ${RADIO_DECANATOS_INTERIOR} 0 1,0 ${CENTRO_X + RADIO_DECANATOS_INTERIOR} ${CENTRO_Y}
       A ${RADIO_DECANATOS_INTERIOR} ${RADIO_DECANATOS_INTERIOR} 0 1,0 ${CENTRO_X - RADIO_DECANATOS_INTERIOR} ${CENTRO_Y} Z
     `;
-    pathCorona.setAttribute("d", dCorona);
-    pathCorona.setAttribute("fill-rule", "evenodd");
-    pathCorona.setAttribute("fill", "#1038a2");
-    pathCorona.setAttribute("stroke", "none");
-    pathCorona.setAttribute("opacity", "0.6")
-    lienzoSvg.appendChild(pathCorona);
+    pathCoronaInterior.setAttribute("d", dCoronaInterior);
+    pathCoronaInterior.setAttribute("fill-rule", "evenodd");
+    pathCoronaInterior.setAttribute("fill", "#1038a2");
+    pathCoronaInterior.setAttribute("stroke", "none");
+    pathCoronaInterior.setAttribute("opacity", "0.6");
+    lienzoSvg.appendChild(pathCoronaInterior);
 
     const circuloDecanatosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloDecanatosInterior.setAttribute("cx", String(CENTRO_X));
@@ -769,7 +763,7 @@ document.addEventListener("DOMContentLoaded", () => {
           txtRetro.setAttribute("text-anchor", "start");
           txtRetro.setAttribute("dominant-baseline", "central");
           txtRetro.setAttribute("fill", "#1038a2");
-          txtRetro.setAttribute("opacity", "0.6")
+          txtRetro.setAttribute("opacity", "0.6");
           txtRetro.textContent = "R";
           lienzoSvg.appendChild(txtRetro);
         }
