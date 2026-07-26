@@ -334,16 +334,6 @@ select {
   margin-bottom: 0;     /* Sin margen inferior para que no sume espacio extra */
 }
 
-.fila-nombre label {
-  font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: 1px;
-  color: #1038a2;
-  min-width: 130px;
-  margin-right: 8px;
-}
-
 .fila-nombre input[type="text"] {
   font-family: 'Inter', sans-serif;
   font-size: 12px;
@@ -355,7 +345,6 @@ select {
   outline: none;
   flex: 1;
   min-width: 150px;
-  margin-right: 8px;
 }
 
 .fila-nombre .ayuda-nombre {
@@ -403,7 +392,7 @@ select {
   .contenedor-sticky-mapa {
     position: relative;
     top: 0;
-    margin-top: 30px;   /* Separación del gráfico respecto al formulario */
+    margin-top: 30px;
   }
 }
 
@@ -417,28 +406,52 @@ select {
   .etiqueta-retrogrado {
     font-size: 9px;
   }
+
+  /* REORGANIZACIÓN DE FILAS DE AJUSTES */
   .fila-ajuste {
-    flex-direction: column;
-    align-items: stretch;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px; /* separación entre elementos */
+    margin-bottom: 15px;
   }
+
+  .fila-ajuste:last-child {
+    margin-bottom: 0;
+  }
+
   .fila-ajuste label {
+    flex: 0 0 auto; /* no crece, no se encoge, tamaño automático */
     min-width: auto;
+    font-size: 12px;
+    letter-spacing: 1px;
   }
+
   .fila-ajuste input[type="number"] {
-    width: 100%;
+    flex: 0 0 auto;
+    width: 60px; /* un poco más ancho para móvil */
     max-width: 80px;
+    margin-right: 0;
   }
+
+  .fila-ajuste .ayuda-ajuste {
+    flex: 0 0 100%; /* ocupa toda la línea */
+    margin-left: 0;
+    font-size: 10px;
+    color: #1038a2;
+    opacity: 0.8;
+    padding-top: 2px; /* pequeño espacio con el input */
+  }
+
   .fila-nombre {
     flex-direction: column;
     align-items: stretch;
   }
-  .fila-nombre label {
-    min-width: auto;
-  }
   .fila-nombre input[type="text"] {
     width: 100%;
   }
+  
   .contenedor-sticky-mapa {
-    margin-top: 20px;   /* Menos separación en pantallas muy pequeñas */
+    margin-top: 30px;
   }
 }
