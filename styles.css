@@ -403,11 +403,7 @@ select {
   .contenedor-sticky-mapa {
     position: relative;
     top: 0;
-  }
-
-  /* Separación del gráfico de los botones en móvil */
-  #carta-astral {
-    margin-bottom: 30px;
+    margin-top: 30px;   /* Separación del gráfico respecto al formulario */
   }
 }
 
@@ -421,7 +417,6 @@ select {
   .etiqueta-retrogrado {
     font-size: 9px;
   }
-
   .fila-ajuste {
     flex-direction: column;
     align-items: stretch;
@@ -433,7 +428,6 @@ select {
     width: 100%;
     max-width: 80px;
   }
-
   .fila-nombre {
     flex-direction: column;
     align-items: stretch;
@@ -444,9 +438,7 @@ select {
   .fila-nombre input[type="text"] {
     width: 100%;
   }
-
-  /* Ajuste fino en móvil muy pequeño */
-  #carta-astral {
-    margin-bottom: 20px;
+  .contenedor-sticky-mapa {
+    margin-top: 20px;   /* Menos separación en pantallas muy pequeñas */
   }
 }
