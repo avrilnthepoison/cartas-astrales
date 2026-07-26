@@ -553,8 +553,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const radAsc = ajustarAngulo(ascendenteAbs);
       const xAsc1 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radAsc));
       const yAsc1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radAsc));
-      const xAsc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 50) * Math.cos(radAsc));
-      const yAsc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 50) * Math.sin(radAsc));
+      const xAsc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 60) * Math.cos(radAsc));
+      const yAsc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 60) * Math.sin(radAsc));
 
       const lineaAsc = document.createElementNS("http://www.w3.org/2000/svg", "line");
       lineaAsc.setAttribute("x1", String(xAsc1));
@@ -569,8 +569,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Ícono ASC (SVG) – colocado en el extremo interior de la línea
       const imgAsc = document.createElementNS("http://www.w3.org/2000/svg", "image");
-      imgAsc.setAttribute("x", String(xAsc2 - 10));
-      imgAsc.setAttribute("y", String(yAsc2 - 10));
+      imgAsc.setAttribute("x", String(xAsc2 - 30));
+      imgAsc.setAttribute("y", String(yAsc2 - 30));
       imgAsc.setAttribute("width", "20");
       imgAsc.setAttribute("height", "20");
       imgAsc.setAttribute("href", "svg/asc.svg");
@@ -580,8 +580,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const radMc = ajustarAngulo(mcAbs);
       const xMc1 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radMc));
       const yMc1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radMc));
-      const xMc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 50) * Math.cos(radMc));
-      const yMc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 50) * Math.sin(radMc));
+      const xMc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 60) * Math.cos(radMc));
+      const yMc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 60) * Math.sin(radMc));
 
       const lineaMc = document.createElementNS("http://www.w3.org/2000/svg", "line");
       lineaMc.setAttribute("x1", String(xMc1));
@@ -596,8 +596,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Ícono MC (SVG) – colocado en el extremo interior de la línea
       const imgMc = document.createElementNS("http://www.w3.org/2000/svg", "image");
-      imgMc.setAttribute("x", String(xMc2 - 10));
-      imgMc.setAttribute("y", String(yMc2 - 10));
+      imgMc.setAttribute("x", String(xMc2 - 30));
+      imgMc.setAttribute("y", String(yMc2 - 30));
       imgMc.setAttribute("width", "20");
       imgMc.setAttribute("height", "20");
       imgMc.setAttribute("href", "svg/mc.svg");
