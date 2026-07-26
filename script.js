@@ -197,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return null;
       }
 
-      // Descargar cada fuente y convertir a base64
+      // Descargar cada fuente y convertir a base64, detectando el estilo
       const fuentesBase64 = [];
       for (const url of urls) {
         try {
@@ -205,7 +205,10 @@ document.addEventListener("DOMContentLoaded", () => {
           if (!respuestaFuente.ok) throw new Error(`HTTP ${respuestaFuente.status}`);
           const buffer = await respuestaFuente.arrayBuffer();
           const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
-          fuentesBase64.push({ base64 });
+          // Determinar si es itálica o regular basado en la URL
+          const esItalic = url.toLowerCase().includes('italic') || url.toLowerCase().includes('i');
+          const estilo = esItalic ? 'italic' : 'normal';
+          fuentesBase64.push({ base64, estilo });
         } catch (e) {
           console.warn(`Error al descargar fuente: ${url}`, e);
         }
@@ -213,18 +216,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (fuentesBase64.length === 0) return null;
 
-      // Asignar estilos: la primera es regular, la segunda (si existe) es itálica
-      const regular = fuentesBase64[0];
-      const italic = fuentesBase64.length > 1 ? fuentesBase64[1] : null;
-
-      let fontFace = `@font-face { font-family: 'IM Fell DW Pica'; font-display: swap; `;
-      fontFace += `src: url('data:font/woff2;base64,${regular.base64}') format('woff2'); `;
-      fontFace += `font-weight: 400; font-style: normal; }\n`;
-
-      if (italic) {
+      // Generar @font-face para cada una
+      let fontFace = '';
+      for (const fuente of fuentesBase64) {
         fontFace += `@font-face { font-family: 'IM Fell DW Pica'; font-display: swap; `;
-        fontFace += `src: url('data:font/woff2;base64,${italic.base64}') format('woff2'); `;
-        fontFace += `font-weight: 400; font-style: italic; }\n`;
+        fontFace += `src: url('data:font/woff2;base64,${fuente.base64}') format('woff2'); `;
+        fontFace += `font-weight: 400; font-style: ${fuente.estilo}; }\n`;
       }
 
       return fontFace;
@@ -260,18 +257,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const svgOriginal = document.getElementById("carta-astral");
     const clon = svgOriginal.cloneNode(true);
 
-    // 3. Inyectar la fuente incrustada en el SVG clonado, con estilos para normal e itálica
+    // 3. Inyectar la fuente incrustada en el SVG clonado (solo el @font-face, sin reglas de estilo adicionales)
     const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
-    style.textContent = `
-      ${fuenteCSS}
-      text {
-        font-family: 'IM Fell DW Pica', serif !important;
-        font-style: normal !important;
-      }
-      .retrogrado {
-        font-style: italic !important;
-      }
-    `;
+    style.textContent = fuenteCSS;
     clon.insertBefore(style, clon.firstChild);
 
     // 4. Incrustar imágenes SVG de planetas
@@ -503,6 +491,7 @@ document.addEventListener("DOMContentLoaded", () => {
       etiquetaTexto.setAttribute("font-size", "14");
       etiquetaTexto.setAttribute("font-weight", "400");
       etiquetaTexto.setAttribute("fill", "#ffffff");
+      etiquetaTexto.setAttribute("font-style", "normal"); // <-- FORZAR NORMAL
       const trayectoTexto = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
       trayectoTexto.setAttribute("href", `#${idTrayecto}`);
       trayectoTexto.setAttribute("startOffset", "50%");
@@ -900,7 +889,6 @@ document.addEventListener("DOMContentLoaded", () => {
           txtRetro.setAttribute("dominant-baseline", "central");
           txtRetro.setAttribute("fill", "#1038a2");
           txtRetro.setAttribute("opacity", "0.6");
-          txtRetro.setAttribute("class", "retrogrado"); // <-- AÑADIDA LA CLASE
           txtRetro.textContent = "R";
           lienzoSvg.appendChild(txtRetro);
         }
