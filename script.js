@@ -300,6 +300,22 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloSignosInterior.setAttribute("fill", "none");
     lienzoSvg.appendChild(circuloSignosInterior);
 
+    const pathCorona = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    const dCorona = `
+      M ${CENTRO_X - RADIO_SIGNOS_INTERIOR} ${CENTRO_Y}
+      A ${RADIO_SIGNOS_INTERIOR} ${RADIO_SIGNOS_INTERIOR} 0 1,1 ${CENTRO_X + RADIO_SIGNOS_INTERIOR} ${CENTRO_Y}
+      A ${RADIO_SIGNOS_INTERIOR} ${RADIO_SIGNOS_INTERIOR} 0 1,1 ${CENTRO_X - RADIO_SIGNOS_INTERIOR} ${CENTRO_Y} Z
+      M ${CENTRO_X - RADIO_DECANATOS_INTERIOR} ${CENTRO_Y}
+      A ${RADIO_DECANATOS_INTERIOR} ${RADIO_DECANATOS_INTERIOR} 0 1,0 ${CENTRO_X + RADIO_DECANATOS_INTERIOR} ${CENTRO_Y}
+      A ${RADIO_DECANATOS_INTERIOR} ${RADIO_DECANATOS_INTERIOR} 0 1,0 ${CENTRO_X - RADIO_DECANATOS_INTERIOR} ${CENTRO_Y} Z
+    `;
+    pathCorona.setAttribute("d", dCorona);
+    pathCorona.setAttribute("fill-rule", "evenodd");
+    pathCorona.setAttribute("fill", "#1038a2");
+    pathCorona.setAttribute("stroke", "none");
+    pathCorona.setAttribute("opacity", "0.6")
+    lienzoSvg.appendChild(pathCorona);
+
     const circuloDecanatosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloDecanatosInterior.setAttribute("cx", String(CENTRO_X));
     circuloDecanatosInterior.setAttribute("cy", String(CENTRO_Y));
