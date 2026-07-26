@@ -163,6 +163,8 @@ select {
   color: #1038a2;
   cursor: pointer;
   user-select: none;
+  -webkit-tap-highlight-color: transparent; /* Elimina resaltado táctil */
+  -webkit-touch-callout: none;              /* Evita menú contextual */
   position: relative;
   padding-left: 22px;
   margin-left: 4px;
@@ -209,6 +211,18 @@ select {
   box-shadow: 0 0 0 2px rgba(0,0,0,0.2);
 }
 
+/* Botones (todos) */
+#btn-generar,
+#btn-borrar,
+#btn-descargar-png,
+#btn-descargar-png-fondo {
+  user-select: none;                    /* Evita selección de texto */
+  -webkit-tap-highlight-color: transparent; /* Elimina resaltado táctil */
+  -webkit-touch-callout: none;          /* Evita menú contextual */
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
 /* Botón de Generar Gráfico */
 #btn-generar {
   display: block;
@@ -223,8 +237,6 @@ select {
   letter-spacing: 2px;
   text-transform: uppercase;
   padding: 16px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
 #btn-borrar {
@@ -241,8 +253,6 @@ select {
   letter-spacing: 1px;
   text-transform: uppercase;
   padding: 12px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Botones de descarga (dos botones) */
@@ -261,8 +271,6 @@ select {
   letter-spacing: 1px;
   text-transform: uppercase;
   padding: 12px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* PLACEHOLDERS (incluye navegadores antiguos) */
@@ -446,9 +454,22 @@ select {
 
 /*
 ==========================================================================
-7. ESTADOS INTERACTIVOS (HOVER Y ACTIVE)
+7. ESTADOS INTERACTIVOS (HOVER, ACTIVE, FOCUS)
 ==========================================================================
 */
+
+/* --- FOCUS: para accesibilidad (teclado) --- */
+.etiqueta-retrogrado input[type="checkbox"]:focus + .etiqueta-retrogrado::before {
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.2);
+}
+
+#btn-generar:focus,
+#btn-borrar:focus,
+#btn-descargar-png:focus,
+#btn-descargar-png-fondo:focus {
+  outline: 2px solid #1038a2;
+  outline-offset: 2px;
+}
 
 /* --- HOVER: SOLO PARA DISPOSITIVOS CON CAPACIDAD DE HOVER (RATÓN) --- */
 @media (hover: hover) {
