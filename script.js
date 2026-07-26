@@ -167,24 +167,102 @@ document.addEventListener("DOMContentLoaded", () => {
 
   botonGenerar.addEventListener("click", procesarYGenerarCarta);
   botonBorrar.addEventListener("click", restablecerTodoACero);
-
   botonDescargarPNG.addEventListener("click", () => descargarPNG(false));
   botonDescargarPNGFondo.addEventListener("click", () => descargarPNG(true));
 
   cargarValoresGuardados();
 
   // ------------------------------------------------------------
+  //  FUNCIÓN PARA OBTENER FUENTE DE GOOGLE FONTS Y CONVERTIRLA A BASE64
+  // ------------------------------------------------------------
+  async function obtenerFuenteBase64(urlCss) {
+    try {
+      // 1. Obtener el CSS de Google Fonts
+      const respuestaCss = await fetch(urlCss);
+      if (!respuestaCss.ok) throw new Error(`HTTP ${respuestaCss.status}`);
+      const css = await respuestaCss.text();
+
+      // 2. Extraer la URL del .woff2 (regular e italic)
+      const regexWoff2 = /url\(([^)]+)\)/g;
+      const urls = [];
+      let match;
+      while ((match = regexWoff2.exec(css)) !== null) {
+        let url = match[1];
+        // Limpiar la URL (quitar comillas y espacios)
+        url = url.replace(/^["']|["']$/g, '');
+        // Asegurar que sea HTTPS
+        if (url.startsWith('http://')) url = url.replace('http://', 'https://');
+        urls.push(url);
+      }
+
+      if (urls.length === 0) {
+        console.warn("No se encontraron URLs de fuentes en el CSS de Google Fonts.");
+        return null;
+      }
+
+      // 3. Descargar cada fuente y convertir a base64
+      const fuentesBase64 = [];
+      for (const url of urls) {
+        try {
+          const respuestaFuente = await fetch(url);
+          if (!respuestaFuente.ok) throw new Error(`HTTP ${respuestaFuente.status}`);
+          const buffer = await respuestaFuente.arrayBuffer();
+          const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+          // Detectar si es italic o regular (por el nombre del archivo o por la URL)
+          const esItalic = url.includes('italic') || url.includes('i') || css.includes('italic');
+          const estilo = esItalic ? 'italic' : 'normal';
+          fuentesBase64.push({
+            base64,
+            estilo,
+            formato: 'woff2'
+          });
+        } catch (e) {
+          console.warn(`Error al descargar fuente: ${url}`, e);
+        }
+      }
+
+      // 4. Construir el @font-face
+      if (fuentesBase64.length === 0) return null;
+      let fontFace = `@font-face { font-family: 'IM Fell DW Pica'; font-display: swap; `;
+      const regular = fuentesBase64.find(f => f.estilo === 'normal') || fuentesBase64[0];
+      const italic = fuentesBase64.find(f => f.estilo === 'italic') || fuentesBase64[0];
+
+      fontFace += `src: url('data:font/woff2;base64,${regular.base64}') format('woff2'); `;
+      fontFace += `font-weight: 400; font-style: normal; }\n`;
+
+      if (italic && italic !== regular) {
+        fontFace += `@font-face { font-family: 'IM Fell DW Pica'; font-display: swap; `;
+        fontFace += `src: url('data:font/woff2;base64,${italic.base64}') format('woff2'); `;
+        fontFace += `font-weight: 400; font-style: italic; }\n`;
+      }
+
+      return fontFace;
+    } catch (error) {
+      console.error("Error al obtener la fuente de Google Fonts:", error);
+      return null;
+    }
+  }
+
+  // ------------------------------------------------------------
   //  FUNCIÓN PARA DESCARGAR PNG (con o sin fondo) - ALTA RESOLUCIÓN Y FUENTE CORRECTA
   // ------------------------------------------------------------
   async function descargarPNG(conFondo = false) {
-    // 1. Asegurar que la fuente "IM Fell DW Pica" esté cargada
+    // 1. Obtener la fuente de Google Fonts incrustada como base64
+    const urlGoogleFonts = 'https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica:ital,wght@0,400;1,400&display=swap';
+    let fuenteCSS = await obtenerFuenteBase64(urlGoogleFonts);
+    if (!fuenteCSS) {
+      // Fallback: usar la fuente del sistema (Times New Roman)
+      console.warn("No se pudo obtener la fuente de Google Fonts. Se usará la fuente por defecto.");
+      fuenteCSS = `text { font-family: serif; }`;
+    }
+
+    // 2. Asegurar que la fuente esté cargada en el documento (para el canvas)
     try {
       await document.fonts.load('1em "IM Fell DW Pica"');
     } catch (e) {
-      console.warn("No se pudo cargar la fuente 'IM Fell DW Pica'", e);
+      // Si falla, no importa, la fuente ya está incrustada en el SVG
     }
 
-    // Factor de escala para aumentar la resolución
     const ESCALA = 3;
     const ANCHO_FINAL = 600 * ESCALA;
     const ALTO_FINAL = 600 * ESCALA;
@@ -192,16 +270,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const svgOriginal = document.getElementById("carta-astral");
     const clon = svgOriginal.cloneNode(true);
 
-    // Inyectar el enlace a la fuente dentro del SVG clonado (para que sea autónomo)
+    // 3. Inyectar la fuente incrustada en el SVG clonado
     const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
     style.textContent = `
-      @import url('https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica:ital,wght@0,400;1,400&display=swap');
+      ${fuenteCSS}
       text { font-family: 'IM Fell DW Pica', serif !important; }
     `;
-    // Insertar al principio del SVG
     clon.insertBefore(style, clon.firstChild);
 
-    // Incrustar imágenes SVG
+    // 4. Incrustar imágenes SVG de planetas
     const imagenes = clon.querySelectorAll("image");
     const cacheDataURI = new Map();
 
@@ -238,7 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     await Promise.all(promesas);
 
-    // Serializar SVG
+    // 5. Serializar SVG
     const svgData = new XMLSerializer().serializeToString(clon);
     const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -250,7 +327,6 @@ document.addEventListener("DOMContentLoaded", () => {
       canvas.height = ALTO_FINAL;
       const ctx = canvas.getContext("2d");
 
-      // Fondo
       if (conFondo) {
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -289,7 +365,6 @@ document.addEventListener("DOMContentLoaded", () => {
   //  FUNCIÓN PRINCIPAL DE DIBUJO (CON DOS CORONAS, EJES COMO ÍCONOS Y SEPARACIÓN DINÁMICA)
   // ------------------------------------------------------------
   function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
-    // LEER VALORES DE UMBRAL Y SEPARACIÓN DESDE LOS INPUTS
     const umbralInput = document.getElementById("umbral-input");
     const separacionInput = document.getElementById("separacion-input");
     let umbral = parseFloat(umbralInput.value);
@@ -319,7 +394,6 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloExterior.setAttribute("fill", "none");
     lienzoSvg.appendChild(circuloExterior);
 
-    // PRIMERA CORONA (exterior, entre RADIO_EXTERIOR y RADIO_SIGNOS_INTERIOR)
     const pathCoronaExterior = document.createElementNS("http://www.w3.org/2000/svg", "path");
     const dCoronaExterior = `
       M ${CENTRO_X - RADIO_EXTERIOR} ${CENTRO_Y}
@@ -345,7 +419,6 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloSignosInterior.setAttribute("fill", "none");
     lienzoSvg.appendChild(circuloSignosInterior);
 
-    // SEGUNDA CORONA (interior, entre RADIO_SIGNOS_INTERIOR y RADIO_DECANATOS_INTERIOR)
     const pathCoronaInterior = document.createElementNS("http://www.w3.org/2000/svg", "path");
     const dCoronaInterior = `
       M ${CENTRO_X - RADIO_SIGNOS_INTERIOR} ${CENTRO_Y}
