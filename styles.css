@@ -261,7 +261,7 @@ select {
   color: #ffffff;
 }
 
-/* NUEVO: Botón Descargar PNG */
+/* Botón Descargar PNG */
 #btn-descargar-png {
   display: block;
   width: 100%;
@@ -287,7 +287,50 @@ select {
 
 /*
 ==========================================================================
-4. ESTILOS DEL GRÁFICO SVG (RADIX)
+4. ESTILOS PARA LOS AJUSTES DE AGRUPACIÓN
+==========================================================================
+*/
+.fila-ajuste {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+
+.fila-ajuste label {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #1038a2;
+  min-width: 130px;
+}
+
+.fila-ajuste input[type="number"] {
+  width: 70px;
+  text-align: center;
+  margin-right: 8px;
+}
+
+.fila-ajuste .ayuda-ajuste {
+  font-size: 10px;
+  color: #666;
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+.nota-ajuste {
+  font-size: 11px;
+  color: #666;
+  margin: 10px 0 0 0;
+  font-style: italic;
+  border-top: 1px dashed #1038a2;
+  padding-top: 10px;
+}
+
+/*
+==========================================================================
+5. ESTILOS DEL GRÁFICO SVG (RADIX)
 ==========================================================================
 */
 #carta-astral {
@@ -307,7 +350,7 @@ select {
 
 /*
 ==========================================================================
-5. RESPONSIVE
+6. RESPONSIVE
 ==========================================================================
 */
 @media (max-width: 850px) {
@@ -336,5 +379,16 @@ select {
   }
   .etiqueta-retrogrado {
     font-size: 9px;
+  }
+  .fila-ajuste {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .fila-ajuste label {
+    min-width: auto;
+  }
+  .fila-ajuste input[type="number"] {
+    width: 100%;
+    max-width: 80px;
   }
 }

@@ -242,9 +242,18 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------------
-  //  FUNCIÓN PRINCIPAL DE DIBUJO (CON DOS CORONAS, EJES COMO ÍCONOS Y SEPARACIÓN INCLUYENDO EJES)
+  //  FUNCIÓN PRINCIPAL DE DIBUJO (CON DOS CORONAS, EJES COMO ÍCONOS Y SEPARACIÓN DINÁMICA)
   // ------------------------------------------------------------
   function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
+    // LEER VALORES DE UMBRAL Y SEPARACIÓN DESDE LOS INPUTS
+    const umbralInput = document.getElementById("umbral-input");
+    const separacionInput = document.getElementById("separacion-input");
+    // Convertir a número, con fallback a valores por defecto
+    let umbral = parseFloat(umbralInput.value);
+    if (isNaN(umbral) || umbral < 0) umbral = 8;
+    let separacionGrupo = parseFloat(separacionInput.value);
+    if (isNaN(separacionGrupo) || separacionGrupo < 0) separacionGrupo = 10;
+
     while (lienzoSvg.firstChild) {
       lienzoSvg.removeChild(lienzoSvg.firstChild);
     }
@@ -570,9 +579,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // Ícono ASC (SVG)
       const xAscIcono = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 75) * Math.cos(radAsc));
       const yAscIcono = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 75) * Math.sin(radAsc));
-
       const imgAsc = document.createElementNS("http://www.w3.org/2000/svg", "image");
-      imgAsc.setAttribute("x", String(xAscIcono - 10)); // centrado (20x20)
+      imgAsc.setAttribute("x", String(xAscIcono - 10));
       imgAsc.setAttribute("y", String(yAscIcono - 10));
       imgAsc.setAttribute("width", "20");
       imgAsc.setAttribute("height", "20");
@@ -598,12 +606,11 @@ document.addEventListener("DOMContentLoaded", () => {
       lienzoSvg.appendChild(lineaMc);
 
       // Ícono MC (SVG)
-      const xMcTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 75) * Math.cos(radMc));
-      const yMcTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 75) * Math.sin(radMc));
-
+      const xMcIcono = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 75) * Math.cos(radMc));
+      const yMcIcono = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 75) * Math.sin(radMc));
       const imgMc = document.createElementNS("http://www.w3.org/2000/svg", "image");
-      imgMc.setAttribute("x", String(xMcTxt - 10));
-      imgMc.setAttribute("y", String(yMcTxt - 10));
+      imgMc.setAttribute("x", String(xMcIcono - 10));
+      imgMc.setAttribute("y", String(yMcIcono - 10));
       imgMc.setAttribute("width", "20");
       imgMc.setAttribute("height", "20");
       imgMc.setAttribute("href", "svg/mc.svg");
@@ -678,8 +685,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Ordenar por posición angular
       todosLosPuntos.sort((a, b) => a.gradosAbsolutos - b.gradosAbsolutos);
 
-      // Agrupar por umbral (8°)
-      const umbral = 8;
+      // Agrupar por umbral (valor dinámico)
       const grupos = [];
       let grupoActual = [];
       for (let i = 0; i < todosLosPuntos.length; i++) {
@@ -699,7 +705,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (grupoActual.length > 0) grupos.push(grupoActual);
 
       // Calcular desplazamientos (los ejes siempre tendrán offset 0)
-      const separacionGrupo = 10;
       const desplazamientos = {};
 
       for (const grupo of grupos) {
