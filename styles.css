@@ -284,6 +284,14 @@ select {
   color: #ffffff;
 }
 
+/* PLACEHOLDERS con color de fondo de bloques */
+input::placeholder,
+input::-webkit-input-placeholder,
+input::-moz-placeholder {
+  color: #e8ecf6;
+  opacity: 1;
+}
+
 /*
 ==========================================================================
 4. ESTILOS PARA AJUSTES DE AGRUPACIÓN Y NOMBRE
@@ -450,7 +458,7 @@ select {
   .fila-nombre input[type="text"] {
     width: 100%;
   }
-  
+
   .contenedor-sticky-mapa {
     margin-top: 30px;
   }
