@@ -284,11 +284,12 @@ select {
   color: #ffffff;
 }
 
-/* PLACEHOLDERS */
-::placeholder{
-  color: #e8ecf6;
-  opacity: 1;
-}
+/* PLACEHOLDERS (incluye navegadores antiguos) */
+::-webkit-input-placeholder { color: #e8ecf6; opacity: 1; } /* Chrome, Safari, Edge */
+::-moz-placeholder { color: #e8ecf6; opacity: 1; }          /* Firefox 19+ */
+:-ms-input-placeholder { color: #e8ecf6; opacity: 1; }      /* IE 10-11 */
+::-ms-input-placeholder { color: #e8ecf6; opacity: 1; }     /* Edge antiguo */
+::placeholder { color: #e8ecf6; opacity: 1; }               /* Estándar moderno */
 
 /*
 ==========================================================================
