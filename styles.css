@@ -322,15 +322,6 @@ select {
   margin-left: 4px;
 }
 
-.nota-ajuste {
-  font-size: 11px;
-  color: #1038a2;
-  margin: 10px 0 0 0;
-  font-style: italic;
-  border-top: 1px dashed #1038a2;
-  padding-top: 10px;
-}
-
 /* Estilos para el bloque de nombre */
 .fila-nombre {
   display: flex;
@@ -360,12 +351,6 @@ select {
   outline: none;
   flex: 1;
   min-width: 150px;
-}
-
-.fila-nombre .ayuda-nombre {
-  font-size: 10px;
-  color: #1038a2;
-  font-weight: 400;
 }
 
 /*
