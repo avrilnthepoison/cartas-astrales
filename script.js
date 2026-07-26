@@ -168,16 +168,21 @@ document.addEventListener("DOMContentLoaded", () => {
   botonGenerar.addEventListener("click", procesarYGenerarCarta);
   botonBorrar.addEventListener("click", restablecerTodoACero);
 
-  // Asignar eventos a los botones de descarga
   botonDescargarPNG.addEventListener("click", () => descargarPNG(false));
   botonDescargarPNGFondo.addEventListener("click", () => descargarPNG(true));
 
   cargarValoresGuardados();
 
   // ------------------------------------------------------------
-  //  FUNCIÓN PARA DESCARGAR PNG (con o sin fondo)
+  //  FUNCIÓN PARA DESCARGAR PNG (con o sin fondo) - ALTA RESOLUCIÓN
   // ------------------------------------------------------------
   async function descargarPNG(conFondo = false) {
+    // Factor de escala para aumentar la resolución (3x → 1800x1800)
+    // Cambia este valor si deseas más o menos resolución
+    const ESCALA = 3; 
+    const ANCHO_FINAL = 600 * ESCALA;
+    const ALTO_FINAL = 600 * ESCALA;
+
     const svgOriginal = document.getElementById("carta-astral");
     const clon = svgOriginal.cloneNode(true);
 
@@ -226,11 +231,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const img = new Image();
     img.onload = function() {
       const canvas = document.createElement("canvas");
-      canvas.width = 600;
-      canvas.height = 600;
+      canvas.width = ANCHO_FINAL;
+      canvas.height = ALTO_FINAL;
       const ctx = canvas.getContext("2d");
 
-      // Si se pide fondo blanco, rellenar; si no, transparente
+      // Fondo (blanco o transparente)
       if (conFondo) {
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -238,6 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
 
+      // Dibujar la imagen escalada al tamaño del canvas
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       const pngUrl = canvas.toDataURL("image/png");
 
@@ -247,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (nombreInput && nombreInput.value.trim() !== "") {
         nombreArchivo = nombreInput.value.trim();
       }
-      // Añadir sufijo según fondo
+
       const sufijo = conFondo ? "_con_fondo" : "_sin_fondo";
       const nombreCompleto = nombreArchivo + sufijo + ".png";
 
