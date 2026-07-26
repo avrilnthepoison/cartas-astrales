@@ -4,17 +4,24 @@
     <style>
       .cls-1 {
         fill: none;
+      }
+
+      .cls-1, .cls-2 {
         stroke: #1038a2;
         stroke-linecap: round;
         stroke-linejoin: round;
         stroke-width: 4px;
+      }
+
+      .cls-2 {
+        fill: #1038a2;
       }
     </style>
   </defs>
   <g id="iconos">
     <g id="sol">
       <circle class="cls-1" cx="22" cy="22" r="20"/>
-      <circle class="cls-1" cx="22" cy="22" r="1.78"/>
+      <circle class="cls-2" cx="22" cy="22" r="1.78"/>
     </g>
   </g>
 </svg>

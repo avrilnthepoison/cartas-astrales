@@ -242,7 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------------
-  //  FUNCIÓN PRINCIPAL DE DIBUJO (CON DOS CORONAS)
+  //  FUNCIÓN PRINCIPAL DE DIBUJO (CON DOS CORONAS, EJES COMO ÍCONOS Y SEPARACIÓN INCLUYENDO EJES)
   // ------------------------------------------------------------
   function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
     while (lienzoSvg.firstChild) {
@@ -307,7 +307,7 @@ document.addEventListener("DOMContentLoaded", () => {
     pathCoronaInterior.setAttribute("fill-rule", "evenodd");
     pathCoronaInterior.setAttribute("fill", "#1038a2");
     pathCoronaInterior.setAttribute("stroke", "none");
-    pathCoronaInterior.setAttribute("opacity", "0.4");
+    pathCoronaInterior.setAttribute("opacity", "0.3");
     lienzoSvg.appendChild(pathCoronaInterior);
 
     const circuloDecanatosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -549,7 +549,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- CAPA 8: Ejes, marcas de posición y planetas ---
     if (mostrarContenido) {
-      // Eje ASC
+      // Eje ASC (línea y marcador)
       const radAsc = ajustarAngulo(ascendenteAbs);
       const xAsc1 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radAsc));
       const yAsc1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radAsc));
@@ -566,20 +566,20 @@ document.addEventListener("DOMContentLoaded", () => {
       lineaAsc.setAttribute("stroke-linecap", "round");
       lienzoSvg.appendChild(lineaAsc);
 
+      // Posición donde irá el ícono de ASC (mismo lugar que el texto anterior)
       const xAscTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 70) * Math.cos(radAsc));
       const yAscTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 70) * Math.sin(radAsc)) + 6;
-      const txtAsc = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      txtAsc.setAttribute("x", String(xAscTxt));
-      txtAsc.setAttribute("y", String(yAscTxt));
-      txtAsc.setAttribute("font-family", "'IM Fell DW Pica', serif");
-      txtAsc.setAttribute("font-size", "12");
-      txtAsc.setAttribute("font-weight", "400");
-      txtAsc.setAttribute("text-anchor", "middle");
-      txtAsc.setAttribute("fill", "#1038a2");
-      txtAsc.textContent = "ASC";
-      lienzoSvg.appendChild(txtAsc);
 
-      // Eje MC
+      // Ícono ASC (SVG)
+      const imgAsc = document.createElementNS("http://www.w3.org/2000/svg", "image");
+      imgAsc.setAttribute("x", String(xAscTxt - 10)); // centrado (20x20)
+      imgAsc.setAttribute("y", String(yAscTxt - 10));
+      imgAsc.setAttribute("width", "20");
+      imgAsc.setAttribute("height", "20");
+      imgAsc.setAttribute("href", "svg/asc.svg");
+      lienzoSvg.appendChild(imgAsc);
+
+      // Eje MC (línea y marcador)
       const radMc = ajustarAngulo(mcAbs);
       const xMc1 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radMc));
       const yMc1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radMc));
@@ -598,18 +598,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const xMcTxt = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 70) * Math.cos(radMc));
       const yMcTxt = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 70) * Math.sin(radMc)) + 6;
-      const txtMc = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      txtMc.setAttribute("x", String(xMcTxt));
-      txtMc.setAttribute("y", String(yMcTxt));
-      txtMc.setAttribute("font-family", "'IM Fell DW Pica', serif");
-      txtMc.setAttribute("font-size", "12");
-      txtMc.setAttribute("font-weight", "400");
-      txtMc.setAttribute("text-anchor", "middle");
-      txtMc.setAttribute("fill", "#1038a2");
-      txtMc.textContent = "MC";
-      lienzoSvg.appendChild(txtMc);
 
-      // Obtener datos de retrógrado
+      // Ícono MC (SVG)
+      const imgMc = document.createElementNS("http://www.w3.org/2000/svg", "image");
+      imgMc.setAttribute("x", String(xMcTxt - 10));
+      imgMc.setAttribute("y", String(yMcTxt - 10));
+      imgMc.setAttribute("width", "20");
+      imgMc.setAttribute("height", "20");
+      imgMc.setAttribute("href", "svg/mc.svg");
+      lienzoSvg.appendChild(imgMc);
+
+      // --- OBTENER DATOS DE PLANETAS Y EJES PARA LA SEPARACIÓN ---
+
+      // 1. Datos de planetas (igual que antes)
       let datosPlanetasForm = {};
       try {
         const raw = localStorage.getItem("datosRadixManual");
@@ -638,6 +639,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const datosPlaneta = datosPlanetasForm[nombre] || { g: 0, m: 0, retrogrado: false };
           planetasData.push({
             nombre,
+            tipo: 'planeta',
             gradosAbsolutos,
             radPlaneta,
             xPlaneta,
@@ -647,49 +649,90 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // Ordenar por posición angular
-      planetasData.sort((a, b) => a.gradosAbsolutos - b.gradosAbsolutos);
+      // 2. Datos de ejes (ASC y MC) como puntos fijos
+      const ejesData = [
+        {
+          nombre: 'ASC',
+          tipo: 'eje',
+          gradosAbsolutos: ascendenteAbs,
+          radPlaneta: radAsc,
+          xPlaneta: xAsc1,  // posición en el borde interior de decanatos (donde termina la línea)
+          yPlaneta: yAsc1,
+          datosPlaneta: { retrogrado: false } // no aplica
+        },
+        {
+          nombre: 'MC',
+          tipo: 'eje',
+          gradosAbsolutos: mcAbs,
+          radPlaneta: radMc,
+          xPlaneta: xMc1,
+          yPlaneta: yMc1,
+          datosPlaneta: { retrogrado: false }
+        }
+      ];
 
-      // Separación entre planetas
+      // 3. Unir todos los puntos (planetas + ejes) para la separación
+      const todosLosPuntos = [...planetasData, ...ejesData];
+
+      // Ordenar por posición angular
+      todosLosPuntos.sort((a, b) => a.gradosAbsolutos - b.gradosAbsolutos);
+
+      // Agrupar por umbral (8°)
       const umbral = 8;
       const grupos = [];
       let grupoActual = [];
-      for (let i = 0; i < planetasData.length; i++) {
+      for (let i = 0; i < todosLosPuntos.length; i++) {
         if (grupoActual.length === 0) {
-          grupoActual.push(planetasData[i]);
+          grupoActual.push(todosLosPuntos[i]);
         } else {
           const ultimo = grupoActual[grupoActual.length - 1];
-          const diff = planetasData[i].gradosAbsolutos - ultimo.gradosAbsolutos;
+          const diff = todosLosPuntos[i].gradosAbsolutos - ultimo.gradosAbsolutos;
           if (diff <= umbral) {
-            grupoActual.push(planetasData[i]);
+            grupoActual.push(todosLosPuntos[i]);
           } else {
             grupos.push(grupoActual);
-            grupoActual = [planetasData[i]];
+            grupoActual = [todosLosPuntos[i]];
           }
         }
       }
       if (grupoActual.length > 0) grupos.push(grupoActual);
 
+      // Calcular desplazamientos para todos los puntos, pero forzando offset (0,0) para los ejes
       const separacionGrupo = 25;
       const desplazamientos = {};
+
       for (const grupo of grupos) {
         const n = grupo.length;
         if (n === 1) {
+          // Si solo un punto, no hay desplazamiento (pero si es planeta, que se quede)
           desplazamientos[grupo[0].nombre] = { dx: 0, dy: 0 };
         } else {
+          // Calcular offsets para todos los puntos del grupo
           const radRef = grupo[0].radPlaneta;
           const tangenteX = -Math.sin(radRef);
           const tangenteY = Math.cos(radRef);
+
+          // Asignar offsets a cada elemento
           for (let i = 0; i < n; i++) {
             const offset = ((n - 1) / 2 - i) * separacionGrupo;
             const dx = Math.round(offset * tangenteX);
             const dy = Math.round(offset * tangenteY);
             desplazamientos[grupo[i].nombre] = { dx, dy };
           }
+
+          // Forzar offset (0,0) para los ejes dentro del grupo
+          for (const punto of grupo) {
+            if (punto.tipo === 'eje') {
+              desplazamientos[punto.nombre] = { dx: 0, dy: 0 };
+            }
+          }
         }
       }
 
-      // Dibujar marcas de posición y planetas
+      // --- DIBUJAR MARCAS DE POSICIÓN Y PLANETAS (usando los desplazamientos calculados) ---
+
+      // Primero dibujar las marcas de posición (líneas desde grados y aspectos)
+      // y luego los íconos de planetas con sus desplazamientos.
       for (const p of planetasData) {
         const nombre = p.nombre;
         const radPlaneta = p.radPlaneta;
