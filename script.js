@@ -54,58 +54,6 @@ document.addEventListener("DOMContentLoaded", () => {
     11: ['SATURNO', 'JUPITER', 'MARTE']
   };
 
-  // -------------------------------------------------------------
-  //  CACHÉ DE SÍMBOLOS INLINE (se cargan una sola vez)
-  // -------------------------------------------------------------
-  const cacheSimbolos = new Map();
-
-  async function cargarSimbolos() {
-    const nombres = ['sol', 'luna', 'mercurio', 'venus', 'marte', 'jupiter', 'saturno', 'urano', 'neptuno', 'pluton', 'quiron', 'nodo-norte'];
-    for (const nombre of nombres) {
-      try {
-        const response = await fetch(`svg/${nombre}.svg`);
-        if (!response.ok) continue;
-        const text = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(text, "image/svg+xml");
-        const svgEl = doc.documentElement;
-        // Crear un <symbol> con el contenido
-        const symbol = document.createElementNS("http://www.w3.org/2000/svg", "symbol");
-        symbol.setAttribute("id", `planeta-${nombre}`);
-        // Tomar el viewBox original o usar uno por defecto
-        const viewBox = svgEl.getAttribute("viewBox") || "0 0 24 24";
-        symbol.setAttribute("viewBox", viewBox);
-        // Copiar todos los hijos del SVG (paths, círculos, etc.)
-        while (svgEl.firstChild) {
-          const child = svgEl.firstChild;
-          symbol.appendChild(child.cloneNode(true));
-        }
-        cacheSimbolos.set(nombre, symbol);
-      } catch (e) {
-        console.warn(`No se pudo cargar ${nombre}.svg`);
-      }
-    }
-  }
-
-  // Llamar a cargarSimbolos al inicio (asíncrono, no bloquea)
-  cargarSimbolos();
-
-  // -------------------------------------------------------------
-  //  FUNCIÓN PARA CREAR UN <use> CON CLASE Y TAMAÑO
-  // -------------------------------------------------------------
-  function crearUsePlaneta(nombrePlaneta, x, y, ancho, alto, claseExtra = "") {
-    const nombre = nombrePlaneta.toLowerCase().replace('_', '-');
-    const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
-    use.setAttribute("href", `#planeta-${nombre}`);
-    use.setAttribute("x", String(x));
-    use.setAttribute("y", String(y));
-    use.setAttribute("width", String(ancho));
-    use.setAttribute("height", String(alto));
-    // Clases: planeta + nombre + claseExtra (decanato o principal)
-    use.setAttribute("class", `planeta ${nombre} ${claseExtra}`);
-    return use;
-  }
-
   function transformarADecimal(g, m) {
     return g + (m / 60);
   }
@@ -223,17 +171,60 @@ document.addEventListener("DOMContentLoaded", () => {
   cargarValoresGuardados();
 
   // ------------------------------------------------------------
-  //  FUNCIÓN PARA DESCARGAR PNG (ahora los símbolos ya están inline)
+  //  FUNCIÓN PARA DESCARGAR PNG CON IMÁGENES INCRUSTADAS
   // ------------------------------------------------------------
   async function descargarPNG() {
     const svgOriginal = document.getElementById("carta-astral");
     const clon = svgOriginal.cloneNode(true);
-    // Asegurarse de que los símbolos estén en el clon
-    // Como ya están en el DOM, no hay que hacer nada extra.
+
+    // Encontrar todas las imágenes del SVG clonado
+    const imagenes = clon.querySelectorAll("image");
+    // Mapa de caché para no leer varias veces el mismo archivo
+    const cacheDataURI = new Map();
+
+    // Función para obtener una imagen como data URI
+    async function obtenerDataURI(ruta) {
+      if (cacheDataURI.has(ruta)) {
+        return cacheDataURI.get(ruta);
+      }
+      try {
+        const response = await fetch(ruta);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const text = await response.text();
+        // Codificamos el contenido SVG como data URI
+        const dataURI = `data:image/svg+xml;utf8,${encodeURIComponent(text)}`;
+        cacheDataURI.set(ruta, dataURI);
+        return dataURI;
+      } catch (error) {
+        console.warn(`No se pudo cargar la imagen: ${ruta}`, error);
+        return null;
+      }
+    }
+
+    // Recorrer todas las imágenes y reemplazar href por data URI
+    const promesas = [];
+    imagenes.forEach(img => {
+      const href = img.getAttribute("href");
+      if (href && href.endsWith(".svg")) {
+        promesas.push(
+          obtenerDataURI(href).then(dataURI => {
+            if (dataURI) {
+              img.setAttribute("href", dataURI);
+            }
+          })
+        );
+      }
+    });
+
+    // Esperar a que todas las imágenes se hayan incrustado
+    await Promise.all(promesas);
+
+    // Ahora serializar el SVG modificado
     const svgData = new XMLSerializer().serializeToString(clon);
     const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
 
+    // Cargar la imagen y dibujar en canvas
     const img = new Image();
     img.onload = function() {
       const canvas = document.createElement("canvas");
@@ -252,29 +243,19 @@ document.addEventListener("DOMContentLoaded", () => {
       URL.revokeObjectURL(url);
     };
     img.onerror = function() {
-      console.error("Error al cargar el SVG para PNG.");
+      console.error("Error al cargar el SVG con imágenes incrustadas.");
       URL.revokeObjectURL(url);
     };
     img.src = url;
   }
 
   // ------------------------------------------------------------
-  //  FUNCIÓN PRINCIPAL DE DIBUJO (modificada para usar <use>)
+  //  FUNCIÓN PRINCIPAL DE DIBUJO
   // ------------------------------------------------------------
   function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
     while (lienzoSvg.firstChild) {
       lienzoSvg.removeChild(lienzoSvg.firstChild);
     }
-
-    // Añadir un <defs> que contendrá los símbolos
-    const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-    // Los símbolos ya están en cache, los añadimos al defs
-    for (const [nombre, symbol] of cacheSimbolos) {
-      // Clonar el símbolo para no reutilizar el mismo nodo
-      const clonSymbol = symbol.cloneNode(true);
-      defs.appendChild(clonSymbol);
-    }
-    lienzoSvg.appendChild(defs);
 
     const indiceSignoCuspide = Math.floor(ascendenteAbs / 30);
     const inicioSignoCuspideG = indiceSignoCuspide * 30;
@@ -289,7 +270,7 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloExterior.setAttribute("cx", String(CENTRO_X));
     circuloExterior.setAttribute("cy", String(CENTRO_Y));
     circuloExterior.setAttribute("r", String(RADIO_EXTERIOR));
-    circuloExterior.setAttribute("stroke", "#111111");
+    circuloExterior.setAttribute("stroke", "#1038a2");
     circuloExterior.setAttribute("stroke-width", "1.5");
     circuloExterior.setAttribute("fill", "none");
     lienzoSvg.appendChild(circuloExterior);
@@ -305,15 +286,16 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
     pathCorona.setAttribute("d", dCorona);
     pathCorona.setAttribute("fill-rule", "evenodd");
-    pathCorona.setAttribute("fill", "#111111");
+    pathCorona.setAttribute("fill", "#1038a2");
     pathCorona.setAttribute("stroke", "none");
+    pathCorona.setAttribute("opacity", "0.8")
     lienzoSvg.appendChild(pathCorona);
 
     const circuloSignosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloSignosInterior.setAttribute("cx", String(CENTRO_X));
     circuloSignosInterior.setAttribute("cy", String(CENTRO_Y));
     circuloSignosInterior.setAttribute("r", String(RADIO_SIGNOS_INTERIOR));
-    circuloSignosInterior.setAttribute("stroke", "#111111");
+    circuloSignosInterior.setAttribute("stroke", "#1038a2");
     circuloSignosInterior.setAttribute("stroke-width", "1.5");
     circuloSignosInterior.setAttribute("fill", "none");
     lienzoSvg.appendChild(circuloSignosInterior);
@@ -322,7 +304,7 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloDecanatosInterior.setAttribute("cx", String(CENTRO_X));
     circuloDecanatosInterior.setAttribute("cy", String(CENTRO_Y));
     circuloDecanatosInterior.setAttribute("r", String(RADIO_DECANATOS_INTERIOR));
-    circuloDecanatosInterior.setAttribute("stroke", "#111111");
+    circuloDecanatosInterior.setAttribute("stroke", "#1038a2");
     circuloDecanatosInterior.setAttribute("stroke-width", "1.5");
     circuloDecanatosInterior.setAttribute("fill", "none");
     lienzoSvg.appendChild(circuloDecanatosInterior);
@@ -340,7 +322,7 @@ document.addEventListener("DOMContentLoaded", () => {
       linea.setAttribute("y1", String(y1));
       linea.setAttribute("x2", String(x2));
       linea.setAttribute("y2", String(y2));
-      linea.setAttribute("stroke", "#ffffff");
+      linea.setAttribute("stroke", "#1038a2");
       linea.setAttribute("stroke-width", "1.5");
       lienzoSvg.appendChild(linea);
     }
@@ -359,7 +341,7 @@ document.addEventListener("DOMContentLoaded", () => {
         linea.setAttribute("y1", String(y1));
         linea.setAttribute("x2", String(x2));
         linea.setAttribute("y2", String(y2));
-        linea.setAttribute("stroke", "#111111");
+        linea.setAttribute("stroke", "#1038a2");
         linea.setAttribute("stroke-width", "1.5");
         lienzoSvg.appendChild(linea);
       }
@@ -399,18 +381,25 @@ document.addEventListener("DOMContentLoaded", () => {
       lienzoSvg.appendChild(etiquetaTexto);
     }
 
-    // --- CAPA 5: Símbolos de los decanatos (AHORA CON <use> Y CLASE DECANATO) ---
+    // --- CAPA 5: Símbolos de los decanatos ---
     for (let i = 0; i < 12; i++) {
       const decanatosSigno = decanatos[i];
       if (!decanatosSigno) continue;
       for (let d = 0; d < 3; d++) {
         const gradoCentral = i * 30 + d * 10 + 5;
         const rad = ajustarAngulo(gradoCentral);
-        const x = Math.round(CENTRO_X + RADIO_SIMBOLOS_DECANATOS * Math.cos(rad)) - 7; // centrar
-        const y = Math.round(CENTRO_Y + RADIO_SIMBOLOS_DECANATOS * Math.sin(rad)) - 7;
+        const x = Math.round(CENTRO_X + RADIO_SIMBOLOS_DECANATOS * Math.cos(rad));
+        const y = Math.round(CENTRO_Y + RADIO_SIMBOLOS_DECANATOS * Math.sin(rad));
         const nombrePlaneta = decanatosSigno[d];
-        const use = crearUsePlaneta(nombrePlaneta, x, y, 14, 14, "planeta-decanato");
-        lienzoSvg.appendChild(use);
+        const nombreSVG = nombrePlaneta.toLowerCase().replace('_', '-');
+        const rutaSVG = `svg/${nombreSVG}.svg`;
+        const imgDecanato = document.createElementNS("http://www.w3.org/2000/svg", "image");
+        imgDecanato.setAttribute("x", String(x - 7));
+        imgDecanato.setAttribute("y", String(y - 7));
+        imgDecanato.setAttribute("width", "14");
+        imgDecanato.setAttribute("height", "14");
+        imgDecanato.setAttribute("href", rutaSVG);
+        lienzoSvg.appendChild(imgDecanato);
       }
     }
 
@@ -419,7 +408,7 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloGradosExterno.setAttribute("cx", String(CENTRO_X));
     circuloGradosExterno.setAttribute("cy", String(CENTRO_Y));
     circuloGradosExterno.setAttribute("r", String(RADIO_GRADOS));
-    circuloGradosExterno.setAttribute("stroke", "#111111");
+    circuloGradosExterno.setAttribute("stroke", "#1038a2");
     circuloGradosExterno.setAttribute("stroke-width", "0.5");
     circuloGradosExterno.setAttribute("stroke-dasharray", "2,2");
     circuloGradosExterno.setAttribute("fill", "none");
@@ -433,7 +422,7 @@ document.addEventListener("DOMContentLoaded", () => {
       punto.setAttribute("cx", String(x));
       punto.setAttribute("cy", String(y));
       punto.setAttribute("r", "1");
-      punto.setAttribute("fill", "#111111");
+      punto.setAttribute("fill", "#1038a2");
       punto.setAttribute("opacity", "1");
       lienzoSvg.appendChild(punto);
     }
@@ -445,7 +434,7 @@ document.addEventListener("DOMContentLoaded", () => {
       punto.setAttribute("cx", String(x));
       punto.setAttribute("cy", String(y));
       punto.setAttribute("r", "1.5");
-      punto.setAttribute("fill", "#111111");
+      punto.setAttribute("fill", "#1038a2");
       punto.setAttribute("opacity", "1");
       lienzoSvg.appendChild(punto);
     }
@@ -454,7 +443,7 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloGradosInterno.setAttribute("cx", String(CENTRO_X));
     circuloGradosInterno.setAttribute("cy", String(CENTRO_Y));
     circuloGradosInterno.setAttribute("r", String(RADIO_ASPECTOS));
-    circuloGradosInterno.setAttribute("stroke", "#111111");
+    circuloGradosInterno.setAttribute("stroke", "#1038a2");
     circuloGradosInterno.setAttribute("stroke-width", "0.5");
     circuloGradosInterno.setAttribute("stroke-dasharray", "2,2");
     circuloGradosInterno.setAttribute("fill", "none");
@@ -468,7 +457,7 @@ document.addEventListener("DOMContentLoaded", () => {
       punto.setAttribute("cx", String(x));
       punto.setAttribute("cy", String(y));
       punto.setAttribute("r", "1");
-      punto.setAttribute("fill", "#111111");
+      punto.setAttribute("fill", "#1038a2");
       punto.setAttribute("opacity", "1");
       lienzoSvg.appendChild(punto);
     }
@@ -480,7 +469,7 @@ document.addEventListener("DOMContentLoaded", () => {
       punto.setAttribute("cx", String(x));
       punto.setAttribute("cy", String(y));
       punto.setAttribute("r", "1.5");
-      punto.setAttribute("fill", "#111111");
+      punto.setAttribute("fill", "#1038a2");
       punto.setAttribute("opacity", "1");
       lienzoSvg.appendChild(punto);
     }
@@ -513,11 +502,11 @@ document.addEventListener("DOMContentLoaded", () => {
           if (diff > 180) diff = 360 - diff;
           const orbe = (p1 === 'LUNA' || p2 === 'LUNA') ? 13 : 3;
           const aspectos = [
-            { tipo: 'conjuncion', angulo: 0, strokeWidth: 1.5, dasharray: null, opacity: 1 },
-            { tipo: 'sextil', angulo: 60, strokeWidth: 1.5, dasharray: '2,5', opacity: 0.5 },
-            { tipo: 'cuadratura', angulo: 90, strokeWidth: 1.5, dasharray: null, opacity: 0.5 },
-            { tipo: 'trígono', angulo: 120, strokeWidth: 1.5, dasharray: '5,10', opacity: 0.5 },
-            { tipo: 'oposicion', angulo: 180, strokeWidth: 1.5, dasharray: null, opacity: 1 }
+            { tipo: 'conjuncion', angulo: 0, strokeWidth: 1.5, dasharray: null, opacity: 0.8 },
+            { tipo: 'sextil', angulo: 60, strokeWidth: 1.5, dasharray: '2,5', opacity: 0.6 },
+            { tipo: 'cuadratura', angulo: 90, strokeWidth: 1.5, dasharray: null, opacity: 0.6 },
+            { tipo: 'trígono', angulo: 120, strokeWidth: 1.5, dasharray: '5,10', opacity: 0.8 },
+            { tipo: 'oposicion', angulo: 180, strokeWidth: 1.5, dasharray: null, opacity: 0.8 }
           ];
           for (const asp of aspectos) {
             if (Math.abs(diff - asp.angulo) <= orbe) {
@@ -532,7 +521,7 @@ document.addEventListener("DOMContentLoaded", () => {
               lineaAspecto.setAttribute("y1", String(y1));
               lineaAspecto.setAttribute("x2", String(x2));
               lineaAspecto.setAttribute("y2", String(y2));
-              lineaAspecto.setAttribute("stroke", "#111111");
+              lineaAspecto.setAttribute("stroke", "#1038a2");
               lineaAspecto.setAttribute("stroke-linecap", "round");
               lineaAspecto.setAttribute("stroke-linejoin", "round");
               lineaAspecto.setAttribute("stroke-width", String(asp.strokeWidth));
@@ -548,7 +537,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // --- CAPA 8: Ejes, marcas de posición y planetas principales ---
+    // --- CAPA 8: Ejes, marcas de posición y planetas ---
     if (mostrarContenido) {
       // Eje ASC
       const radAsc = ajustarAngulo(ascendenteAbs);
@@ -561,8 +550,8 @@ document.addEventListener("DOMContentLoaded", () => {
       lineaAsc.setAttribute("y1", String(yAsc1));
       lineaAsc.setAttribute("x2", String(xAsc2));
       lineaAsc.setAttribute("y2", String(yAsc2));
-      lineaAsc.setAttribute("stroke", "#111111");
-      lineaAsc.setAttribute("opacity", "0.6");
+      lineaAsc.setAttribute("stroke", "#1038a2");
+      lineaAsc.setAttribute("opacity", "0.8");
       lineaAsc.setAttribute("stroke-width", "2");
       lineaAsc.setAttribute("stroke-linecap", "round");
       lienzoSvg.appendChild(lineaAsc);
@@ -576,7 +565,7 @@ document.addEventListener("DOMContentLoaded", () => {
       txtAsc.setAttribute("font-size", "12");
       txtAsc.setAttribute("font-weight", "400");
       txtAsc.setAttribute("text-anchor", "middle");
-      txtAsc.setAttribute("fill", "#111111");
+      txtAsc.setAttribute("fill", "#1038a2");
       txtAsc.textContent = "ASC";
       lienzoSvg.appendChild(txtAsc);
 
@@ -591,8 +580,8 @@ document.addEventListener("DOMContentLoaded", () => {
       lineaMc.setAttribute("y1", String(yMc1));
       lineaMc.setAttribute("x2", String(xMc2));
       lineaMc.setAttribute("y2", String(yMc2));
-      lineaMc.setAttribute("stroke", "#111111");
-      lineaMc.setAttribute("opacity", "0.6");
+      lineaMc.setAttribute("stroke", "#1038a2");
+      lineaMc.setAttribute("opacity", "0.8");
       lineaMc.setAttribute("stroke-width", "2");
       lineaMc.setAttribute("stroke-linecap", "round");
       lienzoSvg.appendChild(lineaMc);
@@ -606,7 +595,7 @@ document.addEventListener("DOMContentLoaded", () => {
       txtMc.setAttribute("font-size", "12");
       txtMc.setAttribute("font-weight", "400");
       txtMc.setAttribute("text-anchor", "middle");
-      txtMc.setAttribute("fill", "#111111");
+      txtMc.setAttribute("fill", "#1038a2");
       txtMc.textContent = "MC";
       lienzoSvg.appendChild(txtMc);
 
@@ -690,7 +679,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // Dibujar marcas de posición y planetas principales
+      // Dibujar marcas de posición y planetas
       for (const p of planetasData) {
         const nombre = p.nombre;
         const radPlaneta = p.radPlaneta;
@@ -709,9 +698,9 @@ document.addEventListener("DOMContentLoaded", () => {
         lineaPosicion.setAttribute("y1", String(yInicio));
         lineaPosicion.setAttribute("x2", String(xFin));
         lineaPosicion.setAttribute("y2", String(yFin));
-        lineaPosicion.setAttribute("stroke", "#111111");
+        lineaPosicion.setAttribute("stroke", "#1038a2");
         lineaPosicion.setAttribute("stroke-width", "1.5");
-        lineaPosicion.setAttribute("opacity", "1");
+        lineaPosicion.setAttribute("opacity", "0.8");
         lineaPosicion.setAttribute("stroke-linecap", "round");
         lienzoSvg.appendChild(lineaPosicion);
 
@@ -726,27 +715,34 @@ document.addEventListener("DOMContentLoaded", () => {
         lineaPosicionAsp.setAttribute("y1", String(yInicioAsp));
         lineaPosicionAsp.setAttribute("x2", String(xFinAsp));
         lineaPosicionAsp.setAttribute("y2", String(yFinAsp));
-        lineaPosicionAsp.setAttribute("stroke", "#111111");
+        lineaPosicionAsp.setAttribute("stroke", "#1038a2");
         lineaPosicionAsp.setAttribute("stroke-width", "1.5");
-        lineaPosicionAsp.setAttribute("opacity", "1");
+        lineaPosicionAsp.setAttribute("opacity", "0.8");
         lineaPosicionAsp.setAttribute("stroke-linecap", "round");
         lienzoSvg.appendChild(lineaPosicionAsp);
 
         // Desplazamiento para icono
         const desp = desplazamientos[nombre] || { dx: 0, dy: 0 };
-        const xIcono = xPlaneta + desp.dx - 10; // centrar (20x20)
-        const yIcono = yPlaneta + desp.dy - 10;
+        const xIcono = xPlaneta + desp.dx;
+        const yIcono = yPlaneta + desp.dy;
 
-        // Símbolo del planeta principal (clase "planeta-principal")
-        const use = crearUsePlaneta(nombre, xIcono, yIcono, 20, 20, "planeta-principal");
-        lienzoSvg.appendChild(use);
+        // Símbolo del planeta (SVG)
+        const nombreSVG = nombre.toLowerCase().replace('_', '-');
+        const rutaSVG = `svg/${nombreSVG}.svg`;
+        const imgPlaneta = document.createElementNS("http://www.w3.org/2000/svg", "image");
+        imgPlaneta.setAttribute("x", String(xIcono - 10));
+        imgPlaneta.setAttribute("y", String(yIcono - 10));
+        imgPlaneta.setAttribute("width", "20");
+        imgPlaneta.setAttribute("height", "20");
+        imgPlaneta.setAttribute("href", rutaSVG);
+        lienzoSvg.appendChild(imgPlaneta);
 
         // Retrógrado
         if (datosPlaneta.retrogrado) {
           const offsetX = 10;
           const offsetY = 10;
-          const xR = xIcono + offsetX + 10;
-          const yR = yIcono + offsetY + 10;
+          const xR = xIcono + offsetX;
+          const yR = yIcono + offsetY;
           const txtRetro = document.createElementNS("http://www.w3.org/2000/svg", "text");
           txtRetro.setAttribute("x", String(xR));
           txtRetro.setAttribute("y", String(yR));
@@ -756,7 +752,8 @@ document.addEventListener("DOMContentLoaded", () => {
           txtRetro.setAttribute("font-weight", "400");
           txtRetro.setAttribute("text-anchor", "start");
           txtRetro.setAttribute("dominant-baseline", "central");
-          txtRetro.setAttribute("fill", "#111111");
+          txtRetro.setAttribute("fill", "#1038a2");
+          txtRetro.setAttribute("opacity", "0.6")
           txtRetro.textContent = "R";
           lienzoSvg.appendChild(txtRetro);
         }

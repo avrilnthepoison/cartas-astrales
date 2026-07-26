@@ -305,18 +305,6 @@ select {
   shape-rendering: geometricPrecision;
 }
 
-/* Colores para planetas en decanatos (más tenues) */
-.planeta-decanato {
-  fill: #777777;
-  stroke: #777777;
-}
-
-/* Colores para planetas principales (más oscuros o con color propio) */
-.planeta-principal {
-  fill: #111111;
-  stroke: #111111;
-}
-
 /*
 ==========================================================================
 5. RESPONSIVE
