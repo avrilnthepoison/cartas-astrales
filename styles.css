@@ -242,7 +242,7 @@ select {
   text-transform: uppercase;
   padding: 12px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Botones de descarga (dos botones) */
@@ -262,17 +262,15 @@ select {
   text-transform: uppercase;
   padding: 12px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* ============================================
-   PLACEHOLDERS (con color visible)
-   ============================================ */
-::-webkit-input-placeholder { color: #7088c7; opacity: 1; }
-::-moz-placeholder { color: #7088c7; opacity: 1; }
-:-ms-input-placeholder { color: #7088c7; opacity: 1; }
-::-ms-input-placeholder { color: #7088c7; opacity: 1; }
-::placeholder { color: #7088c7; opacity: 1; }
+/* PLACEHOLDERS (incluye navegadores antiguos) */
+::-webkit-input-placeholder { color: #7088c7; opacity: 1; } /* Chrome, Safari, Edge */
+::-moz-placeholder { color: #7088c7; opacity: 1; }          /* Firefox 19+ */
+:-ms-input-placeholder { color: #7088c7; opacity: 1; }      /* IE 10-11 */
+::-ms-input-placeholder { color: #7088c7; opacity: 1; }     /* Edge antiguo */
+::placeholder { color: #7088c7; opacity: 1; }               /* Estándar moderno */
 
 /*
 ==========================================================================
@@ -448,30 +446,48 @@ select {
 
 /*
 ==========================================================================
-7. ESTILOS HOVER (SOLO PARA DISPOSITIVOS CON CAPACIDAD DE HOVER)
+7. ESTADOS INTERACTIVOS (HOVER Y ACTIVE)
 ==========================================================================
 */
+
+/* --- HOVER: SOLO PARA DISPOSITIVOS CON CAPACIDAD DE HOVER (RATÓN) --- */
 @media (hover: hover) {
-  /* Hover del checkbox de retrógrado */
   .etiqueta-retrogrado:hover::before {
     background-color: #7088c7;
   }
 
-  /* Hover del botón Generar */
   #btn-generar:hover {
     background-color: #7088c7;
   }
 
-  /* Hover del botón Restablecer */
   #btn-borrar:hover {
     background-color: #1038a2;
     color: #ffffff;
   }
 
-  /* Hover de los botones de descarga */
   #btn-descargar-png:hover,
   #btn-descargar-png-fondo:hover {
     background-color: #1038a2;
     color: #ffffff;
   }
+}
+
+/* --- ACTIVE: PARA TODOS LOS DISPOSITIVOS (CLIC / TÁCTIL) --- */
+.etiqueta-retrogrado:active::before {
+  background-color: #7088c7; /* Mismo color que hover para consistencia */
+}
+
+#btn-generar:active {
+  background-color: #7088c7; /* Cambio al presionar */
+}
+
+#btn-borrar:active {
+  background-color: #1038a2;
+  color: #ffffff;
+}
+
+#btn-descargar-png:active,
+#btn-descargar-png-fondo:active {
+  background-color: #1038a2;
+  color: #ffffff;
 }
