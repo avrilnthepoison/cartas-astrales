@@ -257,9 +257,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const svgOriginal = document.getElementById("carta-astral");
     const clon = svgOriginal.cloneNode(true);
 
-    // 3. Inyectar la fuente incrustada en el SVG clonado (solo el @font-face, sin reglas de estilo adicionales)
+    // 3. Inyectar la fuente incrustada en el SVG clonado,
+    //    más reglas CSS para forzar normal / itálica
     const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
-    style.textContent = fuenteCSS;
+    style.textContent = `
+      ${fuenteCSS}
+      text {
+        font-family: 'IM Fell DW Pica', serif !important;
+        font-style: normal !important;
+      }
+      text[font-style="italic"],
+      .retrogrado {
+        font-style: italic !important;
+      }
+    `;
     clon.insertBefore(style, clon.firstChild);
 
     // 4. Incrustar imágenes SVG de planetas
@@ -491,7 +502,7 @@ document.addEventListener("DOMContentLoaded", () => {
       etiquetaTexto.setAttribute("font-size", "14");
       etiquetaTexto.setAttribute("font-weight", "400");
       etiquetaTexto.setAttribute("fill", "#ffffff");
-      etiquetaTexto.setAttribute("font-style", "normal"); // <-- FORZAR NORMAL
+      etiquetaTexto.setAttribute("font-style", "normal");
       const trayectoTexto = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
       trayectoTexto.setAttribute("href", `#${idTrayecto}`);
       trayectoTexto.setAttribute("startOffset", "50%");
@@ -889,6 +900,7 @@ document.addEventListener("DOMContentLoaded", () => {
           txtRetro.setAttribute("dominant-baseline", "central");
           txtRetro.setAttribute("fill", "#1038a2");
           txtRetro.setAttribute("opacity", "0.6");
+          txtRetro.setAttribute("class", "retrogrado"); // <-- AÑADIDO
           txtRetro.textContent = "R";
           lienzoSvg.appendChild(txtRetro);
         }
