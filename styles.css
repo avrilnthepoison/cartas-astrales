@@ -98,7 +98,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 1.5px;
   margin: 0 0 20px 0;
-  border-bottom: 1px solid #1038a2;
+  border-bottom: 1px solid #7088c7;
   padding-bottom: 8px;
 }
 
@@ -285,11 +285,11 @@ select {
 }
 
 /* PLACEHOLDERS (incluye navegadores antiguos) */
-::-webkit-input-placeholder { color: #e8ecf6; opacity: 1; } /* Chrome, Safari, Edge */
-::-moz-placeholder { color: #e8ecf6; opacity: 1; }          /* Firefox 19+ */
-:-ms-input-placeholder { color: #e8ecf6; opacity: 1; }      /* IE 10-11 */
-::-ms-input-placeholder { color: #e8ecf6; opacity: 1; }     /* Edge antiguo */
-::placeholder { color: #e8ecf6; opacity: 1; }               /* Estándar moderno */
+::-webkit-input-placeholder { color: #7088c7; opacity: 1; } /* Chrome, Safari, Edge */
+::-moz-placeholder { color: #7088c7; opacity: 1; }          /* Firefox 19+ */
+:-ms-input-placeholder { color: #7088c7; opacity: 1; }      /* IE 10-11 */
+::-ms-input-placeholder { color: #7088c7; opacity: 1; }     /* Edge antiguo */
+::placeholder { color: #7088c7; opacity: 1; }               /* Estándar moderno */
 
 /*
 ==========================================================================
