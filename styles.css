@@ -454,22 +454,9 @@ select {
 
 /*
 ==========================================================================
-7. ESTADOS INTERACTIVOS (HOVER, ACTIVE, FOCUS)
+7. ESTADOS INTERACTIVOS (HOVER Y ACTIVE)
 ==========================================================================
 */
-
-/* --- FOCUS: para accesibilidad (teclado) --- */
-.etiqueta-retrogrado input[type="checkbox"]:focus + .etiqueta-retrogrado::before {
-  box-shadow: 0 0 0 2px rgba(0,0,0,0.2);
-}
-
-#btn-generar:focus,
-#btn-borrar:focus,
-#btn-descargar-png:focus,
-#btn-descargar-png-fondo:focus {
-  outline: 2px solid #1038a2;
-  outline-offset: 2px;
-}
 
 /* --- HOVER: SOLO PARA DISPOSITIVOS CON CAPACIDAD DE HOVER (RATÓN) --- */
 @media (hover: hover) {
