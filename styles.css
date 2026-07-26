@@ -295,7 +295,7 @@ select {
   align-items: center;
   flex-wrap: wrap;
   margin-bottom: 15px;
-  gap: 8px;
+  gap: 15px;
 }
 
 .fila-ajuste label {
@@ -323,10 +323,10 @@ select {
 .nota-ajuste {
   font-size: 11px;
   color: #1038a2;
-  margin: 15px 0 0 0;
+  margin: 10px 0 0 0;
   font-style: italic;
   border-top: 1px dashed #1038a2;
-  padding-top: 15px;
+  padding-top: 10px;
 }
 
 /*
