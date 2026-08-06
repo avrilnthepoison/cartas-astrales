@@ -58,15 +58,15 @@ body {
 /* Columna Izquierda: Formulario */
 .seccion-formulario {
   display: table-cell;
-  width: 45%;
-  padding-right: 5%;
+  width: 50%;            /* antes 45% */
+  padding-right: 2%;     /* antes 5% */
   vertical-align: top;
 }
 
 /* Columna Derecha: Gráfico */
 .seccion-mapa {
   display: table-cell;
-  width: 55%;
+  width: 50%;            /* antes 55% */
   vertical-align: top;
 }
 
@@ -74,7 +74,7 @@ body {
   position: sticky;
   top: 40px;
   width: 100%;
-  max-width: 550px;
+  max-width: 650px;      /* antes 550px */
   margin: 0 auto;
 }
 
@@ -108,7 +108,6 @@ body {
   width: 100%;
   margin-bottom: 15px;
 }
-
 .fila-eje:last-child,
 .fila-planeta:last-child {
   margin-bottom: 0;
@@ -284,9 +283,8 @@ select {
 ==========================================================================
 4. AJUSTES DE AGRUPACIÓN Y NOMBRE DE LA CARTA
 ==========================================================================
-/*
-
-/* --- Ajustes de Agrupación --- */
+*/
+/* -- Ajustes de Agrupación -- */
 .fila-ajuste {
   display: flex;
   align-items: center;
@@ -320,7 +318,7 @@ select {
   margin-bottom: 0;
 }
 
-/* --- Bloque de Nombre de la Carta --- */
+/* -- Bloque de Nombre de la Carta -- */
 .fila-nombre {
   display: flex;
   align-items: center;
@@ -361,7 +359,7 @@ select {
   shape-rendering: geometricPrecision;
 }
 
-/* Círculos base (exterior, signos, decanatos) */
+/* Círculos base (exterior, signos, decanatos, términos) */
 .circulo-base {
   stroke: #0e3585;
   stroke-width: 1.5;
@@ -381,20 +379,30 @@ select {
   opacity: 0.2;
 }
 
-/* Líneas de signos y decanatos */
+/* Líneas de signos, decanatos y términos */
 .linea-signo,
 .linea-decanato {
   stroke: #0e3585;
   stroke-width: 1.5;
 }
 
-/* Texto de los nombres de los signos */
+/* Texto de los nombres de los signos (se reduce el tamaño para mantener la escala visual) */
 .texto-signo {
   font-family: 'IM Fell DW Pica', serif;
-  font-size: 14px;
+  font-size: 12px;        /* antes 14px */
   font-weight: 400;
   fill: #ffffff;
   font-style: normal;
+}
+
+/* Texto de "TÉRMINOS" en la nueva franja */
+.texto-terminos {
+  font-family: 'IM Fell DW Pica', serif;
+  font-size: 10px;
+  font-weight: 400;
+  fill: #ffffff;
+  font-style: normal;
+  opacity: 0.7;
 }
 
 /* Iconos de los decanatos (tamaño) */
@@ -504,6 +512,7 @@ select {
     position: relative;
     top: 0;
     margin-top: 30px;
+    max-width: 100%;
   }
 }
 

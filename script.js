@@ -1,21 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
+
   const botonGenerar = document.getElementById("btn-generar");
   const botonBorrar = document.getElementById("btn-borrar");
   const botonDescargarPNG = document.getElementById("btn-descargar-png");
   const botonDescargarPNGFondo = document.getElementById("btn-descargar-png-fondo");
   const lienzoSvg = document.getElementById("carta-astral");
 
-  const CENTRO_X = 300;
-  const CENTRO_Y = 300;
-  
-  const RADIO_EXTERIOR = 295;
-  const RADIO_SIGNOS_INTERIOR = 265;
-  const RADIO_DECANATOS_INTERIOR = 240;
-  const RADIO_PLANETAS = 190;
-  const RADIO_TEXTO_SIGNOS = 275;
-  const RADIO_SIMBOLOS_DECANATOS = 253;
-  const RADIO_GRADOS = 230;
-  const RADIO_ASPECTOS = 135;
+  // Nuevo centro para viewBox 700x700
+  const CENTRO_X = 350;
+  const CENTRO_Y = 350;
+
+  // Nuevos radios para dar espacio a la franja de términos
+  const RADIO_EXTERIOR = 340;
+  const RADIO_SIGNOS_INTERIOR = 310;
+  const RADIO_DECANATOS_INTERIOR = 285;
+  const RADIO_TERMINOS_INTERIOR = 260;        // nuevo
+  const RADIO_PLANETAS = 210;
+  const RADIO_TEXTO_SIGNOS = 325;
+  const RADIO_SIMBOLOS_DECANATOS = 297.5;
+  const RADIO_SIMBOLOS_TERMINOS = 272.5;      // nuevo
+  const RADIO_GRADOS = 275;
+  const RADIO_ASPECTOS = 180;
 
   const nombresSignos = [
     "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
@@ -40,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const cuerpos = Object.keys(simbolos);
 
-  // --- NUEVO DICCIONARIO DE ORBES SEGÚN CADA PLANETA ---
+  // --- DICCIONARIO DE ORBES ---
   const orbesPlanetarios = {
     "SOL": 15,
     "LUNA": 12,
@@ -52,8 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "URANO": 3,
     "NEPTUNO": 3,
     "PLUTON": 3,
-    "NODO_NORTE": 0   // El nodo no proyecta, el orbe lo da el otro planeta
-    // QUIRON no está incluido porque se salta directamente en los aspectos
+    "NODO_NORTE": 0
   };
 
   const decanatos = {
@@ -240,7 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------------
-  // FUNCIÓN PARA DESCARGAR PNG
+  // FUNCIÓN PARA DESCARGAR PNG (sin cambios en la lógica)
   // ------------------------------------------------------------
   async function descargarPNG(conFondo = false) {
     try {
@@ -257,8 +261,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const ESCALA = 3;
-    const ANCHO_FINAL = 600 * ESCALA;
-    const ALTO_FINAL = 600 * ESCALA;
+    const ANCHO_FINAL = 700 * ESCALA;   // 700 porque el viewBox ahora es 700
+    const ALTO_FINAL = 700 * ESCALA;
 
     const svgOriginal = document.getElementById("carta-astral");
     const clon = svgOriginal.cloneNode(true);
@@ -364,10 +368,10 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     img.src = url;
-}
+  }
 
   // ------------------------------------------------------------
-  // FUNCIÓN PRINCIPAL DE DIBUJO (con estilos externalizados y nueva lógica de orbes)
+  // FUNCIÓN PRINCIPAL DE DIBUJO (con las nuevas capas y radios)
   // ------------------------------------------------------------
   function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
     const umbralInput = document.getElementById("umbral-input");
@@ -389,7 +393,8 @@ document.addEventListener("DOMContentLoaded", () => {
       return (desfaceG - gradosOriginales) * (Math.PI / 180);
     }
 
-    // ---------- CAPA 1: Círculos base y coronas ----------
+    // ========== CAPA 1: Círculos base y coronas ==========
+    // Círculo exterior
     const circuloExterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloExterior.setAttribute("cx", String(CENTRO_X));
     circuloExterior.setAttribute("cy", String(CENTRO_Y));
@@ -397,6 +402,7 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloExterior.setAttribute("class", "circulo-base");
     lienzoSvg.appendChild(circuloExterior);
 
+    // Corona exterior (signos)
     const pathCoronaExterior = document.createElementNS("http://www.w3.org/2000/svg", "path");
     const dCoronaExterior = `
       M ${CENTRO_X - RADIO_EXTERIOR} ${CENTRO_Y}
@@ -411,6 +417,7 @@ document.addEventListener("DOMContentLoaded", () => {
     pathCoronaExterior.setAttribute("class", "corona-exterior");
     lienzoSvg.appendChild(pathCoronaExterior);
 
+    // Círculo interior de signos
     const circuloSignosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloSignosInterior.setAttribute("cx", String(CENTRO_X));
     circuloSignosInterior.setAttribute("cy", String(CENTRO_Y));
@@ -418,6 +425,7 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloSignosInterior.setAttribute("class", "circulo-base");
     lienzoSvg.appendChild(circuloSignosInterior);
 
+    // Corona intermedia (decanatos)
     const pathCoronaInterior = document.createElementNS("http://www.w3.org/2000/svg", "path");
     const dCoronaInterior = `
       M ${CENTRO_X - RADIO_SIGNOS_INTERIOR} ${CENTRO_Y}
@@ -432,6 +440,7 @@ document.addEventListener("DOMContentLoaded", () => {
     pathCoronaInterior.setAttribute("class", "corona-interior");
     lienzoSvg.appendChild(pathCoronaInterior);
 
+    // Círculo interior de decanatos
     const circuloDecanatosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloDecanatosInterior.setAttribute("cx", String(CENTRO_X));
     circuloDecanatosInterior.setAttribute("cy", String(CENTRO_Y));
@@ -439,7 +448,30 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloDecanatosInterior.setAttribute("class", "circulo-base");
     lienzoSvg.appendChild(circuloDecanatosInterior);
 
-    // ---------- CAPA 2: Líneas de los signos (30°) ----------
+    // ----- NUEVA CORONA PARA TÉRMINOS -----
+    const pathCoronaTerminos = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    const dCoronaTerminos = `
+      M ${CENTRO_X - RADIO_DECANATOS_INTERIOR} ${CENTRO_Y}
+      A ${RADIO_DECANATOS_INTERIOR} ${RADIO_DECANATOS_INTERIOR} 0 1,1 ${CENTRO_X + RADIO_DECANATOS_INTERIOR} ${CENTRO_Y}
+      A ${RADIO_DECANATOS_INTERIOR} ${RADIO_DECANATOS_INTERIOR} 0 1,1 ${CENTRO_X - RADIO_DECANATOS_INTERIOR} ${CENTRO_Y} Z
+      M ${CENTRO_X - RADIO_TERMINOS_INTERIOR} ${CENTRO_Y}
+      A ${RADIO_TERMINOS_INTERIOR} ${RADIO_TERMINOS_INTERIOR} 0 1,0 ${CENTRO_X + RADIO_TERMINOS_INTERIOR} ${CENTRO_Y}
+      A ${RADIO_TERMINOS_INTERIOR} ${RADIO_TERMINOS_INTERIOR} 0 1,0 ${CENTRO_X - RADIO_TERMINOS_INTERIOR} ${CENTRO_Y} Z
+    `;
+    pathCoronaTerminos.setAttribute("d", dCoronaTerminos);
+    pathCoronaTerminos.setAttribute("fill-rule", "evenodd");
+    pathCoronaTerminos.setAttribute("class", "corona-interior"); // mismo estilo que decanatos
+    lienzoSvg.appendChild(pathCoronaTerminos);
+
+    // Círculo interior de términos (límite inferior)
+    const circuloTerminosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circuloTerminosInterior.setAttribute("cx", String(CENTRO_X));
+    circuloTerminosInterior.setAttribute("cy", String(CENTRO_Y));
+    circuloTerminosInterior.setAttribute("r", String(RADIO_TERMINOS_INTERIOR));
+    circuloTerminosInterior.setAttribute("class", "circulo-base");
+    lienzoSvg.appendChild(circuloTerminosInterior);
+
+    // ========== CAPA 2: Líneas de los signos (30°) ==========
     for (let i = 0; i < 12; i++) {
       const gradoLinea = i * 30;
       const radLinea = ajustarAngulo(gradoLinea);
@@ -456,7 +488,7 @@ document.addEventListener("DOMContentLoaded", () => {
       lienzoSvg.appendChild(linea);
     }
 
-    // ---------- CAPA 3: Líneas de los decanatos (0°, 10°, 20° de cada signo) ----------
+    // ========== CAPA 3: Líneas de los decanatos (0°, 10°, 20° de cada signo) ==========
     for (let i = 0; i < 12; i++) {
       for (let d = 0; d < 3; d++) {
         const gradoLinea = i * 30 + d * 10;
@@ -475,7 +507,26 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // ---------- CAPA 4: Nombres de los signos ----------
+    // ========== CAPA 3b: Líneas de los términos (0°, 10°, 20° de cada signo) ==========
+    for (let i = 0; i < 12; i++) {
+      for (let d = 0; d < 3; d++) {
+        const gradoLinea = i * 30 + d * 10;
+        const radLinea = ajustarAngulo(gradoLinea);
+        const x1 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radLinea));
+        const y1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radLinea));
+        const x2 = Math.round(CENTRO_X + RADIO_TERMINOS_INTERIOR * Math.cos(radLinea));
+        const y2 = Math.round(CENTRO_Y + RADIO_TERMINOS_INTERIOR * Math.sin(radLinea));
+        const linea = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        linea.setAttribute("x1", String(x1));
+        linea.setAttribute("y1", String(y1));
+        linea.setAttribute("x2", String(x2));
+        linea.setAttribute("y2", String(y2));
+        linea.setAttribute("class", "linea-decanato"); // misma clase para consistencia
+        lienzoSvg.appendChild(linea);
+      }
+    }
+
+    // ========== CAPA 4: Nombres de los signos ==========
     for (let i = 0; i < 12; i++) {
       const gradoInicioArco = i * 30;
       const gradoFinArco = gradoInicioArco + 30;
@@ -507,7 +558,7 @@ document.addEventListener("DOMContentLoaded", () => {
       lienzoSvg.appendChild(etiquetaTexto);
     }
 
-    // ---------- CAPA 5: Símbolos de los decanatos ----------
+    // ========== CAPA 5: Símbolos de los decanatos ==========
     for (let i = 0; i < 12; i++) {
       const decanatosSigno = decanatos[i];
       if (!decanatosSigno) continue;
@@ -528,7 +579,40 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // ---------- CAPA 6: Rueda de 360° (marcas de grados) ----------
+    // ========== CAPA 5b: Texto "TÉRMINOS" en la franja de términos ==========
+    // (colocamos un texto similar a los signos pero con "TÉRMINOS" en cada sector)
+    for (let i = 0; i < 12; i++) {
+      const gradoInicioArco = i * 30;
+      const gradoFinArco = gradoInicioArco + 30;
+      const radInicio = ajustarAngulo(gradoInicioArco);
+      const radFin = ajustarAngulo(gradoFinArco);
+      const radioTrayectoTexto = RADIO_SIMBOLOS_TERMINOS;
+      const sx = (CENTRO_X + radioTrayectoTexto * Math.cos(radInicio)).toFixed(2);
+      const sy = (CENTRO_Y + radioTrayectoTexto * Math.sin(radInicio)).toFixed(2);
+      const ex = (CENTRO_X + radioTrayectoTexto * Math.cos(radFin)).toFixed(2);
+      const ey = (CENTRO_Y + radioTrayectoTexto * Math.sin(radFin)).toFixed(2);
+      const idTrayecto = `trayecto-terminos-${i}`;
+      const d = `M ${ex},${ey} A ${radioTrayectoTexto},${radioTrayectoTexto} 0 0,1 ${sx},${sy}`;
+
+      const rutaDefinicion = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      rutaDefinicion.setAttribute("id", idTrayecto);
+      rutaDefinicion.setAttribute("d", d);
+      rutaDefinicion.setAttribute("fill", "none");
+      rutaDefinicion.setAttribute("stroke", "none");
+      lienzoSvg.appendChild(rutaDefinicion);
+
+      const etiquetaTexto = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      etiquetaTexto.setAttribute("class", "texto-terminos");
+      const trayectoTexto = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
+      trayectoTexto.setAttribute("href", `#${idTrayecto}`);
+      trayectoTexto.setAttribute("startOffset", "50%");
+      trayectoTexto.setAttribute("text-anchor", "middle");
+      trayectoTexto.textContent = "TÉRMINOS";
+      etiquetaTexto.appendChild(trayectoTexto);
+      lienzoSvg.appendChild(etiquetaTexto);
+    }
+
+    // ========== CAPA 6: Rueda de 360° (marcas de grados) ==========
     const circuloGradosExterno = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloGradosExterno.setAttribute("cx", String(CENTRO_X));
     circuloGradosExterno.setAttribute("cy", String(CENTRO_Y));
@@ -591,7 +675,7 @@ document.addEventListener("DOMContentLoaded", () => {
       lienzoSvg.appendChild(punto);
     }
 
-    // ---------- CAPA 7: Aspectos planetarios (con nueva lógica de orbes) ----------
+    // ========== CAPA 7: Aspectos planetarios (con lógica de orbes) ==========
     const circuloAspectos = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloAspectos.setAttribute("cx", String(CENTRO_X));
     circuloAspectos.setAttribute("cy", String(CENTRO_Y));
@@ -614,7 +698,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const p1 = nombres[i];
           const p2 = nombres[j];
 
-          // 1. Saltar si alguno de los dos es QUIRON (no aspecta)
+          // Saltar si alguno es QUIRON
           if (p1 === 'QUIRON' || p2 === 'QUIRON') continue;
 
           const pos1 = planetasValidos[p1];
@@ -622,16 +706,12 @@ document.addEventListener("DOMContentLoaded", () => {
           let diff = Math.abs(pos1 - pos2) % 360;
           if (diff > 180) diff = 360 - diff;
 
-          // 2. Determinar el orbe a usar según las nuevas reglas
           let orb = 0;
           if (p1 === 'NODO_NORTE') {
-            // El nodo no proyecta, usamos el orbe del otro planeta (p2)
             orb = orbesPlanetarios[p2] || 0;
           } else if (p2 === 'NODO_NORTE') {
-            // El nodo no proyecta, usamos el orbe del otro planeta (p1)
             orb = orbesPlanetarios[p1] || 0;
           } else {
-            // Ambos son planetas normales: usamos el orbe mayor de los dos
             orb = Math.max(orbesPlanetarios[p1] || 0, orbesPlanetarios[p2] || 0);
           }
 
@@ -667,7 +747,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // ---------- CAPA 8: Ejes, marcas de posición y planetas ----------
+    // ========== CAPA 8: Ejes, marcas de posición y planetas ==========
     if (mostrarContenido) {
       // Eje ASC
       const radAsc = ajustarAngulo(ascendenteAbs);
@@ -675,7 +755,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const yAsc1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radAsc));
       const xAsc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 60) * Math.cos(radAsc));
       const yAsc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 60) * Math.sin(radAsc));
-
       const lineaAsc = document.createElementNS("http://www.w3.org/2000/svg", "line");
       lineaAsc.setAttribute("x1", String(xAsc1));
       lineaAsc.setAttribute("y1", String(yAsc1));
@@ -699,7 +778,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const yMc1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radMc));
       const xMc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 60) * Math.cos(radMc));
       const yMc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 60) * Math.sin(radMc));
-
       const lineaMc = document.createElementNS("http://www.w3.org/2000/svg", "line");
       lineaMc.setAttribute("x1", String(xMc1));
       lineaMc.setAttribute("y1", String(yMc1));
