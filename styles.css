@@ -120,7 +120,7 @@ body {
   vertical-align: middle;
   font-family: 'Inter', sans-serif;
   font-size: 12px;
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 1px;
 }
 
@@ -211,7 +211,7 @@ select {
   box-shadow: 0 0 0 2px rgba(0,0,0,0.2);
 }
 
-/* Botones (todos) */
+/* Botones */
 #btn-generar,
 #btn-borrar,
 #btn-descargar-png,
@@ -249,13 +249,13 @@ select {
   border: none;
   font-family: 'Inter', sans-serif;
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 1px;
   text-transform: uppercase;
   padding: 12px;
 }
 
-/* Botones de descarga (dos botones) */
+/* Botones de descarga */
 #btn-descargar-png,
 #btn-descargar-png-fondo {
   display: block;
@@ -267,7 +267,7 @@ select {
   border: none;
   font-family: 'Inter', sans-serif;
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 1px;
   text-transform: uppercase;
   padding: 12px;
@@ -282,9 +282,9 @@ select {
 
 /*
 ==========================================================================
-4. ESTILOS PARA AJUSTES DE AGRUPACIÓN Y NOMBRE
+4. AJUSTES DE AGRUPACIÓN Y NOMBRE DE LA CARTA
 ==========================================================================
-*/
+/*
 
 /* --- Ajustes de Agrupación --- */
 .fila-ajuste {
@@ -297,7 +297,7 @@ select {
 .fila-ajuste label {
   font-family: 'Inter', sans-serif;
   font-size: 12px;
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 1px;
   color: #1038a2;
   min-width: 130px;
@@ -341,15 +341,9 @@ select {
   min-width: 150px;
 }
 
-.fila-nombre .ayuda-nombre {
-  font-size: 10px;
-  color: #1038a2;
-  font-weight: 400;
-}
-
 /*
 ==========================================================================
-5. ESTILOS DEL GRÁFICO SVG (RADIX)
+5. ESTILOS DEL GRÁFICO SVG (todas las clases de presentación)
 ==========================================================================
 */
 #carta-astral {
@@ -365,6 +359,129 @@ select {
 #carta-astral circle,
 #carta-astral line {
   shape-rendering: geometricPrecision;
+}
+
+/* Círculos base (exterior, signos, decanatos) */
+.circulo-base {
+  stroke: #0e3585;
+  stroke-width: 1.5;
+  fill: none;
+}
+
+/* Coronas coloreadas */
+.corona-exterior {
+  fill: #1038a2;
+  stroke: none;
+  opacity: 0.8;
+}
+
+.corona-interior {
+  fill: #1038a2;
+  stroke: none;
+  opacity: 0.2;
+}
+
+/* Líneas de signos y decanatos */
+.linea-signo,
+.linea-decanato {
+  stroke: #0e3585;
+  stroke-width: 1.5;
+}
+
+/* Texto de los nombres de los signos */
+.texto-signo {
+  font-family: 'IM Fell DW Pica', serif;
+  font-size: 14px;
+  font-weight: 400;
+  fill: #ffffff;
+  font-style: normal;
+}
+
+/* Iconos de los decanatos (tamaño) */
+.icono-decanato {
+  width: 14px;
+  height: 14px;
+}
+
+/* Círculos de grados (rueda exterior e interior) */
+.circulo-grados {
+  stroke: #1038a2;
+  stroke-width: 0.5;
+  stroke-dasharray: 2, 2;
+  fill: none;
+}
+
+/* Puntos de grado */
+.punto-grado {
+  fill: #1038a2;
+  opacity: 1;
+}
+
+/* Líneas de aspectos: base común */
+.aspecto {
+  stroke: #1038a2;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Variantes según el tipo de aspecto */
+.aspecto-conjuncion {
+  stroke-dasharray: none;
+  opacity: 1;
+}
+.aspecto-sextil {
+  stroke-dasharray: 2, 5;
+  opacity: 1;
+}
+.aspecto-cuadratura {
+  stroke-dasharray: none;
+  opacity: 0.4;
+}
+.aspecto-trigono {
+  stroke-dasharray: 5, 10;
+  opacity: 0.6;
+}
+.aspecto-oposicion {
+  stroke-dasharray: none;
+  opacity: 0.6;
+}
+
+/* Ejes ASC y MC */
+.linea-eje {
+  stroke: #0e3585;
+  opacity: 0.8;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.icono-eje {
+  width: 20px;
+  height: 20px;
+}
+
+/* Líneas de posición de planetas */
+.linea-posicion-planeta {
+  stroke: #0e3585;
+  stroke-width: 1.5;
+  opacity: 0.8;
+  stroke-linecap: round;
+}
+
+/* Iconos de planetas */
+.icono-planeta {
+  width: 20px;
+  height: 20px;
+}
+
+/* Texto de retrógrado (R) */
+.texto-retrogrado {
+  font-family: 'IM Fell DW Pica', serif;
+  font-style: italic;
+  font-size: 12px;
+  font-weight: 400;
+  fill: #1038a2;
+  opacity: 0.6;
 }
 
 /*
@@ -400,7 +517,6 @@ select {
   .etiqueta-retrogrado {
     font-size: 9px;
   }
-
   .fila-ajuste {
     display: flex;
     flex-wrap: wrap;
@@ -431,7 +547,6 @@ select {
     opacity: 0.8;
     padding-top: 2px;
   }
-
   .fila-nombre {
     flex-direction: column;
     align-items: stretch;
@@ -439,7 +554,6 @@ select {
   .fila-nombre input[type="text"] {
     width: 100%;
   }
-
   .contenedor-sticky-mapa {
     margin-top: 30px;
   }
@@ -450,21 +564,17 @@ select {
 7. ESTADOS INTERACTIVOS (HOVER Y ACTIVE)
 ==========================================================================
 */
-
 @media (hover: hover) {
   .etiqueta-retrogrado:hover::before {
     background-color: #7088c7;
   }
-
   #btn-generar:hover {
-    background-color: #7088c7;
+    background-color: #0e3585;
   }
-
   #btn-borrar:hover {
     background-color: #1038a2;
     color: #ffffff;
   }
-
   #btn-descargar-png:hover,
   #btn-descargar-png-fondo:hover {
     background-color: #1038a2;
@@ -475,16 +585,13 @@ select {
 .etiqueta-retrogrado:active::before {
   background-color: #7088c7;
 }
-
 #btn-generar:active {
-  background-color: #7088c7;
+  background-color: #0e3585;
 }
-
 #btn-borrar:active {
   background-color: #1038a2;
   color: #ffffff;
 }
-
 #btn-descargar-png:active,
 #btn-descargar-png-fondo:active {
   background-color: #1038a2;

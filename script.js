@@ -173,16 +173,14 @@ document.addEventListener("DOMContentLoaded", () => {
   cargarValoresGuardados();
 
   // ------------------------------------------------------------
-  //  FUNCIÓN PARA OBTENER FUENTE DE GOOGLE FONTS Y CONVERTIRLA A BASE64
-  //  Ahora incluye font-display: block para forzar carga.
+  // FUNCIÓN PARA OBTENER FUENTE DE GOOGLE FONTS Y CONVERTIRLA A BASE64
   // ------------------------------------------------------------
   async function obtenerFuenteBase64(urlCss) {
     try {
       const respuestaCss = await fetch(urlCss);
       if (!respuestaCss.ok) throw new Error(`HTTP ${respuestaCss.status}`);
       const css = await respuestaCss.text();
-
-      // Extraer bloques @font-face completos y sus URLs
+      
       const regexFontFace = /\@font-face\s*\{([^}]*)\}/g;
       const fontFaces = [];
       let match;
@@ -216,14 +214,14 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (fuentesBase64.length === 0) return null;
-
+      
       let fontFace = '';
       for (const fuente of fuentesBase64) {
         fontFace += `@font-face { font-family: 'IM Fell DW Pica'; font-display: block; `;
         fontFace += `src: url('data:font/woff2;base64,${fuente.base64}') format('woff2'); `;
         fontFace += `font-weight: 400; font-style: ${fuente.estilo}; }\n`;
       }
-
+      
       return fontFace;
     } catch (error) {
       console.error("Error al obtener la fuente de Google Fonts:", error);
@@ -232,17 +230,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------------
-  //  FUNCIÓN PARA DESCARGAR PNG (con o sin fondo) - ALTA RESOLUCIÓN Y FUENTE CORRECTA
+  // FUNCIÓN PARA DESCARGAR PNG
   // ------------------------------------------------------------
   async function descargarPNG(conFondo = false) {
-    // 1. Cargar la fuente en el documento principal para que esté disponible en el canvas
     try {
       await document.fonts.load('1em "IM Fell DW Pica"');
     } catch (e) {
       console.warn("No se pudo cargar la fuente en el documento principal:", e);
     }
 
-    // 2. Obtener la fuente de Google Fonts incrustada como base64
     const urlGoogleFonts = 'https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica:ital,wght@0,400;1,400&display=swap';
     let fuenteCSS = await obtenerFuenteBase64(urlGoogleFonts);
     if (!fuenteCSS) {
@@ -257,8 +253,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const svgOriginal = document.getElementById("carta-astral");
     const clon = svgOriginal.cloneNode(true);
 
-    // 3. Inyectar la fuente incrustada en el SVG clonado,
-    //    con font-display: block y reglas para normal/italic
     const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
     style.textContent = `
       ${fuenteCSS}
@@ -274,7 +268,6 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
     clon.insertBefore(style, clon.firstChild);
 
-    // 4. Incrustar imágenes SVG de planetas
     const imagenes = clon.querySelectorAll("image");
     const cacheDataURI = new Map();
 
@@ -308,16 +301,15 @@ document.addEventListener("DOMContentLoaded", () => {
         );
       }
     });
-
+    
     await Promise.all(promesas);
 
-    // 5. Serializar SVG
     const svgData = new XMLSerializer().serializeToString(clon);
     const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
-
+    
     const img = new Image();
-    // Añadir un timeout para evitar que se quede colgado si la fuente no carga
+    
     const timeoutId = setTimeout(() => {
       console.warn("Timeout al cargar la imagen SVG. Se procederá con la descarga.");
       URL.revokeObjectURL(url);
@@ -366,7 +358,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------------
-  //  FUNCIÓN PRINCIPAL DE DIBUJO (CON DOS CORONAS, EJES COMO ÍCONOS Y SEPARACIÓN DINÁMICA)
+  // FUNCIÓN PRINCIPAL DE DIBUJO (con estilos externalizados)
   // ------------------------------------------------------------
   function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
     const umbralInput = document.getElementById("umbral-input");
@@ -388,14 +380,12 @@ document.addEventListener("DOMContentLoaded", () => {
       return (desfaceG - gradosOriginales) * (Math.PI / 180);
     }
 
-    // --- CAPA 1: Círculos base y fondo de la franja de signos ---
+    // ---------- CAPA 1: Círculos base y coronas ----------
     const circuloExterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloExterior.setAttribute("cx", String(CENTRO_X));
     circuloExterior.setAttribute("cy", String(CENTRO_Y));
     circuloExterior.setAttribute("r", String(RADIO_EXTERIOR));
-    circuloExterior.setAttribute("stroke", "#1038a2");
-    circuloExterior.setAttribute("stroke-width", "1.5");
-    circuloExterior.setAttribute("fill", "none");
+    circuloExterior.setAttribute("class", "circulo-base");
     lienzoSvg.appendChild(circuloExterior);
 
     const pathCoronaExterior = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -409,18 +399,14 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
     pathCoronaExterior.setAttribute("d", dCoronaExterior);
     pathCoronaExterior.setAttribute("fill-rule", "evenodd");
-    pathCoronaExterior.setAttribute("fill", "#1038a2");
-    pathCoronaExterior.setAttribute("stroke", "none");
-    pathCoronaExterior.setAttribute("opacity", "0.8");
+    pathCoronaExterior.setAttribute("class", "corona-exterior");
     lienzoSvg.appendChild(pathCoronaExterior);
 
     const circuloSignosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloSignosInterior.setAttribute("cx", String(CENTRO_X));
     circuloSignosInterior.setAttribute("cy", String(CENTRO_Y));
     circuloSignosInterior.setAttribute("r", String(RADIO_SIGNOS_INTERIOR));
-    circuloSignosInterior.setAttribute("stroke", "#1038a2");
-    circuloSignosInterior.setAttribute("stroke-width", "1.5");
-    circuloSignosInterior.setAttribute("fill", "none");
+    circuloSignosInterior.setAttribute("class", "circulo-base");
     lienzoSvg.appendChild(circuloSignosInterior);
 
     const pathCoronaInterior = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -434,21 +420,17 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
     pathCoronaInterior.setAttribute("d", dCoronaInterior);
     pathCoronaInterior.setAttribute("fill-rule", "evenodd");
-    pathCoronaInterior.setAttribute("fill", "#1038a2");
-    pathCoronaInterior.setAttribute("stroke", "none");
-    pathCoronaInterior.setAttribute("opacity", "0.2");
+    pathCoronaInterior.setAttribute("class", "corona-interior");
     lienzoSvg.appendChild(pathCoronaInterior);
 
     const circuloDecanatosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloDecanatosInterior.setAttribute("cx", String(CENTRO_X));
     circuloDecanatosInterior.setAttribute("cy", String(CENTRO_Y));
     circuloDecanatosInterior.setAttribute("r", String(RADIO_DECANATOS_INTERIOR));
-    circuloDecanatosInterior.setAttribute("stroke", "#1038a2");
-    circuloDecanatosInterior.setAttribute("stroke-width", "1.5");
-    circuloDecanatosInterior.setAttribute("fill", "none");
+    circuloDecanatosInterior.setAttribute("class", "circulo-base");
     lienzoSvg.appendChild(circuloDecanatosInterior);
 
-    // --- CAPA 2: Líneas de los SIGNOS (30°) ---
+    // ---------- CAPA 2: Líneas de los signos (30°) ----------
     for (let i = 0; i < 12; i++) {
       const gradoLinea = i * 30;
       const radLinea = ajustarAngulo(gradoLinea);
@@ -461,12 +443,11 @@ document.addEventListener("DOMContentLoaded", () => {
       linea.setAttribute("y1", String(y1));
       linea.setAttribute("x2", String(x2));
       linea.setAttribute("y2", String(y2));
-      linea.setAttribute("stroke", "#1038a2");
-      linea.setAttribute("stroke-width", "1.5");
+      linea.setAttribute("class", "linea-signo");
       lienzoSvg.appendChild(linea);
     }
 
-    // --- CAPA 3: Líneas de los DECANATOS (0°, 10°, 20° de cada signo) ---
+    // ---------- CAPA 3: Líneas de los decanatos (0°, 10°, 20° de cada signo) ----------
     for (let i = 0; i < 12; i++) {
       for (let d = 0; d < 3; d++) {
         const gradoLinea = i * 30 + d * 10;
@@ -480,13 +461,12 @@ document.addEventListener("DOMContentLoaded", () => {
         linea.setAttribute("y1", String(y1));
         linea.setAttribute("x2", String(x2));
         linea.setAttribute("y2", String(y2));
-        linea.setAttribute("stroke", "#1038a2");
-        linea.setAttribute("stroke-width", "1.5");
+        linea.setAttribute("class", "linea-decanato");
         lienzoSvg.appendChild(linea);
       }
     }
 
-    // --- CAPA 4: Nombres de los signos ---
+    // ---------- CAPA 4: Nombres de los signos ----------
     for (let i = 0; i < 12; i++) {
       const gradoInicioArco = i * 30;
       const gradoFinArco = gradoInicioArco + 30;
@@ -499,6 +479,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const ey = (CENTRO_Y + radioTrayectoTexto * Math.sin(radFin)).toFixed(2);
       const idTrayecto = `trayecto-signo-${i}`;
       const d = `M ${ex},${ey} A ${radioTrayectoTexto},${radioTrayectoTexto} 0 0,1 ${sx},${sy}`;
+
       const rutaDefinicion = document.createElementNS("http://www.w3.org/2000/svg", "path");
       rutaDefinicion.setAttribute("id", idTrayecto);
       rutaDefinicion.setAttribute("d", d);
@@ -507,11 +488,7 @@ document.addEventListener("DOMContentLoaded", () => {
       lienzoSvg.appendChild(rutaDefinicion);
 
       const etiquetaTexto = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      etiquetaTexto.setAttribute("font-family", "'IM Fell DW Pica', serif");
-      etiquetaTexto.setAttribute("font-size", "14");
-      etiquetaTexto.setAttribute("font-weight", "400");
-      etiquetaTexto.setAttribute("fill", "#ffffff");
-      etiquetaTexto.setAttribute("font-style", "normal");
+      etiquetaTexto.setAttribute("class", "texto-signo");
       const trayectoTexto = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
       trayectoTexto.setAttribute("href", `#${idTrayecto}`);
       trayectoTexto.setAttribute("startOffset", "50%");
@@ -521,7 +498,7 @@ document.addEventListener("DOMContentLoaded", () => {
       lienzoSvg.appendChild(etiquetaTexto);
     }
 
-    // --- CAPA 5: Símbolos de los decanatos ---
+    // ---------- CAPA 5: Símbolos de los decanatos ----------
     for (let i = 0; i < 12; i++) {
       const decanatosSigno = decanatos[i];
       if (!decanatosSigno) continue;
@@ -536,22 +513,18 @@ document.addEventListener("DOMContentLoaded", () => {
         const imgDecanato = document.createElementNS("http://www.w3.org/2000/svg", "image");
         imgDecanato.setAttribute("x", String(x - 7));
         imgDecanato.setAttribute("y", String(y - 7));
-        imgDecanato.setAttribute("width", "14");
-        imgDecanato.setAttribute("height", "14");
+        imgDecanato.setAttribute("class", "icono-decanato");
         imgDecanato.setAttribute("href", rutaSVG);
         lienzoSvg.appendChild(imgDecanato);
       }
     }
 
-    // --- CAPA 6: Rueda de 360° (marcas de grados) ---
+    // ---------- CAPA 6: Rueda de 360° (marcas de grados) ----------
     const circuloGradosExterno = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloGradosExterno.setAttribute("cx", String(CENTRO_X));
     circuloGradosExterno.setAttribute("cy", String(CENTRO_Y));
     circuloGradosExterno.setAttribute("r", String(RADIO_GRADOS));
-    circuloGradosExterno.setAttribute("stroke", "#1038a2");
-    circuloGradosExterno.setAttribute("stroke-width", "0.5");
-    circuloGradosExterno.setAttribute("stroke-dasharray", "2,2");
-    circuloGradosExterno.setAttribute("fill", "none");
+    circuloGradosExterno.setAttribute("class", "circulo-grados");
     lienzoSvg.appendChild(circuloGradosExterno);
 
     for (let g = 0; g < 360; g += 10) {
@@ -562,10 +535,10 @@ document.addEventListener("DOMContentLoaded", () => {
       punto.setAttribute("cx", String(x));
       punto.setAttribute("cy", String(y));
       punto.setAttribute("r", "1");
-      punto.setAttribute("fill", "#1038a2");
-      punto.setAttribute("opacity", "1");
+      punto.setAttribute("class", "punto-grado");
       lienzoSvg.appendChild(punto);
     }
+
     for (let g = 0; g < 360; g += 30) {
       const rad = ajustarAngulo(g);
       const x = Math.round(CENTRO_X + RADIO_GRADOS * Math.cos(rad));
@@ -574,8 +547,7 @@ document.addEventListener("DOMContentLoaded", () => {
       punto.setAttribute("cx", String(x));
       punto.setAttribute("cy", String(y));
       punto.setAttribute("r", "1.5");
-      punto.setAttribute("fill", "#1038a2");
-      punto.setAttribute("opacity", "1");
+      punto.setAttribute("class", "punto-grado");
       lienzoSvg.appendChild(punto);
     }
 
@@ -583,10 +555,7 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloGradosInterno.setAttribute("cx", String(CENTRO_X));
     circuloGradosInterno.setAttribute("cy", String(CENTRO_Y));
     circuloGradosInterno.setAttribute("r", String(RADIO_ASPECTOS));
-    circuloGradosInterno.setAttribute("stroke", "#1038a2");
-    circuloGradosInterno.setAttribute("stroke-width", "0.5");
-    circuloGradosInterno.setAttribute("stroke-dasharray", "2,2");
-    circuloGradosInterno.setAttribute("fill", "none");
+    circuloGradosInterno.setAttribute("class", "circulo-grados");
     lienzoSvg.appendChild(circuloGradosInterno);
 
     for (let g = 0; g < 360; g += 10) {
@@ -597,10 +566,10 @@ document.addEventListener("DOMContentLoaded", () => {
       punto.setAttribute("cx", String(x));
       punto.setAttribute("cy", String(y));
       punto.setAttribute("r", "1");
-      punto.setAttribute("fill", "#1038a2");
-      punto.setAttribute("opacity", "1");
+      punto.setAttribute("class", "punto-grado");
       lienzoSvg.appendChild(punto);
     }
+
     for (let g = 0; g < 360; g += 30) {
       const rad = ajustarAngulo(g);
       const x = Math.round(CENTRO_X + RADIO_ASPECTOS * Math.cos(rad));
@@ -609,19 +578,17 @@ document.addEventListener("DOMContentLoaded", () => {
       punto.setAttribute("cx", String(x));
       punto.setAttribute("cy", String(y));
       punto.setAttribute("r", "1.5");
-      punto.setAttribute("fill", "#1038a2");
-      punto.setAttribute("opacity", "1");
+      punto.setAttribute("class", "punto-grado");
       lienzoSvg.appendChild(punto);
     }
 
-    // --- CAPA 7: Aspectos planetarios ---
+    // ---------- CAPA 7: Aspectos planetarios ----------
     const circuloAspectos = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloAspectos.setAttribute("cx", String(CENTRO_X));
     circuloAspectos.setAttribute("cy", String(CENTRO_Y));
     circuloAspectos.setAttribute("r", String(RADIO_ASPECTOS));
-    circuloAspectos.setAttribute("stroke", "none");
-    circuloAspectos.setAttribute("stroke-width", "0");
     circuloAspectos.setAttribute("fill", "none");
+    circuloAspectos.setAttribute("stroke", "none");
     lienzoSvg.appendChild(circuloAspectos);
 
     const planetasValidos = {};
@@ -630,6 +597,7 @@ document.addEventListener("DOMContentLoaded", () => {
         planetasValidos[nombre] = pos;
       }
     }
+
     const nombres = Object.keys(planetasValidos);
     if (nombres.length >= 2) {
       for (let i = 0; i < nombres.length; i++) {
@@ -642,12 +610,13 @@ document.addEventListener("DOMContentLoaded", () => {
           if (diff > 180) diff = 360 - diff;
           const orbe = (p1 === 'LUNA' || p2 === 'LUNA') ? 13 : 3;
           const aspectos = [
-            { tipo: 'conjuncion', angulo: 0, strokeWidth: 1.5, dasharray: null, opacity: 1 },
-            { tipo: 'sextil', angulo: 60, strokeWidth: 1.5, dasharray: '2,5', opacity: 1 },
-            { tipo: 'cuadratura', angulo: 90, strokeWidth: 1.5, dasharray: null, opacity: 0.4 },
-            { tipo: 'trígono', angulo: 120, strokeWidth: 1.5, dasharray: '5,10', opacity: 0.6 },
-            { tipo: 'oposicion', angulo: 180, strokeWidth: 1.5, dasharray: null, opacity: 0.6 }
+            { tipo: 'conjuncion', angulo: 0 },
+            { tipo: 'sextil', angulo: 60 },
+            { tipo: 'cuadratura', angulo: 90 },
+            { tipo: 'trigono', angulo: 120 },
+            { tipo: 'oposicion', angulo: 180 }
           ];
+
           for (const asp of aspectos) {
             if (Math.abs(diff - asp.angulo) <= orbe) {
               const rad1 = ajustarAngulo(pos1);
@@ -661,14 +630,7 @@ document.addEventListener("DOMContentLoaded", () => {
               lineaAspecto.setAttribute("y1", String(y1));
               lineaAspecto.setAttribute("x2", String(x2));
               lineaAspecto.setAttribute("y2", String(y2));
-              lineaAspecto.setAttribute("stroke", "#1038a2");
-              lineaAspecto.setAttribute("stroke-linecap", "round");
-              lineaAspecto.setAttribute("stroke-linejoin", "round");
-              lineaAspecto.setAttribute("stroke-width", String(asp.strokeWidth));
-              if (asp.dasharray) {
-                lineaAspecto.setAttribute("stroke-dasharray", asp.dasharray);
-              }
-              lineaAspecto.setAttribute("opacity", String(asp.opacity));
+              lineaAspecto.setAttribute("class", `aspecto aspecto-${asp.tipo}`);
               lienzoSvg.appendChild(lineaAspecto);
               break;
             }
@@ -677,7 +639,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // --- CAPA 8: Ejes, marcas de posición y planetas ---
+    // ---------- CAPA 8: Ejes, marcas de posición y planetas ----------
     if (mostrarContenido) {
       // Eje ASC
       const radAsc = ajustarAngulo(ascendenteAbs);
@@ -691,10 +653,7 @@ document.addEventListener("DOMContentLoaded", () => {
       lineaAsc.setAttribute("y1", String(yAsc1));
       lineaAsc.setAttribute("x2", String(xAsc2));
       lineaAsc.setAttribute("y2", String(yAsc2));
-      lineaAsc.setAttribute("stroke", "#1038a2");
-      lineaAsc.setAttribute("opacity", "0.8");
-      lineaAsc.setAttribute("stroke-width", "2");
-      lineaAsc.setAttribute("stroke-linecap", "round");
+      lineaAsc.setAttribute("class", "linea-eje");
       lienzoSvg.appendChild(lineaAsc);
 
       const xAscIcono = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 75) * Math.cos(radAsc));
@@ -702,8 +661,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const imgAsc = document.createElementNS("http://www.w3.org/2000/svg", "image");
       imgAsc.setAttribute("x", String(xAscIcono - 10));
       imgAsc.setAttribute("y", String(yAscIcono - 10));
-      imgAsc.setAttribute("width", "20");
-      imgAsc.setAttribute("height", "20");
+      imgAsc.setAttribute("class", "icono-eje");
       imgAsc.setAttribute("href", "svg/asc.svg");
       lienzoSvg.appendChild(imgAsc);
 
@@ -713,16 +671,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const yMc1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radMc));
       const xMc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 60) * Math.cos(radMc));
       const yMc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 60) * Math.sin(radMc));
-
+      
       const lineaMc = document.createElementNS("http://www.w3.org/2000/svg", "line");
       lineaMc.setAttribute("x1", String(xMc1));
       lineaMc.setAttribute("y1", String(yMc1));
       lineaMc.setAttribute("x2", String(xMc2));
       lineaMc.setAttribute("y2", String(yMc2));
-      lineaMc.setAttribute("stroke", "#1038a2");
-      lineaMc.setAttribute("opacity", "0.8");
-      lineaMc.setAttribute("stroke-width", "2");
-      lineaMc.setAttribute("stroke-linecap", "round");
+      lineaMc.setAttribute("class", "linea-eje");
       lienzoSvg.appendChild(lineaMc);
 
       const xMcIcono = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 75) * Math.cos(radMc));
@@ -730,12 +685,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const imgMc = document.createElementNS("http://www.w3.org/2000/svg", "image");
       imgMc.setAttribute("x", String(xMcIcono - 10));
       imgMc.setAttribute("y", String(yMcIcono - 10));
-      imgMc.setAttribute("width", "20");
-      imgMc.setAttribute("height", "20");
+      imgMc.setAttribute("class", "icono-eje");
       imgMc.setAttribute("href", "svg/mc.svg");
       lienzoSvg.appendChild(imgMc);
 
-      // --- OBTENER DATOS DE PLANETAS Y EJES PARA LA SEPARACIÓN ---
+      // ---------- OBTENER DATOS DE PLANETAS Y EJES PARA LA SEPARACIÓN ----------
       let datosPlanetasForm = {};
       try {
         const raw = localStorage.getItem("datosRadixManual");
@@ -857,10 +811,7 @@ document.addEventListener("DOMContentLoaded", () => {
         lineaPosicion.setAttribute("y1", String(yInicio));
         lineaPosicion.setAttribute("x2", String(xFin));
         lineaPosicion.setAttribute("y2", String(yFin));
-        lineaPosicion.setAttribute("stroke", "#1038a2");
-        lineaPosicion.setAttribute("stroke-width", "1.5");
-        lineaPosicion.setAttribute("opacity", "0.8");
-        lineaPosicion.setAttribute("stroke-linecap", "round");
+        lineaPosicion.setAttribute("class", "linea-posicion-planeta");
         lienzoSvg.appendChild(lineaPosicion);
 
         const xInicioAsp = Math.round(CENTRO_X + RADIO_ASPECTOS * Math.cos(radPlaneta));
@@ -873,23 +824,18 @@ document.addEventListener("DOMContentLoaded", () => {
         lineaPosicionAsp.setAttribute("y1", String(yInicioAsp));
         lineaPosicionAsp.setAttribute("x2", String(xFinAsp));
         lineaPosicionAsp.setAttribute("y2", String(yFinAsp));
-        lineaPosicionAsp.setAttribute("stroke", "#1038a2");
-        lineaPosicionAsp.setAttribute("stroke-width", "1.5");
-        lineaPosicionAsp.setAttribute("opacity", "0.8");
-        lineaPosicionAsp.setAttribute("stroke-linecap", "round");
+        lineaPosicionAsp.setAttribute("class", "linea-posicion-planeta");
         lienzoSvg.appendChild(lineaPosicionAsp);
 
         const desp = desplazamientos[nombre] || { dx: 0, dy: 0 };
         const xIcono = xPlaneta + desp.dx;
         const yIcono = yPlaneta + desp.dy;
-
         const nombreSVG = nombre.toLowerCase().replace('_', '-');
         const rutaSVG = `svg/${nombreSVG}.svg`;
         const imgPlaneta = document.createElementNS("http://www.w3.org/2000/svg", "image");
         imgPlaneta.setAttribute("x", String(xIcono - 10));
         imgPlaneta.setAttribute("y", String(yIcono - 10));
-        imgPlaneta.setAttribute("width", "20");
-        imgPlaneta.setAttribute("height", "20");
+        imgPlaneta.setAttribute("class", "icono-planeta");
         imgPlaneta.setAttribute("href", rutaSVG);
         lienzoSvg.appendChild(imgPlaneta);
 
@@ -901,18 +847,14 @@ document.addEventListener("DOMContentLoaded", () => {
           const txtRetro = document.createElementNS("http://www.w3.org/2000/svg", "text");
           txtRetro.setAttribute("x", String(xR));
           txtRetro.setAttribute("y", String(yR));
-          txtRetro.setAttribute("font-family", "'IM Fell DW Pica', serif");
-          txtRetro.setAttribute("font-style", "italic");
-          txtRetro.setAttribute("font-size", "12");
-          txtRetro.setAttribute("font-weight", "400");
           txtRetro.setAttribute("text-anchor", "start");
           txtRetro.setAttribute("dominant-baseline", "central");
-          txtRetro.setAttribute("fill", "#1038a2");
-          txtRetro.setAttribute("opacity", "0.6");
+          txtRetro.setAttribute("class", "texto-retrogrado");
           txtRetro.textContent = "R";
           lienzoSvg.appendChild(txtRetro);
         }
       }
     }
   }
+
 });
