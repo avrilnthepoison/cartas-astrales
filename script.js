@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const CENTRO_X = 300;
   const CENTRO_Y = 300;
-
+  
   const RADIO_EXTERIOR = 295;
   const RADIO_SIGNOS_INTERIOR = 265;
   const RADIO_DECANATOS_INTERIOR = 240;
@@ -39,6 +39,22 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const cuerpos = Object.keys(simbolos);
+
+  // --- NUEVO DICCIONARIO DE ORBES SEGÚN CADA PLANETA ---
+  const orbesPlanetarios = {
+    "SOL": 15,
+    "LUNA": 12,
+    "MERCURIO": 7,
+    "VENUS": 7,
+    "MARTE": 7,
+    "JUPITER": 9,
+    "SATURNO": 9,
+    "URANO": 3,
+    "NEPTUNO": 3,
+    "PLUTON": 3,
+    "NODO_NORTE": 0   // El nodo no proyecta, el orbe lo da el otro planeta
+    // QUIRON no está incluido porque se salta directamente en los aspectos
+  };
 
   const decanatos = {
     0: ['MARTE', 'SOL', 'VENUS'],
@@ -74,7 +90,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const planetasIngresados = {};
     const filasPlanetas = document.querySelectorAll(".fila-planeta");
-
     const estructuraAGuardar = {
       ascendente: { g: document.getElementById("asc-grado").value, m: document.getElementById("asc-minuto").value, signo: ascSigno },
       medioCielo: { g: document.getElementById("mc-grado").value, m: document.getElementById("mc-minuto").value, signo: mcSigno },
@@ -181,7 +196,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const respuestaCss = await fetch(urlCss);
       if (!respuestaCss.ok) throw new Error(`HTTP ${respuestaCss.status}`);
       const css = await respuestaCss.text();
-
       const regexFontFace = /\@font-face\s*\{([^}]*)\}/g;
       const fontFaces = [];
       let match;
@@ -195,12 +209,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const estilo = styleMatch ? styleMatch[1].trim() : 'normal';
         fontFaces.push({ url, estilo });
       }
-
       if (fontFaces.length === 0) {
         console.warn("No se encontraron fuentes en el CSS de Google Fonts.");
         return null;
       }
-
       const fuentesBase64 = [];
       for (const ff of fontFaces) {
         try {
@@ -213,16 +225,13 @@ document.addEventListener("DOMContentLoaded", () => {
           console.warn(`Error al descargar fuente: ${ff.url}`, e);
         }
       }
-
       if (fuentesBase64.length === 0) return null;
-
       let fontFace = '';
       for (const fuente of fuentesBase64) {
         fontFace += `@font-face { font-family: 'IM Fell DW Pica'; font-display: block; `;
         fontFace += `src: url('data:font/woff2;base64,${fuente.base64}') format('woff2'); `;
         fontFace += `font-weight: 400; font-style: ${fuente.estilo}; }\n`;
       }
-
       return fontFace;
     } catch (error) {
       console.error("Error al obtener la fuente de Google Fonts:", error);
@@ -302,13 +311,11 @@ document.addEventListener("DOMContentLoaded", () => {
         );
       }
     });
-
     await Promise.all(promesas);
 
     const svgData = new XMLSerializer().serializeToString(clon);
     const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
-
     const img = new Image();
 
     const timeoutId = setTimeout(() => {
@@ -322,21 +329,18 @@ document.addEventListener("DOMContentLoaded", () => {
       canvas.width = ANCHO_FINAL;
       canvas.height = ALTO_FINAL;
       const ctx = canvas.getContext("2d");
-
       if (conFondo) {
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       } else {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
-
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       const pngUrl = canvas.toDataURL("image/png");
 
       const nombreInput = document.getElementById("nombre-carta-input");
       let nombreBase = "carta astral";
       if (nombreInput && nombreInput.value.trim() !== "") {
-        // Capitalizar primera letra y mantener el resto
         let nombreUsuario = nombreInput.value.trim();
         nombreUsuario = nombreUsuario.charAt(0).toUpperCase() + nombreUsuario.slice(1).toLowerCase();
         nombreBase = nombreUsuario + " carta astral";
@@ -352,17 +356,18 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     };
-    
+
     img.onerror = function() {
       clearTimeout(timeoutId);
       console.error("Error al cargar el SVG para PNG.");
       URL.revokeObjectURL(url);
     };
+
     img.src = url;
 }
 
   // ------------------------------------------------------------
-  // FUNCIÓN PRINCIPAL DE DIBUJO (con estilos externalizados)
+  // FUNCIÓN PRINCIPAL DE DIBUJO (con estilos externalizados y nueva lógica de orbes)
   // ------------------------------------------------------------
   function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
     const umbralInput = document.getElementById("umbral-input");
@@ -586,7 +591,7 @@ document.addEventListener("DOMContentLoaded", () => {
       lienzoSvg.appendChild(punto);
     }
 
-    // ---------- CAPA 7: Aspectos planetarios ----------
+    // ---------- CAPA 7: Aspectos planetarios (con nueva lógica de orbes) ----------
     const circuloAspectos = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloAspectos.setAttribute("cx", String(CENTRO_X));
     circuloAspectos.setAttribute("cy", String(CENTRO_Y));
@@ -608,11 +613,30 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let j = i + 1; j < nombres.length; j++) {
           const p1 = nombres[i];
           const p2 = nombres[j];
+
+          // 1. Saltar si alguno de los dos es QUIRON (no aspecta)
+          if (p1 === 'QUIRON' || p2 === 'QUIRON') continue;
+
           const pos1 = planetasValidos[p1];
           const pos2 = planetasValidos[p2];
           let diff = Math.abs(pos1 - pos2) % 360;
           if (diff > 180) diff = 360 - diff;
-          const orbe = (p1 === 'LUNA' || p2 === 'LUNA') ? 13 : 3;
+
+          // 2. Determinar el orbe a usar según las nuevas reglas
+          let orb = 0;
+          if (p1 === 'NODO_NORTE') {
+            // El nodo no proyecta, usamos el orbe del otro planeta (p2)
+            orb = orbesPlanetarios[p2] || 0;
+          } else if (p2 === 'NODO_NORTE') {
+            // El nodo no proyecta, usamos el orbe del otro planeta (p1)
+            orb = orbesPlanetarios[p1] || 0;
+          } else {
+            // Ambos son planetas normales: usamos el orbe mayor de los dos
+            orb = Math.max(orbesPlanetarios[p1] || 0, orbesPlanetarios[p2] || 0);
+          }
+
+          if (orb === 0) continue;
+
           const aspectos = [
             { tipo: 'conjuncion', angulo: 0 },
             { tipo: 'sextil', angulo: 60 },
@@ -622,7 +646,7 @@ document.addEventListener("DOMContentLoaded", () => {
           ];
 
           for (const asp of aspectos) {
-            if (Math.abs(diff - asp.angulo) <= orbe) {
+            if (Math.abs(diff - asp.angulo) <= orb) {
               const rad1 = ajustarAngulo(pos1);
               const rad2 = ajustarAngulo(pos2);
               const x1 = Math.round(CENTRO_X + RADIO_ASPECTOS * Math.cos(rad1));
@@ -675,7 +699,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const yMc1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radMc));
       const xMc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 60) * Math.cos(radMc));
       const yMc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 60) * Math.sin(radMc));
-      
+
       const lineaMc = document.createElementNS("http://www.w3.org/2000/svg", "line");
       lineaMc.setAttribute("x1", String(xMc1));
       lineaMc.setAttribute("y1", String(yMc1));
