@@ -20,6 +20,15 @@
     <div class="interfaz-columnas">
       <!-- COLUMNA IZQUIERDA: FORMULARIO -->
       <section class="seccion-formulario">
+        <!-- BLOQUE NOMBRE DE LA CARTA (ahora primero) -->
+        <div class="bloque-formulario">
+          <h3>Nombre de la Carta</h3>
+          <div class="fila-nombre">
+            <input type="text" id="nombre-carta-input" placeholder="Nombre para el archivo" value="" />
+          </div>
+        </div>
+
+        <!-- BLOQUE EJES PRINCIPALES -->
         <div class="bloque-formulario">
           <h3>Ejes Principales</h3>
           <div class="fila-eje">
@@ -54,9 +63,10 @@
           </div>
         </div>
 
+        <!-- BLOQUE PLANETAS Y PUNTOS -->
         <div class="bloque-formulario">
           <h3>Planetas y Puntos</h3>
-          <!-- SOL (sin retrógrado) -->
+          <!-- SOL -->
           <div class="fila-planeta" data-astro="SOL">
             <span class="nombre-astro">SOL</span>
             <div class="campos-posicion">
@@ -72,7 +82,7 @@
               </select>
             </div>
           </div>
-          <!-- LUNA (sin retrógrado) -->
+          <!-- LUNA -->
           <div class="fila-planeta" data-astro="LUNA">
             <span class="nombre-astro">LUNA</span>
             <div class="campos-posicion">
@@ -280,7 +290,7 @@
           </div>
         </div>
 
-        <!-- BLOQUE DE AJUSTES DE AGRUPACIÓN -->
+        <!-- BLOQUE AJUSTES DE AGRUPACIÓN -->
         <div class="bloque-formulario">
           <h3>Ajustes de Agrupación</h3>
           <div class="fila-ajuste">
@@ -295,18 +305,9 @@
           </div>
         </div>
 
-        <!-- NUEVO BLOQUE: NOMBRE DE LA CARTA -->
-        <div class="bloque-formulario">
-          <h3>Nombre de la Carta</h3>
-          <div class="fila-nombre">
-            <input type="text" id="nombre-carta-input" placeholder="Nombre para el archivo" value="" />
-          </div>
-        </div>
-
+        <!-- BOTONES -->
         <button id="btn-generar">Dibujar Carta Astral</button>
         <button id="btn-borrar">Restablecer Datos</button>
-
-        <!-- DOS BOTONES DE DESCARGA -->
         <button id="btn-descargar-png">Descargar PNG (sin fondo)</button>
         <button id="btn-descargar-png-fondo">Descargar PNG (con fondo blanco)</button>
       </section>
@@ -319,7 +320,6 @@
       </section>
     </div>
   </main>
-
   <script src="script.js"></script>
 </body>
 </html>

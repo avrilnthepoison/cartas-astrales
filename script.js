@@ -132,6 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
       dibujarRadixManual(0, 0, {}, false);
       return;
     }
+
     try {
       const datos = JSON.parse(datosGuardados);
       if (datos.ascendente) {
@@ -180,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const respuestaCss = await fetch(urlCss);
       if (!respuestaCss.ok) throw new Error(`HTTP ${respuestaCss.status}`);
       const css = await respuestaCss.text();
-      
+
       const regexFontFace = /\@font-face\s*\{([^}]*)\}/g;
       const fontFaces = [];
       let match;
@@ -214,14 +215,14 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (fuentesBase64.length === 0) return null;
-      
+
       let fontFace = '';
       for (const fuente of fuentesBase64) {
         fontFace += `@font-face { font-family: 'IM Fell DW Pica'; font-display: block; `;
         fontFace += `src: url('data:font/woff2;base64,${fuente.base64}') format('woff2'); `;
         fontFace += `font-weight: 400; font-style: ${fuente.estilo}; }\n`;
       }
-      
+
       return fontFace;
     } catch (error) {
       console.error("Error al obtener la fuente de Google Fonts:", error);
@@ -301,15 +302,15 @@ document.addEventListener("DOMContentLoaded", () => {
         );
       }
     });
-    
+
     await Promise.all(promesas);
 
     const svgData = new XMLSerializer().serializeToString(clon);
     const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
-    
+
     const img = new Image();
-    
+
     const timeoutId = setTimeout(() => {
       console.warn("Timeout al cargar la imagen SVG. Se procederá con la descarga.");
       URL.revokeObjectURL(url);
@@ -333,13 +334,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const pngUrl = canvas.toDataURL("image/png");
 
       const nombreInput = document.getElementById("nombre-carta-input");
-      let nombreArchivo = "carta_astral";
+      let nombreBase = "carta astral";
       if (nombreInput && nombreInput.value.trim() !== "") {
-        nombreArchivo = nombreInput.value.trim();
+        // Capitalizar primera letra y mantener el resto
+        let nombreUsuario = nombreInput.value.trim();
+        nombreUsuario = nombreUsuario.charAt(0).toUpperCase() + nombreUsuario.slice(1).toLowerCase();
+        nombreBase = nombreUsuario + " carta astral";
       }
-
-      const sufijo = conFondo ? "_con_fondo" : "_sin_fondo";
-      const nombreCompleto = nombreArchivo + sufijo + ".png";
+      const sufijo = conFondo ? "con fondo" : "sin fondo";
+      const nombreCompleto = nombreBase + " " + sufijo + ".png";
 
       const link = document.createElement("a");
       link.download = nombreCompleto;
@@ -349,13 +352,14 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     };
+    
     img.onerror = function() {
       clearTimeout(timeoutId);
       console.error("Error al cargar el SVG para PNG.");
       URL.revokeObjectURL(url);
     };
     img.src = url;
-  }
+}
 
   // ------------------------------------------------------------
   // FUNCIÓN PRINCIPAL DE DIBUJO (con estilos externalizados)
