@@ -14,12 +14,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const RADIO_SIGNOS_INTERIOR = 310;
   const RADIO_DECANATOS_INTERIOR = 285;
   const RADIO_TERMINOS_INTERIOR = 260;        // nuevo
-  const RADIO_PLANETAS = 210;
+  const RADIO_PLANETAS = 200;
   const RADIO_TEXTO_SIGNOS = 320;
   const RADIO_SIMBOLOS_DECANATOS = 297;
   const RADIO_SIMBOLOS_TERMINOS = 272;      // nuevo
   const RADIO_GRADOS = 250;
-  const RADIO_ASPECTOS = 150;
+  const RADIO_ASPECTOS = 145;
 
   const nombresSignos = [
     "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
