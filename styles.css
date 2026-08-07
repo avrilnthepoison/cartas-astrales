@@ -367,16 +367,22 @@ select {
 }
 
 /* Coronas coloreadas */
-.corona-exterior {
+.corona-signos {
   fill: #1038a2;
   stroke: none;
   opacity: 0.8;
 }
 
-.corona-interior {
+.corona-decanatos {
   fill: #1038a2;
   stroke: none;
   opacity: 0.2;
+}
+
+.corona-terminos {
+  fill: #1038a2;
+  stroke: none;
+  opacity: 0.1;
 }
 
 /* Líneas de signos, decanatos y términos */

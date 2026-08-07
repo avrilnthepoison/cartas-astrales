@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-
   const botonGenerar = document.getElementById("btn-generar");
   const botonBorrar = document.getElementById("btn-borrar");
   const botonDescargarPNG = document.getElementById("btn-descargar-png");
@@ -17,8 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const RADIO_TERMINOS_INTERIOR = 260;        // nuevo
   const RADIO_PLANETAS = 210;
   const RADIO_TEXTO_SIGNOS = 325;
-  const RADIO_SIMBOLOS_DECANATOS = 297.5;
-  const RADIO_SIMBOLOS_TERMINOS = 272.5;      // nuevo
+  const RADIO_SIMBOLOS_DECANATOS = 297;
+  const RADIO_SIMBOLOS_TERMINOS = 272;      // nuevo
   const RADIO_GRADOS = 275;
   const RADIO_ASPECTOS = 180;
 
@@ -402,9 +401,9 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloExterior.setAttribute("class", "circulo-base");
     lienzoSvg.appendChild(circuloExterior);
 
-    // Corona exterior (signos)
-    const pathCoronaExterior = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    const dCoronaExterior = `
+    // Corona signos
+    const pathCoronaSignos = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    const dCoronaSignos = `
       M ${CENTRO_X - RADIO_EXTERIOR} ${CENTRO_Y}
       A ${RADIO_EXTERIOR} ${RADIO_EXTERIOR} 0 1,1 ${CENTRO_X + RADIO_EXTERIOR} ${CENTRO_Y}
       A ${RADIO_EXTERIOR} ${RADIO_EXTERIOR} 0 1,1 ${CENTRO_X - RADIO_EXTERIOR} ${CENTRO_Y} Z
@@ -412,10 +411,10 @@ document.addEventListener("DOMContentLoaded", () => {
       A ${RADIO_SIGNOS_INTERIOR} ${RADIO_SIGNOS_INTERIOR} 0 1,0 ${CENTRO_X + RADIO_SIGNOS_INTERIOR} ${CENTRO_Y}
       A ${RADIO_SIGNOS_INTERIOR} ${RADIO_SIGNOS_INTERIOR} 0 1,0 ${CENTRO_X - RADIO_SIGNOS_INTERIOR} ${CENTRO_Y} Z
     `;
-    pathCoronaExterior.setAttribute("d", dCoronaExterior);
-    pathCoronaExterior.setAttribute("fill-rule", "evenodd");
-    pathCoronaExterior.setAttribute("class", "corona-exterior");
-    lienzoSvg.appendChild(pathCoronaExterior);
+    pathCoronaSignos.setAttribute("d", dCoronaSignos);
+    pathCoronaSignos.setAttribute("fill-rule", "evenodd");
+    pathCoronaSignos.setAttribute("class", "corona-signos");
+    lienzoSvg.appendChild(pathCoronaSignos);
 
     // Círculo interior de signos
     const circuloSignosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -425,9 +424,9 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloSignosInterior.setAttribute("class", "circulo-base");
     lienzoSvg.appendChild(circuloSignosInterior);
 
-    // Corona intermedia (decanatos)
-    const pathCoronaInterior = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    const dCoronaInterior = `
+    // Corona Decanatos
+    const pathCoronaDecanatos = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    const dCoronaDecanatos = `
       M ${CENTRO_X - RADIO_SIGNOS_INTERIOR} ${CENTRO_Y}
       A ${RADIO_SIGNOS_INTERIOR} ${RADIO_SIGNOS_INTERIOR} 0 1,1 ${CENTRO_X + RADIO_SIGNOS_INTERIOR} ${CENTRO_Y}
       A ${RADIO_SIGNOS_INTERIOR} ${RADIO_SIGNOS_INTERIOR} 0 1,1 ${CENTRO_X - RADIO_SIGNOS_INTERIOR} ${CENTRO_Y} Z
@@ -435,10 +434,10 @@ document.addEventListener("DOMContentLoaded", () => {
       A ${RADIO_DECANATOS_INTERIOR} ${RADIO_DECANATOS_INTERIOR} 0 1,0 ${CENTRO_X + RADIO_DECANATOS_INTERIOR} ${CENTRO_Y}
       A ${RADIO_DECANATOS_INTERIOR} ${RADIO_DECANATOS_INTERIOR} 0 1,0 ${CENTRO_X - RADIO_DECANATOS_INTERIOR} ${CENTRO_Y} Z
     `;
-    pathCoronaInterior.setAttribute("d", dCoronaInterior);
-    pathCoronaInterior.setAttribute("fill-rule", "evenodd");
-    pathCoronaInterior.setAttribute("class", "corona-interior");
-    lienzoSvg.appendChild(pathCoronaInterior);
+    pathCoronaDecanatos.setAttribute("d", dCoronaDecanatos);
+    pathCoronaDecanatos.setAttribute("fill-rule", "evenodd");
+    pathCoronaDecanatos.setAttribute("class", "corona-decanatos");
+    lienzoSvg.appendChild(pathCoronaDecanatos);
 
     // Círculo interior de decanatos
     const circuloDecanatosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -448,7 +447,7 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloDecanatosInterior.setAttribute("class", "circulo-base");
     lienzoSvg.appendChild(circuloDecanatosInterior);
 
-    // ----- NUEVA CORONA PARA TÉRMINOS -----
+    // Corona Términos
     const pathCoronaTerminos = document.createElementNS("http://www.w3.org/2000/svg", "path");
     const dCoronaTerminos = `
       M ${CENTRO_X - RADIO_DECANATOS_INTERIOR} ${CENTRO_Y}
@@ -460,7 +459,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
     pathCoronaTerminos.setAttribute("d", dCoronaTerminos);
     pathCoronaTerminos.setAttribute("fill-rule", "evenodd");
-    pathCoronaTerminos.setAttribute("class", "corona-interior"); // mismo estilo que decanatos
+    pathCoronaTerminos.setAttribute("class", "corona-terminos");
     lienzoSvg.appendChild(pathCoronaTerminos);
 
     // Círculo interior de términos (límite inferior)
