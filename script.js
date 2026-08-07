@@ -1,23 +1,22 @@
 document.addEventListener("DOMContentLoaded", () => {
+
   const botonGenerar = document.getElementById("btn-generar");
   const botonBorrar = document.getElementById("btn-borrar");
   const botonDescargarPNG = document.getElementById("btn-descargar-png");
   const botonDescargarPNGFondo = document.getElementById("btn-descargar-png-fondo");
   const lienzoSvg = document.getElementById("carta-astral");
 
-  // Nuevo centro para viewBox 700x700
   const CENTRO_X = 350;
   const CENTRO_Y = 350;
 
-  // Nuevos radios para dar espacio a la franja de términos
   const RADIO_EXTERIOR = 340;
   const RADIO_SIGNOS_INTERIOR = 310;
   const RADIO_DECANATOS_INTERIOR = 285;
-  const RADIO_TERMINOS_INTERIOR = 260;        // nuevo
+  const RADIO_TERMINOS_INTERIOR = 260;
   const RADIO_PLANETAS = 200;
   const RADIO_TEXTO_SIGNOS = 320;
   const RADIO_SIMBOLOS_DECANATOS = 297;
-  const RADIO_SIMBOLOS_TERMINOS = 272;      // nuevo
+  const RADIO_SIMBOLOS_TERMINOS = 272; // centro de la franja de términos
   const RADIO_GRADOS = 250;
   const RADIO_ASPECTOS = 145;
 
@@ -44,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const cuerpos = Object.keys(simbolos);
 
-  // --- DICCIONARIO DE ORBES ---
+  // --- ORBES ---
   const orbesPlanetarios = {
     "SOL": 15,
     "LUNA": 12,
@@ -59,6 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "NODO_NORTE": 0
   };
 
+  // --- DECANATOS ---
   const decanatos = {
     0: ['MARTE', 'SOL', 'VENUS'],
     1: ['MERCURIO', 'LUNA', 'SATURNO'],
@@ -72,6 +72,94 @@ document.addEventListener("DOMContentLoaded", () => {
     9: ['JUPITER', 'MARTE', 'SOL'],
     10: ['VENUS', 'MERCURIO', 'LUNA'],
     11: ['SATURNO', 'JUPITER', 'MARTE']
+  };
+
+  // --- TÉRMINOS (datos según signo) ---
+  const terminosData = {
+    0: [ // Aries
+      { planeta: 'JUPITER', inicio: 0, fin: 6 },
+      { planeta: 'VENUS', inicio: 6, fin: 12 },
+      { planeta: 'MERCURIO', inicio: 12, fin: 20 },
+      { planeta: 'MARTE', inicio: 20, fin: 25 },
+      { planeta: 'SATURNO', inicio: 25, fin: 30 }
+    ],
+    1: [ // Tauro
+      { planeta: 'VENUS', inicio: 0, fin: 8 },
+      { planeta: 'MERCURIO', inicio: 8, fin: 14 },
+      { planeta: 'JUPITER', inicio: 14, fin: 22 },
+      { planeta: 'SATURNO', inicio: 22, fin: 27 },
+      { planeta: 'MARTE', inicio: 27, fin: 30 }
+    ],
+    2: [ // Géminis
+      { planeta: 'MERCURIO', inicio: 0, fin: 6 },
+      { planeta: 'JUPITER', inicio: 6, fin: 12 },
+      { planeta: 'VENUS', inicio: 12, fin: 17 },
+      { planeta: 'MARTE', inicio: 17, fin: 24 },
+      { planeta: 'SATURNO', inicio: 24, fin: 30 }
+    ],
+    3: [ // Cáncer
+      { planeta: 'MARTE', inicio: 0, fin: 7 },
+      { planeta: 'VENUS', inicio: 7, fin: 13 },
+      { planeta: 'MERCURIO', inicio: 13, fin: 19 },
+      { planeta: 'JUPITER', inicio: 19, fin: 26 },
+      { planeta: 'SATURNO', inicio: 26, fin: 30 }
+    ],
+    4: [ // Leo
+      { planeta: 'JUPITER', inicio: 0, fin: 6 },
+      { planeta: 'VENUS', inicio: 6, fin: 11 },
+      { planeta: 'SATURNO', inicio: 11, fin: 18 },
+      { planeta: 'MERCURIO', inicio: 18, fin: 24 },
+      { planeta: 'MARTE', inicio: 24, fin: 30 }
+    ],
+    5: [ // Virgo
+      { planeta: 'MERCURIO', inicio: 0, fin: 7 },
+      { planeta: 'VENUS', inicio: 7, fin: 17 },
+      { planeta: 'JUPITER', inicio: 17, fin: 21 },
+      { planeta: 'MARTE', inicio: 21, fin: 28 },
+      { planeta: 'SATURNO', inicio: 28, fin: 30 }
+    ],
+    6: [ // Libra
+      { planeta: 'SATURNO', inicio: 0, fin: 6 },
+      { planeta: 'VENUS', inicio: 6, fin: 14 },
+      { planeta: 'JUPITER', inicio: 14, fin: 21 },
+      { planeta: 'MERCURIO', inicio: 21, fin: 28 },
+      { planeta: 'MARTE', inicio: 28, fin: 30 }
+    ],
+    7: [ // Escorpio
+      { planeta: 'MARTE', inicio: 0, fin: 7 },
+      { planeta: 'VENUS', inicio: 7, fin: 11 },
+      { planeta: 'MERCURIO', inicio: 11, fin: 19 },
+      { planeta: 'JUPITER', inicio: 19, fin: 24 },
+      { planeta: 'SATURNO', inicio: 24, fin: 30 }
+    ],
+    8: [ // Sagitario
+      { planeta: 'JUPITER', inicio: 0, fin: 12 },
+      { planeta: 'VENUS', inicio: 12, fin: 17 },
+      { planeta: 'MERCURIO', inicio: 17, fin: 21 },
+      { planeta: 'SATURNO', inicio: 21, fin: 26 },
+      { planeta: 'MARTE', inicio: 26, fin: 30 }
+    ],
+    9: [ // Capricornio
+      { planeta: 'MERCURIO', inicio: 0, fin: 7 },
+      { planeta: 'JUPITER', inicio: 7, fin: 14 },
+      { planeta: 'VENUS', inicio: 14, fin: 22 },
+      { planeta: 'SATURNO', inicio: 22, fin: 26 },
+      { planeta: 'MARTE', inicio: 26, fin: 30 }
+    ],
+    10: [ // Acuario
+      { planeta: 'SATURNO', inicio: 0, fin: 7 },
+      { planeta: 'MERCURIO', inicio: 7, fin: 13 },
+      { planeta: 'VENUS', inicio: 13, fin: 20 },
+      { planeta: 'JUPITER', inicio: 20, fin: 25 },
+      { planeta: 'MARTE', inicio: 25, fin: 30 }
+    ],
+    11: [ // Piscis
+      { planeta: 'VENUS', inicio: 0, fin: 12 },
+      { planeta: 'JUPITER', inicio: 12, fin: 16 },
+      { planeta: 'MERCURIO', inicio: 16, fin: 19 },
+      { planeta: 'MARTE', inicio: 19, fin: 28 },
+      { planeta: 'SATURNO', inicio: 28, fin: 30 }
+    ]
   };
 
   function transformarADecimal(g, m) {
@@ -243,7 +331,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------------
-  // FUNCIÓN PARA DESCARGAR PNG (sin cambios en la lógica)
+  // FUNCIÓN PARA DESCARGAR PNG
   // ------------------------------------------------------------
   async function descargarPNG(conFondo = false) {
     try {
@@ -260,7 +348,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const ESCALA = 3;
-    const ANCHO_FINAL = 700 * ESCALA;   // 700 porque el viewBox ahora es 700
+    const ANCHO_FINAL = 700 * ESCALA;
     const ALTO_FINAL = 700 * ESCALA;
 
     const svgOriginal = document.getElementById("carta-astral");
@@ -370,7 +458,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------------
-  // FUNCIÓN PRINCIPAL DE DIBUJO (con las nuevas capas y radios)
+  // FUNCIÓN PRINCIPAL DE DIBUJO (con la nueva franja de términos)
   // ------------------------------------------------------------
   function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
     const umbralInput = document.getElementById("umbral-input");
@@ -393,6 +481,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ========== CAPA 1: Círculos base y coronas ==========
+    // ... (código existente, sin cambios hasta la corona de términos)
+
     // Círculo exterior
     const circuloExterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloExterior.setAttribute("cx", String(CENTRO_X));
@@ -416,7 +506,6 @@ document.addEventListener("DOMContentLoaded", () => {
     pathCoronaSignos.setAttribute("class", "corona-signos");
     lienzoSvg.appendChild(pathCoronaSignos);
 
-    // Círculo interior de signos
     const circuloSignosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloSignosInterior.setAttribute("cx", String(CENTRO_X));
     circuloSignosInterior.setAttribute("cy", String(CENTRO_Y));
@@ -439,7 +528,6 @@ document.addEventListener("DOMContentLoaded", () => {
     pathCoronaDecanatos.setAttribute("class", "corona-decanatos");
     lienzoSvg.appendChild(pathCoronaDecanatos);
 
-    // Círculo interior de decanatos
     const circuloDecanatosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloDecanatosInterior.setAttribute("cx", String(CENTRO_X));
     circuloDecanatosInterior.setAttribute("cy", String(CENTRO_Y));
@@ -462,7 +550,6 @@ document.addEventListener("DOMContentLoaded", () => {
     pathCoronaTerminos.setAttribute("class", "corona-terminos");
     lienzoSvg.appendChild(pathCoronaTerminos);
 
-    // Círculo interior de términos (límite inferior)
     const circuloTerminosInterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloTerminosInterior.setAttribute("cx", String(CENTRO_X));
     circuloTerminosInterior.setAttribute("cy", String(CENTRO_Y));
@@ -506,7 +593,24 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // ========== CAPA: Líneas de los términos ==========
+    // ========== CAPA 3b: Líneas de los términos ==========
+    for (let i = 0; i < 12; i++) {
+      for (let d = 0; d < 3; d++) {
+        const gradoLinea = i * 30 + d * 10;
+        const radLinea = ajustarAngulo(gradoLinea);
+        const x1 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radLinea));
+        const y1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radLinea));
+        const x2 = Math.round(CENTRO_X + RADIO_TERMINOS_INTERIOR * Math.cos(radLinea));
+        const y2 = Math.round(CENTRO_Y + RADIO_TERMINOS_INTERIOR * Math.sin(radLinea));
+        const linea = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        linea.setAttribute("x1", String(x1));
+        linea.setAttribute("y1", String(y1));
+        linea.setAttribute("x2", String(x2));
+        linea.setAttribute("y2", String(y2));
+        linea.setAttribute("class", "linea-termino");
+        lienzoSvg.appendChild(linea);
+      }
+    }
 
     // ========== CAPA 4: Nombres de los signos ==========
     for (let i = 0; i < 12; i++) {
@@ -561,7 +665,54 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // ========== CAPA: Símbolo de los términos
+    // ========== CAPA 5b: Símbolos de los términos (bloques fusionados) ==========
+    // Generar lista de términos en grados absolutos
+    const terminosAbsolutos = [];
+    for (let signo = 0; signo < 12; signo++) {
+      const lista = terminosData[signo];
+      if (!lista) continue;
+      const base = signo * 30;
+      for (const term of lista) {
+        terminosAbsolutos.push({
+          planeta: term.planeta,
+          inicio: base + term.inicio,
+          fin: base + term.fin
+        });
+      }
+    }
+
+    // Fusionar bloques consecutivos del mismo planeta que se tocan
+    const bloquesFusionados = [];
+    if (terminosAbsolutos.length > 0) {
+      let actual = { ...terminosAbsolutos[0] };
+      for (let i = 1; i < terminosAbsolutos.length; i++) {
+        const siguiente = terminosAbsolutos[i];
+        // Si el planeta es el mismo y el inicio del siguiente coincide con el fin del actual
+        if (siguiente.planeta === actual.planeta && siguiente.inicio === actual.fin) {
+          actual.fin = siguiente.fin; // fusionar
+        } else {
+          bloquesFusionados.push(actual);
+          actual = { ...siguiente };
+        }
+      }
+      bloquesFusionados.push(actual);
+    }
+
+    // Dibujar íconos para cada bloque fusionado
+    for (const bloque of bloquesFusionados) {
+      const gradoCentral = (bloque.inicio + bloque.fin) / 2;
+      const rad = ajustarAngulo(gradoCentral);
+      const x = CENTRO_X + RADIO_SIMBOLOS_TERMINOS * Math.cos(rad);
+      const y = CENTRO_Y + RADIO_SIMBOLOS_TERMINOS * Math.sin(rad);
+      const nombreSVG = bloque.planeta.toLowerCase().replace('_', '-');
+      const rutaSVG = `svg/${nombreSVG}.svg`;
+      const imgTermino = document.createElementNS("http://www.w3.org/2000/svg", "image");
+      imgTermino.setAttribute("x", String(x - 6));
+      imgTermino.setAttribute("y", String(y - 6));
+      imgTermino.setAttribute("class", "icono-termino");
+      imgTermino.setAttribute("href", rutaSVG);
+      lienzoSvg.appendChild(imgTermino);
+    }
 
     // ========== CAPA 6: Rueda de 360° (marcas de grados) ==========
     const circuloGradosExterno = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -626,7 +777,7 @@ document.addEventListener("DOMContentLoaded", () => {
       lienzoSvg.appendChild(punto);
     }
 
-    // ========== CAPA 7: Aspectos planetarios (con lógica de orbes) ==========
+    // ========== CAPA 7: Aspectos planetarios ==========
     const circuloAspectos = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloAspectos.setAttribute("cx", String(CENTRO_X));
     circuloAspectos.setAttribute("cy", String(CENTRO_Y));
@@ -648,10 +799,7 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let j = i + 1; j < nombres.length; j++) {
           const p1 = nombres[i];
           const p2 = nombres[j];
-
-          // Saltar si alguno es QUIRON
           if (p1 === 'QUIRON' || p2 === 'QUIRON') continue;
-
           const pos1 = planetasValidos[p1];
           const pos2 = planetasValidos[p2];
           let diff = Math.abs(pos1 - pos2) % 360;
@@ -665,7 +813,6 @@ document.addEventListener("DOMContentLoaded", () => {
           } else {
             orb = Math.max(orbesPlanetarios[p1] || 0, orbesPlanetarios[p2] || 0);
           }
-
           if (orb === 0) continue;
 
           const aspectos = [

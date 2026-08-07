@@ -387,7 +387,8 @@ select {
 
 /* Líneas de signos, decanatos y términos */
 .linea-signo,
-.linea-decanato {
+.linea-decanato,
+.linea-termino {
   stroke: #0e3585;
   stroke-width: 1.5;
 }
@@ -408,6 +409,10 @@ select {
 }
 
 /* Iconos de los términos */
+.icono-termino {
+  width: 12px;
+  height: 12px;
+}
 
 /* Círculos de grados (rueda exterior e interior) */
 .circulo-grados {
