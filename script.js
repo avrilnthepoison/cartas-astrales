@@ -14,12 +14,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const RADIO_SIGNOS_INTERIOR = 310;
   const RADIO_DECANATOS_INTERIOR = 285;
   const RADIO_TERMINOS_INTERIOR = 260;        // nuevo
-  const RADIO_PLANETAS = 210;
-  const RADIO_TEXTO_SIGNOS = 325;
+  const RADIO_PLANETAS = 190;
+  const RADIO_TEXTO_SIGNOS = 320;
   const RADIO_SIMBOLOS_DECANATOS = 297;
   const RADIO_SIMBOLOS_TERMINOS = 272;      // nuevo
-  const RADIO_GRADOS = 275;
-  const RADIO_ASPECTOS = 180;
+  const RADIO_GRADOS = 230;
+  const RADIO_ASPECTOS = 135;
 
   const nombresSignos = [
     "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
@@ -506,24 +506,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // ========== CAPA 3b: Líneas de los términos (0°, 10°, 20° de cada signo) ==========
-    for (let i = 0; i < 12; i++) {
-      for (let d = 0; d < 3; d++) {
-        const gradoLinea = i * 30 + d * 10;
-        const radLinea = ajustarAngulo(gradoLinea);
-        const x1 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radLinea));
-        const y1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radLinea));
-        const x2 = Math.round(CENTRO_X + RADIO_TERMINOS_INTERIOR * Math.cos(radLinea));
-        const y2 = Math.round(CENTRO_Y + RADIO_TERMINOS_INTERIOR * Math.sin(radLinea));
-        const linea = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        linea.setAttribute("x1", String(x1));
-        linea.setAttribute("y1", String(y1));
-        linea.setAttribute("x2", String(x2));
-        linea.setAttribute("y2", String(y2));
-        linea.setAttribute("class", "linea-decanato"); // misma clase para consistencia
-        lienzoSvg.appendChild(linea);
-      }
-    }
+    // ========== CAPA: Líneas de los términos ==========
 
     // ========== CAPA 4: Nombres de los signos ==========
     for (let i = 0; i < 12; i++) {
@@ -564,8 +547,8 @@ document.addEventListener("DOMContentLoaded", () => {
       for (let d = 0; d < 3; d++) {
         const gradoCentral = i * 30 + d * 10 + 5;
         const rad = ajustarAngulo(gradoCentral);
-        const x = Math.round(CENTRO_X + RADIO_SIMBOLOS_DECANATOS * Math.cos(rad));
-        const y = Math.round(CENTRO_Y + RADIO_SIMBOLOS_DECANATOS * Math.sin(rad));
+        const x = CENTRO_X + RADIO_SIMBOLOS_DECANATOS * Math.cos(rad);
+        const y = CENTRO_Y + RADIO_SIMBOLOS_DECANATOS * Math.sin(rad);
         const nombrePlaneta = decanatosSigno[d];
         const nombreSVG = nombrePlaneta.toLowerCase().replace('_', '-');
         const rutaSVG = `svg/${nombreSVG}.svg`;
@@ -578,38 +561,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // ========== CAPA 5b: Texto "TÉRMINOS" en la franja de términos ==========
-    // (colocamos un texto similar a los signos pero con "TÉRMINOS" en cada sector)
-    for (let i = 0; i < 12; i++) {
-      const gradoInicioArco = i * 30;
-      const gradoFinArco = gradoInicioArco + 30;
-      const radInicio = ajustarAngulo(gradoInicioArco);
-      const radFin = ajustarAngulo(gradoFinArco);
-      const radioTrayectoTexto = RADIO_SIMBOLOS_TERMINOS;
-      const sx = (CENTRO_X + radioTrayectoTexto * Math.cos(radInicio)).toFixed(2);
-      const sy = (CENTRO_Y + radioTrayectoTexto * Math.sin(radInicio)).toFixed(2);
-      const ex = (CENTRO_X + radioTrayectoTexto * Math.cos(radFin)).toFixed(2);
-      const ey = (CENTRO_Y + radioTrayectoTexto * Math.sin(radFin)).toFixed(2);
-      const idTrayecto = `trayecto-terminos-${i}`;
-      const d = `M ${ex},${ey} A ${radioTrayectoTexto},${radioTrayectoTexto} 0 0,1 ${sx},${sy}`;
-
-      const rutaDefinicion = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      rutaDefinicion.setAttribute("id", idTrayecto);
-      rutaDefinicion.setAttribute("d", d);
-      rutaDefinicion.setAttribute("fill", "none");
-      rutaDefinicion.setAttribute("stroke", "none");
-      lienzoSvg.appendChild(rutaDefinicion);
-
-      const etiquetaTexto = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      etiquetaTexto.setAttribute("class", "texto-terminos");
-      const trayectoTexto = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
-      trayectoTexto.setAttribute("href", `#${idTrayecto}`);
-      trayectoTexto.setAttribute("startOffset", "50%");
-      trayectoTexto.setAttribute("text-anchor", "middle");
-      trayectoTexto.textContent = "TÉRMINOS";
-      etiquetaTexto.appendChild(trayectoTexto);
-      lienzoSvg.appendChild(etiquetaTexto);
-    }
+    // ========== CAPA: Símbolo de los términos
 
     // ========== CAPA 6: Rueda de 360° (marcas de grados) ==========
     const circuloGradosExterno = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -750,10 +702,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (mostrarContenido) {
       // Eje ASC
       const radAsc = ajustarAngulo(ascendenteAbs);
-      const xAsc1 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radAsc));
-      const yAsc1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radAsc));
-      const xAsc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 60) * Math.cos(radAsc));
-      const yAsc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 60) * Math.sin(radAsc));
+      const xAsc1 = CENTRO_X + RADIO_TERMINOS_INTERIOR * Math.cos(radAsc);
+      const yAsc1 = CENTRO_Y + RADIO_TERMINOS_INTERIOR * Math.sin(radAsc);
+      const xAsc2 = CENTRO_X + (RADIO_TERMINOS_INTERIOR - 60) * Math.cos(radAsc);
+      const yAsc2 = CENTRO_Y + (RADIO_TERMINOS_INTERIOR - 60) * Math.sin(radAsc);
       const lineaAsc = document.createElementNS("http://www.w3.org/2000/svg", "line");
       lineaAsc.setAttribute("x1", String(xAsc1));
       lineaAsc.setAttribute("y1", String(yAsc1));
@@ -762,8 +714,8 @@ document.addEventListener("DOMContentLoaded", () => {
       lineaAsc.setAttribute("class", "linea-eje");
       lienzoSvg.appendChild(lineaAsc);
 
-      const xAscIcono = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 75) * Math.cos(radAsc));
-      const yAscIcono = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 75) * Math.sin(radAsc));
+      const xAscIcono = CENTRO_X + (RADIO_TERMINOS_INTERIOR - 75) * Math.cos(radAsc);
+      const yAscIcono = CENTRO_Y + (RADIO_TERMINOS_INTERIOR - 75) * Math.sin(radAsc);
       const imgAsc = document.createElementNS("http://www.w3.org/2000/svg", "image");
       imgAsc.setAttribute("x", String(xAscIcono - 10));
       imgAsc.setAttribute("y", String(yAscIcono - 10));
@@ -773,10 +725,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Eje MC
       const radMc = ajustarAngulo(mcAbs);
-      const xMc1 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radMc));
-      const yMc1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radMc));
-      const xMc2 = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 60) * Math.cos(radMc));
-      const yMc2 = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 60) * Math.sin(radMc));
+      const xMc1 = CENTRO_X + RADIO_TERMINOS_INTERIOR * Math.cos(radMc);
+      const yMc1 = CENTRO_Y + RADIO_TERMINOS_INTERIOR * Math.sin(radMc);
+      const xMc2 = CENTRO_X + (RADIO_TERMINOS_INTERIOR - 60) * Math.cos(radMc);
+      const yMc2 = CENTRO_Y + (RADIO_TERMINOS_INTERIOR - 60) * Math.sin(radMc);
       const lineaMc = document.createElementNS("http://www.w3.org/2000/svg", "line");
       lineaMc.setAttribute("x1", String(xMc1));
       lineaMc.setAttribute("y1", String(yMc1));
@@ -785,8 +737,8 @@ document.addEventListener("DOMContentLoaded", () => {
       lineaMc.setAttribute("class", "linea-eje");
       lienzoSvg.appendChild(lineaMc);
 
-      const xMcIcono = Math.round(CENTRO_X + (RADIO_DECANATOS_INTERIOR - 75) * Math.cos(radMc));
-      const yMcIcono = Math.round(CENTRO_Y + (RADIO_DECANATOS_INTERIOR - 75) * Math.sin(radMc));
+      const xMcIcono = CENTRO_X + (RADIO_TERMINOS_INTERIOR - 75) * Math.cos(radMc);
+      const yMcIcono = CENTRO_Y + (RADIO_TERMINOS_INTERIOR - 75) * Math.sin(radMc);
       const imgMc = document.createElementNS("http://www.w3.org/2000/svg", "image");
       imgMc.setAttribute("x", String(xMcIcono - 10));
       imgMc.setAttribute("y", String(yMcIcono - 10));
@@ -906,11 +858,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const yPlaneta = p.yPlaneta;
         const datosPlaneta = p.datosPlaneta;
 
-        const xInicio = Math.round(CENTRO_X + RADIO_GRADOS * Math.cos(radPlaneta));
-        const yInicio = Math.round(CENTRO_Y + RADIO_GRADOS * Math.sin(radPlaneta));
+        const xInicio = CENTRO_X + RADIO_GRADOS * Math.cos(radPlaneta);
+        const yInicio = CENTRO_Y + RADIO_GRADOS * Math.sin(radPlaneta);
         const radioFinMarca = RADIO_GRADOS - 10;
-        const xFin = Math.round(CENTRO_X + radioFinMarca * Math.cos(radPlaneta));
-        const yFin = Math.round(CENTRO_Y + radioFinMarca * Math.sin(radPlaneta));
+        const xFin = CENTRO_X + radioFinMarca * Math.cos(radPlaneta);
+        const yFin = CENTRO_Y + radioFinMarca * Math.sin(radPlaneta);
         const lineaPosicion = document.createElementNS("http://www.w3.org/2000/svg", "line");
         lineaPosicion.setAttribute("x1", String(xInicio));
         lineaPosicion.setAttribute("y1", String(yInicio));
@@ -919,11 +871,11 @@ document.addEventListener("DOMContentLoaded", () => {
         lineaPosicion.setAttribute("class", "linea-posicion-planeta");
         lienzoSvg.appendChild(lineaPosicion);
 
-        const xInicioAsp = Math.round(CENTRO_X + RADIO_ASPECTOS * Math.cos(radPlaneta));
-        const yInicioAsp = Math.round(CENTRO_Y + RADIO_ASPECTOS * Math.sin(radPlaneta));
+        const xInicioAsp = CENTRO_X + RADIO_ASPECTOS * Math.cos(radPlaneta);
+        const yInicioAsp = CENTRO_Y + RADIO_ASPECTOS * Math.sin(radPlaneta);
         const radioFinAsp = RADIO_ASPECTOS + 10;
-        const xFinAsp = Math.round(CENTRO_X + radioFinAsp * Math.cos(radPlaneta));
-        const yFinAsp = Math.round(CENTRO_Y + radioFinAsp * Math.sin(radPlaneta));
+        const xFinAsp = CENTRO_X + radioFinAsp * Math.cos(radPlaneta);
+        const yFinAsp = CENTRO_Y + radioFinAsp * Math.sin(radPlaneta);
         const lineaPosicionAsp = document.createElementNS("http://www.w3.org/2000/svg", "line");
         lineaPosicionAsp.setAttribute("x1", String(xInicioAsp));
         lineaPosicionAsp.setAttribute("y1", String(yInicioAsp));

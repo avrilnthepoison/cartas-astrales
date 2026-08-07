@@ -9,7 +9,7 @@
 
 body {
   background-color: #ffffff;
-  color: #1038a2;
+  color: #1040a2;
   font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 0;
@@ -45,7 +45,7 @@ body {
   font-size: 12px;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: #1038a2;
+  color: #1040a2;
   margin: 0;
 }
 
@@ -58,7 +58,7 @@ body {
 /* Columna Izquierda: Formulario */
 .seccion-formulario {
   display: table-cell;
-  width: 50%;            /* antes 45% */
+  width: 45%;
   padding-right: 2%;     /* antes 5% */
   vertical-align: top;
 }
@@ -66,7 +66,7 @@ body {
 /* Columna Derecha: Gráfico */
 .seccion-mapa {
   display: table-cell;
-  width: 50%;            /* antes 55% */
+  width: 55%;
   vertical-align: top;
 }
 
@@ -133,7 +133,7 @@ body {
 input[type="number"], select {
   font-family: 'Inter', sans-serif;
   font-size: 12px;
-  color: #1038a2;
+  color: #1040a2;
   border: none;
   border-radius: 12px;
   padding: 6px 6px;
@@ -159,7 +159,7 @@ select {
   gap: 4px;
   font-size: 12px;
   font-weight: 600;
-  color: #1038a2;
+  color: #1040a2;
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -192,7 +192,7 @@ select {
 }
 
 .etiqueta-retrogrado:has(input[type="checkbox"]:checked)::before {
-  background: #1038a2;
+  background: #1040a2;
 }
 
 .etiqueta-retrogrado:has(input[type="checkbox"]:checked)::after {
@@ -226,7 +226,7 @@ select {
 #btn-generar {
   display: block;
   width: 100%;
-  background-color: #1038a2;
+  background-color: #1040a2;
   border-radius: 12px;
   color: #ffffff;
   border: none;
@@ -244,7 +244,7 @@ select {
   margin-top: 12px;
   background-color: #cfd7ec;
   border-radius: 12px;
-  color: #1038a2;
+  color: #1040a2;
   border: none;
   font-family: 'Inter', sans-serif;
   font-size: 10px;
@@ -262,7 +262,7 @@ select {
   margin-top: 12px;
   background-color: #cfd7ec;
   border-radius: 12px;
-  color: #1038a2;
+  color: #1040a2;
   border: none;
   font-family: 'Inter', sans-serif;
   font-size: 10px;
@@ -297,7 +297,7 @@ select {
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 1px;
-  color: #1038a2;
+  color: #1040a2;
   min-width: 130px;
   margin-right: 8px;
 }
@@ -310,7 +310,7 @@ select {
 
 .fila-ajuste .ayuda-ajuste {
   font-size: 10px;
-  color: #1038a2;
+  color: #1040a2;
   font-weight: 400;
 }
 
@@ -329,7 +329,7 @@ select {
 .fila-nombre input[type="text"] {
   font-family: 'Inter', sans-serif;
   font-size: 12px;
-  color: #1038a2;
+  color: #1040a2;
   border: none;
   border-radius: 12px;
   padding: 6px 12px;
@@ -368,19 +368,19 @@ select {
 
 /* Coronas coloreadas */
 .corona-signos {
-  fill: #1038a2;
+  fill: #1040a2;
   stroke: none;
   opacity: 0.8;
 }
 
 .corona-decanatos {
-  fill: #1038a2;
+  fill: #1040a2;
   stroke: none;
   opacity: 0.2;
 }
 
 .corona-terminos {
-  fill: #1038a2;
+  fill: #1040a2;
   stroke: none;
   opacity: 0.1;
 }
@@ -395,20 +395,10 @@ select {
 /* Texto de los nombres de los signos (se reduce el tamaño para mantener la escala visual) */
 .texto-signo {
   font-family: 'IM Fell DW Pica', serif;
-  font-size: 12px;        /* antes 14px */
+  font-size: 14px;
   font-weight: 400;
   fill: #ffffff;
   font-style: normal;
-}
-
-/* Texto de "TÉRMINOS" en la nueva franja */
-.texto-terminos {
-  font-family: 'IM Fell DW Pica', serif;
-  font-size: 10px;
-  font-weight: 400;
-  fill: #ffffff;
-  font-style: normal;
-  opacity: 0.7;
 }
 
 /* Iconos de los decanatos (tamaño) */
@@ -417,9 +407,11 @@ select {
   height: 14px;
 }
 
+/* Iconos de los términos */
+
 /* Círculos de grados (rueda exterior e interior) */
 .circulo-grados {
-  stroke: #1038a2;
+  stroke: #1040a2;
   stroke-width: 0.5;
   stroke-dasharray: 2, 2;
   fill: none;
@@ -427,13 +419,13 @@ select {
 
 /* Puntos de grado */
 .punto-grado {
-  fill: #1038a2;
+  fill: #1040a2;
   opacity: 1;
 }
 
 /* Líneas de aspectos: base común */
 .aspecto {
-  stroke: #1038a2;
+  stroke: #1040a2;
   stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -453,7 +445,7 @@ select {
   opacity: 0.4;
 }
 .aspecto-trigono {
-  stroke-dasharray: 5, 10;
+  stroke-dasharray: 10;
   opacity: 0.6;
 }
 .aspecto-oposicion {
