@@ -382,7 +382,7 @@ select {
 .corona-terminos {
   fill: #1040a2;
   stroke: none;
-  opacity: 0.1;
+  opacity: 0.05;
 }
 
 /* Líneas de signos, decanatos y términos */
@@ -410,8 +410,8 @@ select {
 
 /* Iconos de los términos */
 .icono-termino {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
 }
 
 /* Círculos de grados (rueda exterior e interior) */
