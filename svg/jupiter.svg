@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37.33 44">
+<svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36.33 43">
   <defs>
     <style>
       .cls-1 {
         fill: none;
-        stroke: #1038a2;
+        stroke: #1040a2;
         stroke-linecap: round;
         stroke-linejoin: round;
-        stroke-width: 4px;
+        stroke-width: 3px;
       }
     </style>
   </defs>
   <g id="iconos">
     <g id="jupiter">
-      <path class="cls-1" d="m35.33,28.67H2s9.56-11.88,12.17-16.24c.57-.96,1.27-2.73,1.14-4.3-.27-3.38-3.17-6.08-6.55-6.13-3.72-.05-6.76,2.95-6.76,6.67"/>
-      <line class="cls-1" x1="22" y1="15.33" x2="22" y2="42"/>
+      <path class="cls-1" d="m34.83,28.17H1.5s9.56-11.88,12.17-16.24c.57-.96,1.27-2.73,1.14-4.3-.27-3.38-3.17-6.08-6.55-6.13-3.72-.05-6.76,2.95-6.76,6.67"/>
+      <line class="cls-1" x1="21.5" y1="14.83" x2="21.5" y2="41.5"/>
     </g>
   </g>
 </svg>

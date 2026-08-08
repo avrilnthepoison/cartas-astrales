@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 44">
+<svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 43">
   <defs>
     <style>
       .cls-1 {
         fill: none;
-        stroke: #1038a2;
+        stroke: #1040a2;
         stroke-linecap: round;
         stroke-linejoin: round;
-        stroke-width: 4px;
+        stroke-width: 3px;
       }
     </style>
   </defs>
   <g id="iconos">
     <g id="luna">
-      <path class="cls-1" d="m14,2c-4.5,0-8.66,1.49-12,4h0c8.84,0,16,7.16,16,16s-7.16,16-16,16h0c3.34,2.51,7.5,4,12,4,11.05,0,20-8.95,20-20S25.05,2,14,2Z"/>
+      <path class="cls-1" d="m13.5,1.5C9,1.5,4.84,2.99,1.5,5.5h0c8.84,0,16,7.16,16,16s-7.16,16-16,16h0c3.34,2.51,7.5,4,12,4,11.05,0,20-8.95,20-20S24.55,1.5,13.5,1.5Z"/>
     </g>
   </g>
 </svg>

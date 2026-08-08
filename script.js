@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const CENTRO_X = 350;
   const CENTRO_Y = 350;
-
   const RADIO_EXTERIOR = 340;
   const RADIO_SIGNOS_INTERIOR = 310;
   const RADIO_DECANATOS_INTERIOR = 285;
@@ -16,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const RADIO_TEXTO_SIGNOS = 320;
   const RADIO_SIMBOLOS_DECANATOS = 297;
   const RADIO_SIMBOLOS_TERMINOS = 275;
-  const RADIO_GRADOS = 250;
+  const RADIO_GRADOS = 255;
   const RADIO_ASPECTOS = 145;
 
   const nombresSignos = [
@@ -37,7 +36,8 @@ document.addEventListener("DOMContentLoaded", () => {
     "NEPTUNO": "♆",
     "PLUTON": "♇",
     "QUIRON": "⚷",
-    "NODO_NORTE": "☊"
+    "NODO_NORTE": "☊",
+    "NODO_SUR": "☋"   // Añadido para que se incluya en el bucle de dibujo
   };
   const cuerpos = Object.keys(simbolos);
 
@@ -53,7 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
     "URANO": 3,
     "NEPTUNO": 3,
     "PLUTON": 3,
-    "NODO_NORTE": 0
+    "NODO_NORTE": 0,
+    "NODO_SUR": 0    // Añadido (se usará el orbe del otro planeta)
   };
 
   // DECANATOS
@@ -205,6 +206,13 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     });
 
+    // ---- AÑADIR NODO SUR (opuesto al Nodo Norte) ----
+    if (planetasIngresados.hasOwnProperty('NODO_NORTE')) {
+      const posNorte = planetasIngresados['NODO_NORTE'];
+      const posSur = (posNorte + 180) % 360;
+      planetasIngresados['NODO_SUR'] = posSur;
+    }
+
     localStorage.setItem("datosRadixManual", JSON.stringify(estructuraAGuardar));
     dibujarRadixManual(gradoAscAbsoluto, gradoMcAbsoluto, planetasIngresados, true);
   }
@@ -329,14 +337,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // FUNCIÓN PARA DESCARGAR PNG (CORREGIDA)
   // ------------------------------------------------------------
   async function descargarPNG(conFondo = false) {
-    // Intentar cargar la fuente en el documento principal (para que el clon la herede)
+    // Intentar cargar la fuente en el documento principal
     try {
       await document.fonts.load('1em "IM Fell DW Pica"');
     } catch (e) {
       console.warn("No se pudo cargar la fuente en el documento principal:", e);
     }
 
-    // Obtener la fuente en Base64
     const urlGoogleFonts = 'https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica:ital,wght@0,400;1,400&display=swap';
     let fuenteCSS = await obtenerFuenteBase64(urlGoogleFonts);
     if (!fuenteCSS) {
@@ -344,7 +351,6 @@ document.addEventListener("DOMContentLoaded", () => {
       fuenteCSS = `text { font-family: serif; }`;
     }
 
-    // Obtener el CSS de estilos del gráfico (styles.css) mediante fetch
     let estilosCSS = '';
     try {
       const resp = await fetch('styles.css');
@@ -364,7 +370,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const svgOriginal = document.getElementById("carta-astral");
     const clon = svgOriginal.cloneNode(true);
 
-    // Crear bloque <style> con todos los estilos necesarios
     const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
     style.textContent = `
       /* Estilos del gráfico (desde styles.css) */
@@ -384,7 +389,6 @@ document.addEventListener("DOMContentLoaded", () => {
         font-style: italic !important;
       }
     `;
-    // Insertar el style al principio del SVG clonado
     clon.insertBefore(style, clon.firstChild);
 
     // Convertir imágenes SVG referenciadas a dataURI
@@ -399,7 +403,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const response = await fetch(ruta);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const text = await response.text();
-        // Codificar como dataURI (SVG)
         const dataURI = `data:image/svg+xml;utf8,${encodeURIComponent(text)}`;
         cacheDataURI.set(ruta, dataURI);
         return dataURI;
@@ -424,17 +427,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     await Promise.all(promesas);
 
-    // Serializar el SVG
     const svgData = new XMLSerializer().serializeToString(clon);
     const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
 
-    // Cargar la imagen SVG en un elemento Image para dibujar en canvas
     const img = new Image();
     const timeoutId = setTimeout(() => {
       console.warn("Timeout al cargar la imagen SVG. Se procederá con la descarga.");
-      // No revocamos la URL aquí, la revocaremos después del intento.
-    }, 15000); // 15 segundos
+    }, 15000);
 
     img.onload = function() {
       clearTimeout(timeoutId);
@@ -483,7 +483,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------------
-  // FUNCIÓN PRINCIPAL DE DIBUJO (sin cambios relevantes, pero se incluye completa)
+  // FUNCIÓN PRINCIPAL DE DIBUJO (con modificación para Nodo Sur)
   // ------------------------------------------------------------
   function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
     const umbralInput = document.getElementById("umbral-input");
@@ -793,7 +793,7 @@ document.addEventListener("DOMContentLoaded", () => {
       lienzoSvg.appendChild(punto);
     }
 
-    // ========== CAPA 7: Aspectos planetarios ==========
+    // ========== CAPA 7: Aspectos planetarios (con Nodo Sur) ==========
     const circuloAspectos = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloAspectos.setAttribute("cx", String(CENTRO_X));
     circuloAspectos.setAttribute("cy", String(CENTRO_Y));
@@ -814,20 +814,30 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let j = i + 1; j < nombres.length; j++) {
           const p1 = nombres[i];
           const p2 = nombres[j];
+
+          // No dibujar aspecto entre Nodo Norte y Nodo Sur
+          if ((p1 === 'NODO_NORTE' && p2 === 'NODO_SUR') ||
+              (p1 === 'NODO_SUR' && p2 === 'NODO_NORTE')) {
+            continue;
+          }
+
           if (p1 === 'QUIRON' || p2 === 'QUIRON') continue;
           const pos1 = planetasValidos[p1];
           const pos2 = planetasValidos[p2];
           let diff = Math.abs(pos1 - pos2) % 360;
           if (diff > 180) diff = 360 - diff;
+
           let orb = 0;
-          if (p1 === 'NODO_NORTE') {
+          // Para Nodo Norte y Nodo Sur, usar el orbe del otro planeta
+          if (p1 === 'NODO_NORTE' || p1 === 'NODO_SUR') {
             orb = orbesPlanetarios[p2] || 0;
-          } else if (p2 === 'NODO_NORTE') {
+          } else if (p2 === 'NODO_NORTE' || p2 === 'NODO_SUR') {
             orb = orbesPlanetarios[p1] || 0;
           } else {
             orb = Math.max(orbesPlanetarios[p1] || 0, orbesPlanetarios[p2] || 0);
           }
           if (orb === 0) continue;
+
           const aspectos = [
             { tipo: 'conjuncion', angulo: 0 },
             { tipo: 'sextil', angulo: 60 },
