@@ -17,6 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const RADIO_SIMBOLOS_TERMINOS = 275;
   const RADIO_GRADOS = 255;
   const RADIO_ASPECTOS = 145;
+  const RADIO_NUMEROS_GRADOS = 200;
+  const RADIO_NUMEROS_MINUTOS = 185;
 
   const nombresSignos = [
     "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
@@ -483,7 +485,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------------
-  // FUNCIÓN PRINCIPAL DE DIBUJO (con repulsión global)
+  // FUNCIÓN PRINCIPAL DE DIBUJO (con repulsión global y números de grados/minutos)
   // ------------------------------------------------------------
   function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
     // ---- Parámetros fijos de separación ----
@@ -1045,7 +1047,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!colisiones) break;
       }
 
-      // ---- DIBUJAR PLANETAS CON ÁNGULOS ACTUALIZADOS ----
+      // ---- DIBUJAR PLANETAS CON ÁNGULOS ACTUALIZADOS Y NÚMEROS DE GRADOS/MINUTOS ----
       for (const p of puntos) {
         if (p.tipo !== 'planeta') continue;
         const nombre = p.nombre;
@@ -1056,7 +1058,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const yPlaneta = Math.round(CENTRO_Y + RADIO_PLANETAS * Math.sin(anguloRad));
 
         // Línea de posición desde el grado original (en RADIO_GRADOS) hasta el anillo de planetas (en el ángulo original)
-        // Mantenemos la línea original, no la modificamos.
         const xInicio = CENTRO_X + RADIO_GRADOS * Math.cos(anguloOriginal);
         const yInicio = CENTRO_Y + RADIO_GRADOS * Math.sin(anguloOriginal);
         const radioFinMarca = RADIO_GRADOS - 10;
@@ -1109,6 +1110,30 @@ document.addEventListener("DOMContentLoaded", () => {
           txtRetro.textContent = "R";
           lienzoSvg.appendChild(txtRetro);
         }
+
+        // ---- NÚMEROS DE GRADOS Y MINUTOS (usando el ángulo final) ----
+        const gradoNum = parseInt(p.datos.g, 10) || 0;
+        const minutoNum = parseInt(p.datos.m, 10) || 0;
+
+        // Texto de grado
+        const xGrado = CENTRO_X + RADIO_NUMEROS_GRADOS * Math.cos(anguloRad);
+        const yGrado = CENTRO_Y + RADIO_NUMEROS_GRADOS * Math.sin(anguloRad);
+        const txtGrado = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        txtGrado.setAttribute("x", String(xGrado));
+        txtGrado.setAttribute("y", String(yGrado));
+        txtGrado.setAttribute("class", "texto-grado");
+        txtGrado.textContent = `${gradoNum}°`;
+        lienzoSvg.appendChild(txtGrado);
+
+        // Texto de minuto
+        const xMinuto = CENTRO_X + RADIO_NUMEROS_MINUTOS * Math.cos(anguloRad);
+        const yMinuto = CENTRO_Y + RADIO_NUMEROS_MINUTOS * Math.sin(anguloRad);
+        const txtMinuto = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        txtMinuto.setAttribute("x", String(xMinuto));
+        txtMinuto.setAttribute("y", String(yMinuto));
+        txtMinuto.setAttribute("class", "texto-minuto");
+        txtMinuto.textContent = `${minutoNum}'`;
+        lienzoSvg.appendChild(txtMinuto);
       }
     }
   }

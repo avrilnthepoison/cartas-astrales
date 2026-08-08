@@ -6,7 +6,6 @@
 *, *::before, *::after {
   box-sizing: border-box;
 }
-
 body {
   background-color: #ffffff;
   color: #1040a2;
@@ -54,22 +53,17 @@ body {
   width: 100%;
   table-layout: fixed;
 }
-
-/* Columna Izquierda: Formulario */
 .seccion-formulario {
   display: table-cell;
   width: 45%;
-  padding-right: 2%;     /* antes 5% */
+  padding-right: 2%;
   vertical-align: top;
 }
-
-/* Columna Derecha: Gráfico */
 .seccion-mapa {
   display: table-cell;
   width: 55%;
   vertical-align: top;
 }
-
 .contenedor-sticky-mapa {
   position: sticky;
   top: 40px;
@@ -90,7 +84,6 @@ body {
   background-color: #e8ecf6;
   border-radius: 12px;
 }
-
 .bloque-formulario h3 {
   font-family: 'IM Fell DW Pica', serif;
   font-size: 14px;
@@ -102,7 +95,6 @@ body {
   padding-bottom: 8px;
 }
 
-/* Filas de entrada */
 .fila-eje, .fila-planeta {
   display: table;
   width: 100%;
@@ -122,7 +114,6 @@ body {
   font-weight: 500;
   letter-spacing: 1px;
 }
-
 .campos-posicion {
   display: table-cell;
   width: 70%;
@@ -141,13 +132,11 @@ input[type="number"], select {
   outline: none;
   vertical-align: middle;
 }
-
 input[type="number"] {
   width: 50px;
   margin-right: 8px;
   text-align: center;
 }
-
 select {
   width: 110px;
 }
@@ -168,7 +157,6 @@ select {
   padding-left: 22px;
   margin-left: 4px;
 }
-
 .etiqueta-retrogrado input[type="checkbox"] {
   position: absolute;
   opacity: 0;
@@ -176,7 +164,6 @@ select {
   height: 0;
   pointer-events: none;
 }
-
 .etiqueta-retrogrado::before {
   content: '';
   position: absolute;
@@ -190,11 +177,9 @@ select {
   background: #ffffff;
   transition: all 0.2s ease;
 }
-
 .etiqueta-retrogrado:has(input[type="checkbox"]:checked)::before {
   background: #1040a2;
 }
-
 .etiqueta-retrogrado:has(input[type="checkbox"]:checked)::after {
   content: '✓';
   position: absolute;
@@ -205,7 +190,6 @@ select {
   font-size: 12px;
   font-weight: 700;
 }
-
 .etiqueta-retrogrado input[type="checkbox"]:focus + .etiqueta-retrogrado::before {
   box-shadow: 0 0 0 2px rgba(0,0,0,0.2);
 }
@@ -221,8 +205,6 @@ select {
   cursor: pointer;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
-
-/* Botón de Generar Gráfico */
 #btn-generar {
   display: block;
   width: 100%;
@@ -237,7 +219,6 @@ select {
   text-transform: uppercase;
   padding: 16px;
 }
-
 #btn-borrar {
   display: block;
   width: 100%;
@@ -253,8 +234,6 @@ select {
   text-transform: uppercase;
   padding: 12px;
 }
-
-/* Botones de descarga */
 #btn-descargar-png,
 #btn-descargar-png-fondo {
   display: block;
@@ -272,7 +251,6 @@ select {
   padding: 12px;
 }
 
-/* PLACEHOLDERS (incluye navegadores antiguos) */
 ::-webkit-input-placeholder { color: #7088c7; opacity: 1; }
 ::-moz-placeholder { color: #7088c7; opacity: 1; }
 :-ms-input-placeholder { color: #7088c7; opacity: 1; }
@@ -290,7 +268,6 @@ select {
   flex-wrap: wrap;
   margin-bottom: 0;
 }
-
 .fila-nombre input[type="text"] {
   font-family: 'Inter', sans-serif;
   font-size: 12px;
@@ -337,13 +314,11 @@ select {
   stroke: none;
   opacity: 0.8;
 }
-
 .corona-decanatos {
   fill: #1040a2;
   stroke: none;
   opacity: 0.2;
 }
-
 .corona-terminos {
   fill: #1040a2;
   stroke: none;
@@ -358,7 +333,7 @@ select {
   stroke-width: 1.5;
 }
 
-/* Texto de los nombres de los signos (se reduce el tamaño para mantener la escala visual) */
+/* Texto de los nombres de los signos */
 .texto-signo {
   font-family: 'IM Fell DW Pica', serif;
   font-size: 14px;
@@ -367,7 +342,7 @@ select {
   font-style: normal;
 }
 
-/* Iconos de los decanatos (tamaño) */
+/* Iconos de los decanatos */
 .icono-decanato {
   width: 14px;
   height: 14px;
@@ -386,7 +361,6 @@ select {
   stroke-dasharray: 2, 2;
   fill: none;
 }
-
 /* Puntos de grado */
 .punto-grado {
   fill: #1040a2;
@@ -400,8 +374,6 @@ select {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-
-/* Variantes según el tipo de aspecto */
 .aspecto-conjuncion {
   stroke-dasharray: none;
   opacity: 1;
@@ -430,7 +402,6 @@ select {
   stroke-width: 2;
   stroke-linecap: round;
 }
-
 .icono-eje {
   width: 20px;
   height: 20px;
@@ -458,6 +429,25 @@ select {
   font-weight: 400;
   fill: #1038a2;
   opacity: 0.6;
+}
+
+/* Números de grados y minutos de los planetas */
+.texto-grado,
+.texto-minuto {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  fill: #0e3585;
+  opacity: 0.85;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.texto-grado {
+  font-size: 11px;
+}
+.texto-minuto {
+  font-size: 10px;
+  opacity: 0.7;
 }
 
 /*
