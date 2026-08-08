@@ -716,8 +716,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const nombreSVG = bloque.planeta.toLowerCase().replace('_', '-');
       const rutaSVG = `svg/${nombreSVG}.svg`;
       const imgTermino = document.createElementNS("http://www.w3.org/2000/svg", "image");
-      imgTermino.setAttribute("x", String(x - 5));
-      imgTermino.setAttribute("y", String(y - 5));
+      imgTermino.setAttribute("x", String(x - 4));
+      imgTermino.setAttribute("y", String(y - 4));
       imgTermino.setAttribute("class", "icono-termino");
       imgTermino.setAttribute("href", rutaSVG);
       lienzoSvg.appendChild(imgTermino);
@@ -870,8 +870,8 @@ document.addEventListener("DOMContentLoaded", () => {
       lineaAsc.setAttribute("class", "linea-eje");
       lienzoSvg.appendChild(lineaAsc);
 
-      const xAscIcono = CENTRO_X + (RADIO_TERMINOS_INTERIOR - 75) * Math.cos(radAsc);
-      const yAscIcono = CENTRO_Y + (RADIO_TERMINOS_INTERIOR - 75) * Math.sin(radAsc);
+      const xAscIcono = CENTRO_X + (RADIO_TERMINOS_INTERIOR - 80) * Math.cos(radAsc);
+      const yAscIcono = CENTRO_Y + (RADIO_TERMINOS_INTERIOR - 80) * Math.sin(radAsc);
       const imgAsc = document.createElementNS("http://www.w3.org/2000/svg", "image");
       imgAsc.setAttribute("x", String(xAscIcono - 10));
       imgAsc.setAttribute("y", String(yAscIcono - 10));
@@ -893,8 +893,8 @@ document.addEventListener("DOMContentLoaded", () => {
       lineaMc.setAttribute("class", "linea-eje");
       lienzoSvg.appendChild(lineaMc);
 
-      const xMcIcono = CENTRO_X + (RADIO_TERMINOS_INTERIOR - 75) * Math.cos(radMc);
-      const yMcIcono = CENTRO_Y + (RADIO_TERMINOS_INTERIOR - 75) * Math.sin(radMc);
+      const xMcIcono = CENTRO_X + (RADIO_TERMINOS_INTERIOR - 80) * Math.cos(radMc);
+      const yMcIcono = CENTRO_Y + (RADIO_TERMINOS_INTERIOR - 80) * Math.sin(radMc);
       const imgMc = document.createElementNS("http://www.w3.org/2000/svg", "image");
       imgMc.setAttribute("x", String(xMcIcono - 10));
       imgMc.setAttribute("y", String(yMcIcono - 10));

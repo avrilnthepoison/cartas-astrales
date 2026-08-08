@@ -410,8 +410,8 @@ select {
 
 /* Iconos de los términos */
 .icono-termino {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 
 /* Círculos de grados (rueda exterior e interior) */
