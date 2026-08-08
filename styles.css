@@ -427,27 +427,26 @@ select {
   font-style: italic;
   font-size: 12px;
   font-weight: 400;
-  fill: #1038a2;
+  fill: #0e3585;
   opacity: 0.6;
 }
 
 /* Números de grados y minutos de los planetas */
 .texto-grado,
 .texto-minuto {
-  font-family: 'Inter', sans-serif;
-  font-size: 11px;
+  font-family: 'IM Fell DW Pica', serif;
   font-weight: 500;
   fill: #0e3585;
-  opacity: 0.85;
   text-anchor: middle;
   dominant-baseline: central;
 }
 .texto-grado {
   font-size: 11px;
+  opacity: 0.8;
 }
 .texto-minuto {
   font-size: 10px;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 /*
@@ -510,7 +509,7 @@ select {
     flex: 0 0 100%;
     margin-left: 0;
     font-size: 10px;
-    color: #1038a2;
+    color: #1040a2;
     opacity: 0.8;
     padding-top: 2px;
   }
@@ -539,12 +538,12 @@ select {
     background-color: #0e3585;
   }
   #btn-borrar:hover {
-    background-color: #1038a2;
+    background-color: #1040a2;
     color: #ffffff;
   }
   #btn-descargar-png:hover,
   #btn-descargar-png-fondo:hover {
-    background-color: #1038a2;
+    background-color: #1040a2;
     color: #ffffff;
   }
 }
@@ -556,11 +555,11 @@ select {
   background-color: #0e3585;
 }
 #btn-borrar:active {
-  background-color: #1038a2;
+  background-color: #1040a2;
   color: #ffffff;
 }
 #btn-descargar-png:active,
 #btn-descargar-png-fondo:active {
-  background-color: #1038a2;
+  background-color: #1040a2;
   color: #ffffff;
 }
