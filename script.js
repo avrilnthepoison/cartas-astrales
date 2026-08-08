@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const CENTRO_X = 350;
   const CENTRO_Y = 350;
-
   const RADIO_EXTERIOR = 340;
   const RADIO_SIGNOS_INTERIOR = 310;
   const RADIO_DECANATOS_INTERIOR = 285;
@@ -18,8 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const RADIO_SIMBOLOS_TERMINOS = 275;
   const RADIO_GRADOS = 255;
   const RADIO_ASPECTOS = 145;
-  const RADIO_NUMEROS_GRADOS = 195;
-  const RADIO_NUMEROS_MINUTOS = 175;
+  const RADIO_NUMEROS_GRADOS = 194;
+  const RADIO_NUMEROS_MINUTOS = 173;
 
   const nombresSignos = [
     "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
@@ -492,13 +491,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // ---- Parámetros fijos de separación ----
     const ANCHO_ICONO = 20;            // 20x20 px
     const MARGEN_PLANETA_PLANETA = 10; // entre planetas
-    const MARGEN_PLANETA_EJE = 5;      // entre planeta y eje
-    const DIST_MIN_PLANETA = ANCHO_ICONO + MARGEN_PLANETA_PLANETA; // 30px
-    const DIST_MIN_EJE = ANCHO_ICONO / 2 + MARGEN_PLANETA_EJE;     // 10+5=15px
+    const MARGEN_PLANETA_EJE = 8;      // entre planeta y eje
+    const DIST_MIN_PLANETA = ANCHO_ICONO + MARGEN_PLANETA_PLANETA;
+    const DIST_MIN_EJE = ANCHO_ICONO / 2 + MARGEN_PLANETA_EJE;
 
     // Umbrales angulares en radianes (en el radio de los planetas)
-    const UMBRAL_PLANETA_RAD = DIST_MIN_PLANETA / RADIO_PLANETAS; // 30/220 ≈ 0.13636
-    const UMBRAL_EJE_RAD = DIST_MIN_EJE / RADIO_PLANETAS;         // 15/220 ≈ 0.06818
+    const UMBRAL_PLANETA_RAD = DIST_MIN_PLANETA / RADIO_PLANETAS;
+    const UMBRAL_EJE_RAD = DIST_MIN_EJE / RADIO_PLANETAS;
 
     while (lienzoSvg.firstChild) {
       lienzoSvg.removeChild(lienzoSvg.firstChild);
@@ -949,13 +948,18 @@ document.addEventListener("DOMContentLoaded", () => {
         if (planetas.hasOwnProperty(nombre)) {
           const gradosAbsolutos = planetas[nombre];
           const anguloRad = ajustarAngulo(gradosAbsolutos);
+          let datos = datosPlanetasForm[nombre] || { g: 0, m: 0, retrogrado: false };
+          // Para el Nodo Sur, heredamos los datos del Nodo Norte
+          if (nombre === 'NODO_SUR' && datosPlanetasForm.hasOwnProperty('NODO_NORTE')) {
+            datos = { ...datosPlanetasForm['NODO_NORTE'] };
+          }
           puntos.push({
             nombre: nombre,
             tipo: 'planeta',
             anguloOriginal: anguloRad,
             anguloActual: anguloRad, // se modificará
             esMovil: true,
-            datos: datosPlanetasForm[nombre] || { g: 0, m: 0, retrogrado: false }
+            datos: datos
           });
         }
       }
