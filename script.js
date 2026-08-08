@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const CENTRO_X = 350;
   const CENTRO_Y = 350;
-
   const RADIO_EXTERIOR = 340;
   const RADIO_SIGNOS_INTERIOR = 310;
   const RADIO_DECANATOS_INTERIOR = 285;
@@ -20,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const RADIO_ASPECTOS = 145;
   const RADIO_NUMEROS_GRADOS = 195;
   const RADIO_NUMEROS_MINUTOS = 172;
+  const RADIO_NUMEROS_EJE = 165;
 
   const nombresSignos = [
     "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
@@ -492,7 +492,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ---- Parámetros fijos de separación ----
     const ANCHO_ICONO = 20;            // 20x20 px
     const MARGEN_PLANETA_PLANETA = 10; // entre planetas
-    const MARGEN_PLANETA_EJE = 10;      // entre planeta y eje
+    const MARGEN_PLANETA_EJE = 10;     // entre planeta y eje
     const DIST_MIN_PLANETA = ANCHO_ICONO + MARGEN_PLANETA_PLANETA;
     const DIST_MIN_EJE = ANCHO_ICONO / 2 + MARGEN_PLANETA_EJE;
 
@@ -923,6 +923,29 @@ document.addEventListener("DOMContentLoaded", () => {
       imgMc.setAttribute("class", "icono-eje");
       imgMc.setAttribute("href", "svg/mc.svg");
       lienzoSvg.appendChild(imgMc);
+
+      // ---- Texto de grados de los ejes (ASC y MC) ----
+      // ASC
+      const ascGradoNum = Math.floor(ascendenteAbs % 30);
+      const xAscGrado = CENTRO_X + RADIO_NUMEROS_EJE * Math.cos(radAsc);
+      const yAscGrado = CENTRO_Y + RADIO_NUMEROS_EJE * Math.sin(radAsc);
+      const txtAscGrado = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      txtAscGrado.setAttribute("x", String(xAscGrado));
+      txtAscGrado.setAttribute("y", String(yAscGrado));
+      txtAscGrado.setAttribute("class", "texto-grado");
+      txtAscGrado.textContent = `${ascGradoNum}°`;
+      lienzoSvg.appendChild(txtAscGrado);
+
+      // MC
+      const mcGradoNum = Math.floor(mcAbs % 30);
+      const xMcGrado = CENTRO_X + RADIO_NUMEROS_EJE * Math.cos(radMc);
+      const yMcGrado = CENTRO_Y + RADIO_NUMEROS_EJE * Math.sin(radMc);
+      const txtMcGrado = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      txtMcGrado.setAttribute("x", String(xMcGrado));
+      txtMcGrado.setAttribute("y", String(yMcGrado));
+      txtMcGrado.setAttribute("class", "texto-grado");
+      txtMcGrado.textContent = `${mcGradoNum}°`;
+      lienzoSvg.appendChild(txtMcGrado);
 
       // ---- OBTENER DATOS DE PLANETAS Y EJES ----
       let datosPlanetasForm = {};
