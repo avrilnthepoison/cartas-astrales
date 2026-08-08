@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const CENTRO_X = 350;
   const CENTRO_Y = 350;
+
   const RADIO_EXTERIOR = 340;
   const RADIO_SIGNOS_INTERIOR = 310;
   const RADIO_DECANATOS_INTERIOR = 285;
@@ -17,8 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const RADIO_SIMBOLOS_TERMINOS = 275;
   const RADIO_GRADOS = 255;
   const RADIO_ASPECTOS = 145;
-  const RADIO_NUMEROS_GRADOS = 194;
-  const RADIO_NUMEROS_MINUTOS = 173;
+  const RADIO_NUMEROS_GRADOS = 195;
+  const RADIO_NUMEROS_MINUTOS = 172;
 
   const nombresSignos = [
     "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
@@ -491,7 +492,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ---- Parámetros fijos de separación ----
     const ANCHO_ICONO = 20;            // 20x20 px
     const MARGEN_PLANETA_PLANETA = 10; // entre planetas
-    const MARGEN_PLANETA_EJE = 8;      // entre planeta y eje
+    const MARGEN_PLANETA_EJE = 10;      // entre planeta y eje
     const DIST_MIN_PLANETA = ANCHO_ICONO + MARGEN_PLANETA_PLANETA;
     const DIST_MIN_EJE = ANCHO_ICONO / 2 + MARGEN_PLANETA_EJE;
 
