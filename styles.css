@@ -433,7 +433,8 @@ select {
 
 /* Números de grados y minutos de los planetas */
 .texto-grado,
-.texto-minuto {
+.texto-minuto,
+.texto-grado-eje {
   font-family: 'IM Fell DW Pica', serif;
   font-style: italic;
   font-weight: 400;
@@ -446,6 +447,10 @@ select {
   opacity: 0.8;
 }
 .texto-minuto {
+  font-size: 12px;
+  opacity: 0.6;
+}
+.texto-grado-eje {
   font-size: 12px;
   opacity: 0.6;
 }

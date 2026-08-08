@@ -493,7 +493,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ---- Parámetros fijos de separación ----
     const ANCHO_ICONO = 20;            // 20x20 px
     const MARGEN_PLANETA_PLANETA = 10; // entre planetas
-    const MARGEN_PLANETA_EJE = 12;     // entre planeta y eje
+    const MARGEN_PLANETA_EJE = 15;     // entre planeta y eje
     const DIST_MIN_PLANETA = ANCHO_ICONO + MARGEN_PLANETA_PLANETA;
     const DIST_MIN_EJE = ANCHO_ICONO / 2 + MARGEN_PLANETA_EJE;
 
@@ -933,7 +933,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const txtAscGrado = document.createElementNS("http://www.w3.org/2000/svg", "text");
       txtAscGrado.setAttribute("x", String(xAscGrado));
       txtAscGrado.setAttribute("y", String(yAscGrado));
-      txtAscGrado.setAttribute("class", "texto-grado");
+      txtAscGrado.setAttribute("class", "texto-grado-eje");
       txtAscGrado.textContent = `${ascGradoNum}°`;
       lienzoSvg.appendChild(txtAscGrado);
 
@@ -944,7 +944,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const txtMcGrado = document.createElementNS("http://www.w3.org/2000/svg", "text");
       txtMcGrado.setAttribute("x", String(xMcGrado));
       txtMcGrado.setAttribute("y", String(yMcGrado));
-      txtMcGrado.setAttribute("class", "texto-grado");
+      txtMcGrado.setAttribute("class", "texto-grado-eje");
       txtMcGrado.textContent = `${mcGradoNum}°`;
       lienzoSvg.appendChild(txtMcGrado);
 
