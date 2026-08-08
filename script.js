@@ -492,7 +492,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- Parámetros fijos para la separación ---
     const ANCHO_ICONO = 20;          // Tamaño de los iconos (20x20)
-    const MARGEN_MINIMO = 15;        // Espacio mínimo entre bordes
+    const MARGEN_MINIMO = 10;        // Espacio mínimo entre bordes
     const SEPARACION_FIJA = ANCHO_ICONO + MARGEN_MINIMO; // Distancia entre centros
 
     while (lienzoSvg.firstChild) {
