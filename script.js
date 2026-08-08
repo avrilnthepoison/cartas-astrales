@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const RADIO_PLANETAS = 200;
   const RADIO_TEXTO_SIGNOS = 320;
   const RADIO_SIMBOLOS_DECANATOS = 297;
-  const RADIO_SIMBOLOS_TERMINOS = 272; // centro de la franja de términos
+  const RADIO_SIMBOLOS_TERMINOS = 272;
   const RADIO_GRADOS = 250;
   const RADIO_ASPECTOS = 145;
 
@@ -458,7 +458,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------------
-  // FUNCIÓN PRINCIPAL DE DIBUJO (con la nueva franja de términos)
+  // FUNCIÓN PRINCIPAL DE DIBUJO
   // ------------------------------------------------------------
   function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
     const umbralInput = document.getElementById("umbral-input");
@@ -480,9 +480,52 @@ document.addEventListener("DOMContentLoaded", () => {
       return (desfaceG - gradosOriginales) * (Math.PI / 180);
     }
 
-    // ========== CAPA 1: Círculos base y coronas ==========
-    // ... (código existente, sin cambios hasta la corona de términos)
+    // ------------------------------------------
+    // GENERACIÓN DE BLOQUES FUSIONADOS DE TÉRMINOS
+    // (se usa tanto para líneas como para íconos)
+    // ------------------------------------------
+    const terminosAbsolutos = [];
+    for (let signo = 0; signo < 12; signo++) {
+      const lista = terminosData[signo];
+      if (!lista) continue;
+      const base = signo * 30;
+      for (const term of lista) {
+        terminosAbsolutos.push({
+          planeta: term.planeta,
+          inicio: base + term.inicio,
+          fin: base + term.fin
+        });
+      }
+    }
 
+    // Fusionar bloques consecutivos del mismo planeta que se tocan
+    const bloquesFusionados = [];
+    if (terminosAbsolutos.length > 0) {
+      let actual = { ...terminosAbsolutos[0] };
+      for (let i = 1; i < terminosAbsolutos.length; i++) {
+        const siguiente = terminosAbsolutos[i];
+        if (siguiente.planeta === actual.planeta && siguiente.inicio === actual.fin) {
+          actual.fin = siguiente.fin;
+        } else {
+          bloquesFusionados.push(actual);
+          actual = { ...siguiente };
+        }
+      }
+      bloquesFusionados.push(actual);
+    }
+
+    // Extraer límites únicos (inicios y fines) para dibujar líneas
+    const limitesSet = new Set();
+    for (const bloque of bloquesFusionados) {
+      limitesSet.add(bloque.inicio);
+      limitesSet.add(bloque.fin);
+    }
+    // Ordenar los límites
+    const limites = Array.from(limitesSet).sort((a, b) => a - b);
+    // Eliminar el límite 360 (es igual a 0, pero no dibujamos línea en 360 porque ya está en 0)
+    // No eliminamos 0 porque sí queremos línea en el inicio del primer signo.
+
+    // ========== CAPA 1: Círculos base y coronas ==========
     // Círculo exterior
     const circuloExterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloExterior.setAttribute("cx", String(CENTRO_X));
@@ -593,23 +636,22 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // ========== CAPA 3b: Líneas de los términos ==========
-    for (let i = 0; i < 12; i++) {
-      for (let d = 0; d < 3; d++) {
-        const gradoLinea = i * 30 + d * 10;
-        const radLinea = ajustarAngulo(gradoLinea);
-        const x1 = Math.round(CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radLinea));
-        const y1 = Math.round(CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radLinea));
-        const x2 = Math.round(CENTRO_X + RADIO_TERMINOS_INTERIOR * Math.cos(radLinea));
-        const y2 = Math.round(CENTRO_Y + RADIO_TERMINOS_INTERIOR * Math.sin(radLinea));
-        const linea = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        linea.setAttribute("x1", String(x1));
-        linea.setAttribute("y1", String(y1));
-        linea.setAttribute("x2", String(x2));
-        linea.setAttribute("y2", String(y2));
-        linea.setAttribute("class", "linea-termino");
-        lienzoSvg.appendChild(linea);
-      }
+    // ========== CAPA 3b: Líneas de los términos (según límites de bloques fusionados) ==========
+    // Dibujar líneas en cada límite (excepto 360, que es redundante)
+    for (const grado of limites) {
+      if (grado === 360) continue; // no dibujar línea en 360 (equivale a 0)
+      const radLinea = ajustarAngulo(grado);
+      const x1 = CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radLinea);
+      const y1 = CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radLinea);
+      const x2 = CENTRO_X + RADIO_TERMINOS_INTERIOR * Math.cos(radLinea);
+      const y2 = CENTRO_Y + RADIO_TERMINOS_INTERIOR * Math.sin(radLinea);
+      const linea = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      linea.setAttribute("x1", String(x1));
+      linea.setAttribute("y1", String(y1));
+      linea.setAttribute("x2", String(x2));
+      linea.setAttribute("y2", String(y2));
+      linea.setAttribute("class", "linea-termino");
+      lienzoSvg.appendChild(linea);
     }
 
     // ========== CAPA 4: Nombres de los signos ==========
@@ -666,39 +708,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ========== CAPA 5b: Símbolos de los términos (bloques fusionados) ==========
-    // Generar lista de términos en grados absolutos
-    const terminosAbsolutos = [];
-    for (let signo = 0; signo < 12; signo++) {
-      const lista = terminosData[signo];
-      if (!lista) continue;
-      const base = signo * 30;
-      for (const term of lista) {
-        terminosAbsolutos.push({
-          planeta: term.planeta,
-          inicio: base + term.inicio,
-          fin: base + term.fin
-        });
-      }
-    }
-
-    // Fusionar bloques consecutivos del mismo planeta que se tocan
-    const bloquesFusionados = [];
-    if (terminosAbsolutos.length > 0) {
-      let actual = { ...terminosAbsolutos[0] };
-      for (let i = 1; i < terminosAbsolutos.length; i++) {
-        const siguiente = terminosAbsolutos[i];
-        // Si el planeta es el mismo y el inicio del siguiente coincide con el fin del actual
-        if (siguiente.planeta === actual.planeta && siguiente.inicio === actual.fin) {
-          actual.fin = siguiente.fin; // fusionar
-        } else {
-          bloquesFusionados.push(actual);
-          actual = { ...siguiente };
-        }
-      }
-      bloquesFusionados.push(actual);
-    }
-
-    // Dibujar íconos para cada bloque fusionado
     for (const bloque of bloquesFusionados) {
       const gradoCentral = (bloque.inicio + bloque.fin) / 2;
       const rad = ajustarAngulo(gradoCentral);
