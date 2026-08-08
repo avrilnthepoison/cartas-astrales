@@ -438,20 +438,22 @@ select {
   font-family: 'IM Fell DW Pica', serif;
   font-style: italic;
   font-weight: 400;
-  fill: #0e3585;
   text-anchor: middle;
   dominant-baseline: central;
 }
 .texto-grado {
   font-size: 14px;
+  fill: #1040a2;
   opacity: 0.8;
 }
 .texto-minuto {
   font-size: 12px;
+  fill: #1040a2;
   opacity: 0.6;
 }
 .texto-grado-eje {
   font-size: 10px;
+  fill: #0e3585;
   opacity: 1;
 }
 
