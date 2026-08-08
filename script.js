@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const RADIO_SIMBOLOS_TERMINOS = 275;
   const RADIO_GRADOS = 255;
   const RADIO_ASPECTOS = 145;
-  const RADIO_NUMEROS_GRADOS = 190;
+  const RADIO_NUMEROS_GRADOS = 195;
   const RADIO_NUMEROS_MINUTOS = 175;
 
   const nombresSignos = [

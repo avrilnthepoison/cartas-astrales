@@ -435,17 +435,18 @@ select {
 .texto-grado,
 .texto-minuto {
   font-family: 'IM Fell DW Pica', serif;
-  font-weight: 500;
+  font-style: italic;
+  font-weight: 400;
   fill: #0e3585;
   text-anchor: middle;
   dominant-baseline: central;
 }
 .texto-grado {
-  font-size: 11px;
-  opacity: 0.8;
+  font-size: 14px;
+  opacity: 0.85;
 }
 .texto-minuto {
-  font-size: 10px;
+  font-size: 12px;
   opacity: 0.6;
 }
 
