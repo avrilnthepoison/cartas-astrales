@@ -483,17 +483,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------------
-  // FUNCIÓN PRINCIPAL DE DIBUJO (con separación fija y dirección tangente)
+  // FUNCIÓN PRINCIPAL DE DIBUJO (con umbral fijo y separación automática)
   // ------------------------------------------------------------
   function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
-    const umbralInput = document.getElementById("umbral-input");
-    let umbral = parseFloat(umbralInput.value);
-    if (isNaN(umbral) || umbral < 0) umbral = 8;
-
-    // --- Parámetros fijos para la separación ---
+    // ---- Parámetros fijos para la separación ----
     const ANCHO_ICONO = 20;          // Tamaño de los iconos (20x20)
     const MARGEN_MINIMO = 10;        // Espacio mínimo entre bordes
-    const SEPARACION_FIJA = ANCHO_ICONO + MARGEN_MINIMO; // Distancia entre centros
+    const SEPARACION_FIJA = ANCHO_ICONO + MARGEN_MINIMO; // Distancia entre centros (30px)
+
+    // Umbral fijo (en grados) que corresponde a la separación mínima en el radio de los planetas.
+    // En el radio RADIO_PLANETAS (220px), 30px equivalen a ~7.8°, redondeamos a 8°.
+    const UMBRAL_FIJO = 8;
 
     while (lienzoSvg.firstChild) {
       lienzoSvg.removeChild(lienzoSvg.firstChild);
@@ -980,7 +980,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const todosLosPuntos = [...planetasData, ...ejesData];
       todosLosPuntos.sort((a, b) => a.gradosAbsolutos - b.gradosAbsolutos);
 
-      // ---- AGRUPACIÓN Y CÁLCULO DE DESPLAZAMIENTOS (con dirección tangente) ----
+      // ---- AGRUPACIÓN Y CÁLCULO DE DESPLAZAMIENTOS (con umbral fijo) ----
       const grupos = [];
       let grupoActual = [];
       for (let i = 0; i < todosLosPuntos.length; i++) {
@@ -989,7 +989,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
           const ultimo = grupoActual[grupoActual.length - 1];
           const diff = todosLosPuntos[i].gradosAbsolutos - ultimo.gradosAbsolutos;
-          if (diff <= umbral) {
+          if (diff <= UMBRAL_FIJO) {
             grupoActual.push(todosLosPuntos[i]);
           } else {
             grupos.push(grupoActual);

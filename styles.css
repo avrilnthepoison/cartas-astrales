@@ -281,44 +281,9 @@ select {
 
 /*
 ==========================================================================
-4. AJUSTES DE AGRUPACIÓN Y NOMBRE DE LA CARTA
+4. NOMBRE DE LA CARTA
 ==========================================================================
 */
-/* -- Ajustes de Agrupación -- */
-.fila-ajuste {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 15px;
-}
-
-.fila-ajuste label {
-  font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 1px;
-  color: #1040a2;
-  min-width: 130px;
-  margin-right: 8px;
-}
-
-.fila-ajuste input[type="number"] {
-  width: 70px;
-  text-align: center;
-  margin-right: 8px;
-}
-
-.fila-ajuste .ayuda-ajuste {
-  font-size: 10px;
-  color: #1040a2;
-  font-weight: 400;
-}
-
-.fila-ajuste:last-child {
-  margin-bottom: 0;
-}
-
-/* -- Bloque de Nombre de la Carta -- */
 .fila-nombre {
   display: flex;
   align-items: center;
