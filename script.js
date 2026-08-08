@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-
   const botonGenerar = document.getElementById("btn-generar");
   const botonBorrar = document.getElementById("btn-borrar");
   const botonDescargarPNG = document.getElementById("btn-descargar-png");
@@ -12,11 +11,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const RADIO_EXTERIOR = 340;
   const RADIO_SIGNOS_INTERIOR = 310;
   const RADIO_DECANATOS_INTERIOR = 285;
-  const RADIO_TERMINOS_INTERIOR = 260;
+  const RADIO_TERMINOS_INTERIOR = 265;
   const RADIO_PLANETAS = 220;
   const RADIO_TEXTO_SIGNOS = 320;
   const RADIO_SIMBOLOS_DECANATOS = 297;
-  const RADIO_SIMBOLOS_TERMINOS = 272;
+  const RADIO_SIMBOLOS_TERMINOS = 275;
   const RADIO_GRADOS = 250;
   const RADIO_ASPECTOS = 145;
 
@@ -40,10 +39,9 @@ document.addEventListener("DOMContentLoaded", () => {
     "QUIRON": "⚷",
     "NODO_NORTE": "☊"
   };
-
   const cuerpos = Object.keys(simbolos);
 
-  // --- ORBES ---
+  // ORBES
   const orbesPlanetarios = {
     "SOL": 15,
     "LUNA": 12,
@@ -58,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "NODO_NORTE": 0
   };
 
-  // --- DECANATOS ---
+  // DECANATOS
   const decanatos = {
     0: ['MARTE', 'SOL', 'VENUS'],
     1: ['MERCURIO', 'LUNA', 'SATURNO'],
@@ -74,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
     11: ['SATURNO', 'JUPITER', 'MARTE']
   };
 
-  // --- TÉRMINOS (datos según signo) ---
+  // TÉRMINOS
   const terminosData = {
     0: [ // Aries
       { planeta: 'JUPITER', inicio: 0, fin: 6 },
@@ -219,7 +217,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("mc-grado").value = "";
     document.getElementById("mc-minuto").value = "";
     document.getElementById("mc-signo").value = "0";
-
     const filasPlanetas = document.querySelectorAll(".fila-planeta");
     filasPlanetas.forEach(fila => {
       fila.querySelector(".p-grado").value = "";
@@ -228,7 +225,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const retroCheck = fila.querySelector(".p-retrogrado");
       if (retroCheck) retroCheck.checked = false;
     });
-
     dibujarRadixManual(0, 0, {}, false);
   }
 
@@ -238,7 +234,6 @@ document.addEventListener("DOMContentLoaded", () => {
       dibujarRadixManual(0, 0, {}, false);
       return;
     }
-
     try {
       const datos = JSON.parse(datosGuardados);
       if (datos.ascendente) {
@@ -287,7 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const respuestaCss = await fetch(urlCss);
       if (!respuestaCss.ok) throw new Error(`HTTP ${respuestaCss.status}`);
       const css = await respuestaCss.text();
-      const regexFontFace = /\@font-face\s*\{([^}]*)\}/g;
+      const regexFontFace = /@font-face\s*\{([^}]*)\}/g;
       const fontFaces = [];
       let match;
       while ((match = regexFontFace.exec(css)) !== null) {
@@ -331,20 +326,35 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------------
-  // FUNCIÓN PARA DESCARGAR PNG
+  // FUNCIÓN PARA DESCARGAR PNG (CORREGIDA)
   // ------------------------------------------------------------
   async function descargarPNG(conFondo = false) {
+    // Intentar cargar la fuente en el documento principal (para que el clon la herede)
     try {
       await document.fonts.load('1em "IM Fell DW Pica"');
     } catch (e) {
       console.warn("No se pudo cargar la fuente en el documento principal:", e);
     }
 
+    // Obtener la fuente en Base64
     const urlGoogleFonts = 'https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica:ital,wght@0,400;1,400&display=swap';
     let fuenteCSS = await obtenerFuenteBase64(urlGoogleFonts);
     if (!fuenteCSS) {
       console.warn("No se pudo obtener la fuente de Google Fonts. Se usará la fuente por defecto.");
       fuenteCSS = `text { font-family: serif; }`;
+    }
+
+    // Obtener el CSS de estilos del gráfico (styles.css) mediante fetch
+    let estilosCSS = '';
+    try {
+      const resp = await fetch('styles.css');
+      if (resp.ok) {
+        estilosCSS = await resp.text();
+      } else {
+        console.warn('No se pudo cargar styles.css, se usará un estilo mínimo.');
+      }
+    } catch (e) {
+      console.warn('Error al obtener styles.css:', e);
     }
 
     const ESCALA = 3;
@@ -354,9 +364,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const svgOriginal = document.getElementById("carta-astral");
     const clon = svgOriginal.cloneNode(true);
 
+    // Crear bloque <style> con todos los estilos necesarios
     const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
     style.textContent = `
+      /* Estilos del gráfico (desde styles.css) */
+      ${estilosCSS}
+
+      /* Reglas de la fuente (Base64) */
       ${fuenteCSS}
+
+      /* Reglas adicionales para garantizar la fuente */
       text {
         font-family: 'IM Fell DW Pica', serif !important;
       }
@@ -367,8 +384,10 @@ document.addEventListener("DOMContentLoaded", () => {
         font-style: italic !important;
       }
     `;
+    // Insertar el style al principio del SVG clonado
     clon.insertBefore(style, clon.firstChild);
 
+    // Convertir imágenes SVG referenciadas a dataURI
     const imagenes = clon.querySelectorAll("image");
     const cacheDataURI = new Map();
 
@@ -380,6 +399,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const response = await fetch(ruta);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const text = await response.text();
+        // Codificar como dataURI (SVG)
         const dataURI = `data:image/svg+xml;utf8,${encodeURIComponent(text)}`;
         cacheDataURI.set(ruta, dataURI);
         return dataURI;
@@ -404,15 +424,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     await Promise.all(promesas);
 
+    // Serializar el SVG
     const svgData = new XMLSerializer().serializeToString(clon);
     const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
-    const img = new Image();
 
+    // Cargar la imagen SVG en un elemento Image para dibujar en canvas
+    const img = new Image();
     const timeoutId = setTimeout(() => {
       console.warn("Timeout al cargar la imagen SVG. Se procederá con la descarga.");
-      URL.revokeObjectURL(url);
-    }, 10000);
+      // No revocamos la URL aquí, la revocaremos después del intento.
+    }, 15000); // 15 segundos
 
     img.onload = function() {
       clearTimeout(timeoutId);
@@ -420,15 +442,17 @@ document.addEventListener("DOMContentLoaded", () => {
       canvas.width = ANCHO_FINAL;
       canvas.height = ALTO_FINAL;
       const ctx = canvas.getContext("2d");
+
       if (conFondo) {
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       } else {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const pngUrl = canvas.toDataURL("image/png");
 
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      const pngUrl = canvas.toDataURL("image/png");
       const nombreInput = document.getElementById("nombre-carta-input");
       let nombreBase = "carta astral";
       if (nombreInput && nombreInput.value.trim() !== "") {
@@ -445,6 +469,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+
       URL.revokeObjectURL(url);
     };
 
@@ -458,7 +483,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------------
-  // FUNCIÓN PRINCIPAL DE DIBUJO
+  // FUNCIÓN PRINCIPAL DE DIBUJO (sin cambios relevantes, pero se incluye completa)
   // ------------------------------------------------------------
   function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
     const umbralInput = document.getElementById("umbral-input");
@@ -480,10 +505,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return (desfaceG - gradosOriginales) * (Math.PI / 180);
     }
 
-    // ------------------------------------------
-    // GENERACIÓN DE BLOQUES FUSIONADOS DE TÉRMINOS
-    // (se usa tanto para líneas como para íconos)
-    // ------------------------------------------
+    // ---------- GENERACIÓN DE BLOQUES FUSIONADOS DE TÉRMINOS ----------
     const terminosAbsolutos = [];
     for (let signo = 0; signo < 12; signo++) {
       const lista = terminosData[signo];
@@ -497,8 +519,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     }
-
-    // Fusionar bloques consecutivos del mismo planeta que se tocan
     const bloquesFusionados = [];
     if (terminosAbsolutos.length > 0) {
       let actual = { ...terminosAbsolutos[0] };
@@ -513,20 +533,14 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       bloquesFusionados.push(actual);
     }
-
-    // Extraer límites únicos (inicios y fines) para dibujar líneas
     const limitesSet = new Set();
     for (const bloque of bloquesFusionados) {
       limitesSet.add(bloque.inicio);
       limitesSet.add(bloque.fin);
     }
-    // Ordenar los límites
     const limites = Array.from(limitesSet).sort((a, b) => a - b);
-    // Eliminar el límite 360 (es igual a 0, pero no dibujamos línea en 360 porque ya está en 0)
-    // No eliminamos 0 porque sí queremos línea en el inicio del primer signo.
 
     // ========== CAPA 1: Círculos base y coronas ==========
-    // Círculo exterior
     const circuloExterior = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circuloExterior.setAttribute("cx", String(CENTRO_X));
     circuloExterior.setAttribute("cy", String(CENTRO_Y));
@@ -534,7 +548,6 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloExterior.setAttribute("class", "circulo-base");
     lienzoSvg.appendChild(circuloExterior);
 
-    // Corona signos
     const pathCoronaSignos = document.createElementNS("http://www.w3.org/2000/svg", "path");
     const dCoronaSignos = `
       M ${CENTRO_X - RADIO_EXTERIOR} ${CENTRO_Y}
@@ -556,7 +569,6 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloSignosInterior.setAttribute("class", "circulo-base");
     lienzoSvg.appendChild(circuloSignosInterior);
 
-    // Corona Decanatos
     const pathCoronaDecanatos = document.createElementNS("http://www.w3.org/2000/svg", "path");
     const dCoronaDecanatos = `
       M ${CENTRO_X - RADIO_SIGNOS_INTERIOR} ${CENTRO_Y}
@@ -578,7 +590,6 @@ document.addEventListener("DOMContentLoaded", () => {
     circuloDecanatosInterior.setAttribute("class", "circulo-base");
     lienzoSvg.appendChild(circuloDecanatosInterior);
 
-    // Corona Términos
     const pathCoronaTerminos = document.createElementNS("http://www.w3.org/2000/svg", "path");
     const dCoronaTerminos = `
       M ${CENTRO_X - RADIO_DECANATOS_INTERIOR} ${CENTRO_Y}
@@ -637,9 +648,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ========== CAPA 3b: Líneas de los términos (según límites de bloques fusionados) ==========
-    // Dibujar líneas en cada límite (excepto 360, que es redundante)
     for (const grado of limites) {
-      if (grado === 360) continue; // no dibujar línea en 360 (equivale a 0)
+      if (grado === 360) continue;
       const radLinea = ajustarAngulo(grado);
       const x1 = CENTRO_X + RADIO_DECANATOS_INTERIOR * Math.cos(radLinea);
       const y1 = CENTRO_Y + RADIO_DECANATOS_INTERIOR * Math.sin(radLinea);
@@ -667,7 +677,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const ey = (CENTRO_Y + radioTrayectoTexto * Math.sin(radFin)).toFixed(2);
       const idTrayecto = `trayecto-signo-${i}`;
       const d = `M ${ex},${ey} A ${radioTrayectoTexto},${radioTrayectoTexto} 0 0,1 ${sx},${sy}`;
-
       const rutaDefinicion = document.createElementNS("http://www.w3.org/2000/svg", "path");
       rutaDefinicion.setAttribute("id", idTrayecto);
       rutaDefinicion.setAttribute("d", d);
@@ -742,7 +751,6 @@ document.addEventListener("DOMContentLoaded", () => {
       punto.setAttribute("class", "punto-grado");
       lienzoSvg.appendChild(punto);
     }
-
     for (let g = 0; g < 360; g += 30) {
       const rad = ajustarAngulo(g);
       const x = Math.round(CENTRO_X + RADIO_GRADOS * Math.cos(rad));
@@ -773,7 +781,6 @@ document.addEventListener("DOMContentLoaded", () => {
       punto.setAttribute("class", "punto-grado");
       lienzoSvg.appendChild(punto);
     }
-
     for (let g = 0; g < 360; g += 30) {
       const rad = ajustarAngulo(g);
       const x = Math.round(CENTRO_X + RADIO_ASPECTOS * Math.cos(rad));
@@ -801,7 +808,6 @@ document.addEventListener("DOMContentLoaded", () => {
         planetasValidos[nombre] = pos;
       }
     }
-
     const nombres = Object.keys(planetasValidos);
     if (nombres.length >= 2) {
       for (let i = 0; i < nombres.length; i++) {
@@ -813,7 +819,6 @@ document.addEventListener("DOMContentLoaded", () => {
           const pos2 = planetasValidos[p2];
           let diff = Math.abs(pos1 - pos2) % 360;
           if (diff > 180) diff = 360 - diff;
-
           let orb = 0;
           if (p1 === 'NODO_NORTE') {
             orb = orbesPlanetarios[p2] || 0;
@@ -823,7 +828,6 @@ document.addEventListener("DOMContentLoaded", () => {
             orb = Math.max(orbesPlanetarios[p1] || 0, orbesPlanetarios[p2] || 0);
           }
           if (orb === 0) continue;
-
           const aspectos = [
             { tipo: 'conjuncion', angulo: 0 },
             { tipo: 'sextil', angulo: 60 },
@@ -831,7 +835,6 @@ document.addEventListener("DOMContentLoaded", () => {
             { tipo: 'trigono', angulo: 120 },
             { tipo: 'oposicion', angulo: 180 }
           ];
-
           for (const asp of aspectos) {
             if (Math.abs(diff - asp.angulo) <= orb) {
               const rad1 = ajustarAngulo(pos1);
@@ -1043,6 +1046,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const desp = desplazamientos[nombre] || { dx: 0, dy: 0 };
         const xIcono = xPlaneta + desp.dx;
         const yIcono = yPlaneta + desp.dy;
+
         const nombreSVG = nombre.toLowerCase().replace('_', '-');
         const rutaSVG = `svg/${nombreSVG}.svg`;
         const imgPlaneta = document.createElementNS("http://www.w3.org/2000/svg", "image");
@@ -1069,5 +1073,4 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   }
-
 });
