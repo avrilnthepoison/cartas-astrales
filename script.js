@@ -483,19 +483,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------------
-  // FUNCIÓN PRINCIPAL DE DIBUJO (con modificación para Nodo Sur y nueva lógica de separación)
+  // FUNCIÓN PRINCIPAL DE DIBUJO (con separación fija y dirección tangente)
   // ------------------------------------------------------------
   function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
     const umbralInput = document.getElementById("umbral-input");
-    const separacionInput = document.getElementById("separacion-input");
     let umbral = parseFloat(umbralInput.value);
     if (isNaN(umbral) || umbral < 0) umbral = 8;
-    let separacionGrupo = parseFloat(separacionInput.value);
-    if (isNaN(separacionGrupo) || separacionGrupo < 0) separacionGrupo = 10;
 
-    // ---- Nuevas constantes para la separación entre bordes ----
-    const ANCHO_ICONO = 20;          // Tamaño de los iconos de planetas y ejes (20x20)
-    const MARGEN_MINIMO = 15;        // Margen mínimo entre bordes (para evitar superposiciones)
+    // --- Parámetros fijos para la separación ---
+    const ANCHO_ICONO = 20;          // Tamaño de los iconos (20x20)
+    const MARGEN_MINIMO = 15;        // Espacio mínimo entre bordes
+    const SEPARACION_FIJA = ANCHO_ICONO + MARGEN_MINIMO; // Distancia entre centros
 
     while (lienzoSvg.firstChild) {
       lienzoSvg.removeChild(lienzoSvg.firstChild);
@@ -982,7 +980,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const todosLosPuntos = [...planetasData, ...ejesData];
       todosLosPuntos.sort((a, b) => a.gradosAbsolutos - b.gradosAbsolutos);
 
-      // ---- AGRUPACIÓN Y CÁLCULO DE DESPLAZAMIENTOS (NUEVA LÓGICA) ----
+      // ---- AGRUPACIÓN Y CÁLCULO DE DESPLAZAMIENTOS (con dirección tangente) ----
       const grupos = [];
       let grupoActual = [];
       for (let i = 0; i < todosLosPuntos.length; i++) {
@@ -1010,25 +1008,23 @@ document.addEventListener("DOMContentLoaded", () => {
           continue;
         }
 
-        // Separación efectiva: máximo entre lo ingresado y el margen mínimo
-        const separacionEfectiva = Math.max(separacionGrupo, MARGEN_MINIMO);
-        // Distancia entre centros = separación entre bordes + ancho del icono
-        const distanciaCentros = separacionEfectiva + ANCHO_ICONO;
+        // Usamos la separación fija (distancia entre centros)
+        const separacion = SEPARACION_FIJA;
 
         // Ángulo de referencia (el del primer elemento del grupo)
         const radRef = grupo[0].radPlaneta;
         const tangenteX = -Math.sin(radRef);
         const tangenteY = Math.cos(radRef);
 
-        // Asignar desplazamientos simétricos
+        // Fórmula original: offset = ((n-1)/2 - i) * separacion
         for (let i = 0; i < n; i++) {
-          const offset = (i - (n - 1) / 2) * distanciaCentros;
+          const offset = ((n - 1) / 2 - i) * separacion;
           const dx = Math.round(offset * tangenteX);
           const dy = Math.round(offset * tangenteY);
           desplazamientos[grupo[i].nombre] = { dx, dy };
         }
 
-        // Los ejes (ASC, MC) no se desplazan (se les asigna 0)
+        // Los ejes (ASC, MC) no se desplazan
         for (const punto of grupo) {
           if (punto.tipo === 'eje') {
             desplazamientos[punto.nombre] = { dx: 0, dy: 0 };
