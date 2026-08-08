@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "PLUTON": "♇",
     "QUIRON": "⚷",
     "NODO_NORTE": "☊",
-    "NODO_SUR": "☋"   // Añadido para que se incluya en el bucle de dibujo
+    "NODO_SUR": "☋"
   };
   const cuerpos = Object.keys(simbolos);
 
@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "NEPTUNO": 3,
     "PLUTON": 3,
     "NODO_NORTE": 0,
-    "NODO_SUR": 0    // Añadido (se usará el orbe del otro planeta)
+    "NODO_SUR": 0
   };
 
   // DECANATOS
@@ -483,7 +483,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------------
-  // FUNCIÓN PRINCIPAL DE DIBUJO (con modificación para Nodo Sur)
+  // FUNCIÓN PRINCIPAL DE DIBUJO (con modificación para Nodo Sur y nueva lógica de separación)
   // ------------------------------------------------------------
   function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
     const umbralInput = document.getElementById("umbral-input");
@@ -492,6 +492,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isNaN(umbral) || umbral < 0) umbral = 8;
     let separacionGrupo = parseFloat(separacionInput.value);
     if (isNaN(separacionGrupo) || separacionGrupo < 0) separacionGrupo = 10;
+
+    // ---- Nuevas constantes para la separación entre bordes ----
+    const ANCHO_ICONO = 20;          // Tamaño de los iconos de planetas y ejes (20x20)
+    const MARGEN_MINIMO = 15;        // Margen mínimo entre bordes (para evitar superposiciones)
 
     while (lienzoSvg.firstChild) {
       lienzoSvg.removeChild(lienzoSvg.firstChild);
@@ -978,6 +982,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const todosLosPuntos = [...planetasData, ...ejesData];
       todosLosPuntos.sort((a, b) => a.gradosAbsolutos - b.gradosAbsolutos);
 
+      // ---- AGRUPACIÓN Y CÁLCULO DE DESPLAZAMIENTOS (NUEVA LÓGICA) ----
       const grupos = [];
       let grupoActual = [];
       for (let i = 0; i < todosLosPuntos.length; i++) {
@@ -997,24 +1002,36 @@ document.addEventListener("DOMContentLoaded", () => {
       if (grupoActual.length > 0) grupos.push(grupoActual);
 
       const desplazamientos = {};
+
       for (const grupo of grupos) {
         const n = grupo.length;
         if (n === 1) {
           desplazamientos[grupo[0].nombre] = { dx: 0, dy: 0 };
-        } else {
-          const radRef = grupo[0].radPlaneta;
-          const tangenteX = -Math.sin(radRef);
-          const tangenteY = Math.cos(radRef);
-          for (let i = 0; i < n; i++) {
-            const offset = ((n - 1) / 2 - i) * separacionGrupo;
-            const dx = Math.round(offset * tangenteX);
-            const dy = Math.round(offset * tangenteY);
-            desplazamientos[grupo[i].nombre] = { dx, dy };
-          }
-          for (const punto of grupo) {
-            if (punto.tipo === 'eje') {
-              desplazamientos[punto.nombre] = { dx: 0, dy: 0 };
-            }
+          continue;
+        }
+
+        // Separación efectiva: máximo entre lo ingresado y el margen mínimo
+        const separacionEfectiva = Math.max(separacionGrupo, MARGEN_MINIMO);
+        // Distancia entre centros = separación entre bordes + ancho del icono
+        const distanciaCentros = separacionEfectiva + ANCHO_ICONO;
+
+        // Ángulo de referencia (el del primer elemento del grupo)
+        const radRef = grupo[0].radPlaneta;
+        const tangenteX = -Math.sin(radRef);
+        const tangenteY = Math.cos(radRef);
+
+        // Asignar desplazamientos simétricos
+        for (let i = 0; i < n; i++) {
+          const offset = (i - (n - 1) / 2) * distanciaCentros;
+          const dx = Math.round(offset * tangenteX);
+          const dy = Math.round(offset * tangenteY);
+          desplazamientos[grupo[i].nombre] = { dx, dy };
+        }
+
+        // Los ejes (ASC, MC) no se desplazan (se les asigna 0)
+        for (const punto of grupo) {
+          if (punto.tipo === 'eje') {
+            desplazamientos[punto.nombre] = { dx: 0, dy: 0 };
           }
         }
       }
