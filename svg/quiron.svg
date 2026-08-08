@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19 43">
+<svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 44">
   <defs>
     <style>
       .cls-1 {
@@ -7,15 +7,15 @@
         stroke: #1040a2;
         stroke-linecap: round;
         stroke-linejoin: round;
-        stroke-width: 3px;
+        stroke-width: 4px;
       }
     </style>
   </defs>
   <g id="iconos">
     <g id="quiron">
-      <line class="cls-1" x1="9.5" y1="1.5" x2="9.5" y2="25.5"/>
-      <polyline class="cls-1" points="17.5 1.5 9.5 9.5 17.5 17.5"/>
-      <circle class="cls-1" cx="9.5" cy="33.5" r="8"/>
+      <line class="cls-1" x1="10" y1="2" x2="10" y2="26"/>
+      <polyline class="cls-1" points="18 2 10 10 18 18"/>
+      <circle class="cls-1" cx="10" cy="34" r="8"/>
     </g>
   </g>
 </svg>
