@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const RADIO_SIGNOS_INTERIOR = 310;
   const RADIO_DECANATOS_INTERIOR = 285;
   const RADIO_TERMINOS_INTERIOR = 260;
-  const RADIO_PLANETAS = 225;
+  const RADIO_PLANETAS = 220;
   const RADIO_TEXTO_SIGNOS = 320;
   const RADIO_SIMBOLOS_DECANATOS = 297;
   const RADIO_SIMBOLOS_TERMINOS = 272;
@@ -716,8 +716,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const nombreSVG = bloque.planeta.toLowerCase().replace('_', '-');
       const rutaSVG = `svg/${nombreSVG}.svg`;
       const imgTermino = document.createElementNS("http://www.w3.org/2000/svg", "image");
-      imgTermino.setAttribute("x", String(x - 4));
-      imgTermino.setAttribute("y", String(y - 4));
+      imgTermino.setAttribute("x", String(x - 5));
+      imgTermino.setAttribute("y", String(y - 5));
       imgTermino.setAttribute("class", "icono-termino");
       imgTermino.setAttribute("href", rutaSVG);
       lienzoSvg.appendChild(imgTermino);
