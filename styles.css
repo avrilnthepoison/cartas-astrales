@@ -72,9 +72,9 @@ body {
 
 .contenedor-sticky-mapa {
   position: sticky;
-  top: 10px;
+  top: 40px;
   width: 100%;
-  max-width: 650px;      /* antes 550px */
+  max-width: 550px;
   margin: 0 auto;
 }
 
