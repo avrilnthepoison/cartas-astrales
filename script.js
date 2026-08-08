@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const CENTRO_X = 350;
   const CENTRO_Y = 350;
+
   const RADIO_EXTERIOR = 340;
   const RADIO_SIGNOS_INTERIOR = 310;
   const RADIO_DECANATOS_INTERIOR = 285;
@@ -19,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const RADIO_ASPECTOS = 145;
   const RADIO_NUMEROS_GRADOS = 195;
   const RADIO_NUMEROS_MINUTOS = 172;
-  const RADIO_NUMEROS_EJE = 165;
+  const RADIO_NUMEROS_EJE = 172;
 
   const nombresSignos = [
     "ARIES", "TAURO", "GÉMINIS", "CÁNCER",
@@ -492,7 +493,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ---- Parámetros fijos de separación ----
     const ANCHO_ICONO = 20;            // 20x20 px
     const MARGEN_PLANETA_PLANETA = 10; // entre planetas
-    const MARGEN_PLANETA_EJE = 10;     // entre planeta y eje
+    const MARGEN_PLANETA_EJE = 12;     // entre planeta y eje
     const DIST_MIN_PLANETA = ANCHO_ICONO + MARGEN_PLANETA_PLANETA;
     const DIST_MIN_EJE = ANCHO_ICONO / 2 + MARGEN_PLANETA_EJE;
 
@@ -883,8 +884,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // Dibujar línea ASC
       const xAsc1 = CENTRO_X + RADIO_TERMINOS_INTERIOR * Math.cos(radAsc);
       const yAsc1 = CENTRO_Y + RADIO_TERMINOS_INTERIOR * Math.sin(radAsc);
-      const xAsc2 = CENTRO_X + (RADIO_TERMINOS_INTERIOR - 60) * Math.cos(radAsc);
-      const yAsc2 = CENTRO_Y + (RADIO_TERMINOS_INTERIOR - 60) * Math.sin(radAsc);
+      const xAsc2 = CENTRO_X + (RADIO_TERMINOS_INTERIOR - 55) * Math.cos(radAsc);
+      const yAsc2 = CENTRO_Y + (RADIO_TERMINOS_INTERIOR - 55) * Math.sin(radAsc);
       const lineaAsc = document.createElementNS("http://www.w3.org/2000/svg", "line");
       lineaAsc.setAttribute("x1", String(xAsc1));
       lineaAsc.setAttribute("y1", String(yAsc1));
@@ -893,8 +894,8 @@ document.addEventListener("DOMContentLoaded", () => {
       lineaAsc.setAttribute("class", "linea-eje");
       lienzoSvg.appendChild(lineaAsc);
 
-      const xAscIcono = CENTRO_X + (RADIO_TERMINOS_INTERIOR - 80) * Math.cos(radAsc);
-      const yAscIcono = CENTRO_Y + (RADIO_TERMINOS_INTERIOR - 80) * Math.sin(radAsc);
+      const xAscIcono = CENTRO_X + (RADIO_TERMINOS_INTERIOR - 75) * Math.cos(radAsc);
+      const yAscIcono = CENTRO_Y + (RADIO_TERMINOS_INTERIOR - 75) * Math.sin(radAsc);
       const imgAsc = document.createElementNS("http://www.w3.org/2000/svg", "image");
       imgAsc.setAttribute("x", String(xAscIcono - 10));
       imgAsc.setAttribute("y", String(yAscIcono - 10));
@@ -905,8 +906,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // Dibujar línea MC
       const xMc1 = CENTRO_X + RADIO_TERMINOS_INTERIOR * Math.cos(radMc);
       const yMc1 = CENTRO_Y + RADIO_TERMINOS_INTERIOR * Math.sin(radMc);
-      const xMc2 = CENTRO_X + (RADIO_TERMINOS_INTERIOR - 60) * Math.cos(radMc);
-      const yMc2 = CENTRO_Y + (RADIO_TERMINOS_INTERIOR - 60) * Math.sin(radMc);
+      const xMc2 = CENTRO_X + (RADIO_TERMINOS_INTERIOR - 55) * Math.cos(radMc);
+      const yMc2 = CENTRO_Y + (RADIO_TERMINOS_INTERIOR - 55) * Math.sin(radMc);
       const lineaMc = document.createElementNS("http://www.w3.org/2000/svg", "line");
       lineaMc.setAttribute("x1", String(xMc1));
       lineaMc.setAttribute("y1", String(yMc1));
@@ -915,8 +916,8 @@ document.addEventListener("DOMContentLoaded", () => {
       lineaMc.setAttribute("class", "linea-eje");
       lienzoSvg.appendChild(lineaMc);
 
-      const xMcIcono = CENTRO_X + (RADIO_TERMINOS_INTERIOR - 80) * Math.cos(radMc);
-      const yMcIcono = CENTRO_Y + (RADIO_TERMINOS_INTERIOR - 80) * Math.sin(radMc);
+      const xMcIcono = CENTRO_X + (RADIO_TERMINOS_INTERIOR - 75) * Math.cos(radMc);
+      const yMcIcono = CENTRO_Y + (RADIO_TERMINOS_INTERIOR - 75) * Math.sin(radMc);
       const imgMc = document.createElementNS("http://www.w3.org/2000/svg", "image");
       imgMc.setAttribute("x", String(xMcIcono - 10));
       imgMc.setAttribute("y", String(yMcIcono - 10));
