@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+
   const botonGenerar = document.getElementById("btn-generar");
   const botonBorrar = document.getElementById("btn-borrar");
   const botonDescargarPNG = document.getElementById("btn-descargar-png");
@@ -43,23 +44,40 @@ document.addEventListener("DOMContentLoaded", () => {
     "NODO_NORTE": "☊",
     "NODO_SUR": "☋"
   };
+
   const cuerpos = Object.keys(simbolos);
 
-  // ORBES
-  const orbesPlanetarios = {
-    "SOL": 15,
-    "LUNA": 12,
-    "MERCURIO": 7,
-    "VENUS": 7,
-    "MARTE": 7,
-    "JUPITER": 9,
-    "SATURNO": 9,
-    "URANO": 3,
-    "NEPTUNO": 3,
-    "PLUTON": 3,
-    "NODO_NORTE": 0,
-    "NODO_SUR": 0
+  // ----------------------------------------------------------------
+  // ORBES POR GRUPO Y TIPO DE ASPECTO
+  // ----------------------------------------------------------------
+  const grupos = {
+    SOL: 'grupo1',
+    LUNA: 'grupo1',
+    MERCURIO: 'grupo2',
+    VENUS: 'grupo2',
+    JUPITER: 'grupo2',
+    MARTE: 'grupo3',
+    SATURNO: 'grupo3',
+    URANO: 'grupo4',
+    NEPTUNO: 'grupo4',
+    PLUTON: 'grupo4'
   };
+
+  const orbesPorGrupo = {
+    grupo1: { conjuncion: 9, sextil: 5, cuadratura: 6, trigono: 8, oposicion: 9 },
+    grupo2: { conjuncion: 7, sextil: 4, cuadratura: 5, trigono: 6, oposicion: 7 },
+    grupo3: { conjuncion: 6, sextil: 3, cuadratura: 4, trigono: 5, oposicion: 6 },
+    grupo4: { conjuncion: 5, sextil: 2, cuadratura: 3, trigono: 4, oposicion: 5 }
+  };
+
+  function obtenerOrbePlaneta(planeta, tipo) {
+    const grupo = grupos[planeta];
+    if (!grupo) return 0;
+    const orbes = orbesPorGrupo[grupo];
+    if (!orbes) return 0;
+    return orbes[tipo] || 0;
+  }
+  // ----------------------------------------------------------------
 
   // DECANATOS
   const decanatos = {
@@ -210,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     });
 
-    // ---- AÑADIR NODO SUR (opuesto al Nodo Norte) ----
+    // Añadir Nodo Sur (opuesto al Nodo Norte)
     if (planetasIngresados.hasOwnProperty('NODO_NORTE')) {
       const posNorte = planetasIngresados['NODO_NORTE'];
       const posSur = (posNorte + 180) % 360;
@@ -286,9 +304,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   cargarValoresGuardados();
 
-  // ------------------------------------------------------------
+  // ----------------------------------------------------------------
   // FUNCIÓN PARA OBTENER FUENTE DE GOOGLE FONTS Y CONVERTIRLA A BASE64
-  // ------------------------------------------------------------
+  // ----------------------------------------------------------------
   async function obtenerFuenteBase64(urlCss) {
     try {
       const respuestaCss = await fetch(urlCss);
@@ -337,11 +355,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ------------------------------------------------------------
-  // FUNCIÓN PARA DESCARGAR PNG (CORREGIDA)
-  // ------------------------------------------------------------
+  // ----------------------------------------------------------------
+  // FUNCIÓN PARA DESCARGAR PNG
+  // ----------------------------------------------------------------
   async function descargarPNG(conFondo = false) {
-    // Intentar cargar la fuente en el documento principal
     try {
       await document.fonts.load('1em "IM Fell DW Pica"');
     } catch (e) {
@@ -381,7 +398,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       /* Reglas de la fuente (Base64) */
       ${fuenteCSS}
-
       /* Reglas adicionales para garantizar la fuente */
       text {
         font-family: 'IM Fell DW Pica', serif !important;
@@ -429,6 +445,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
       }
     });
+
     await Promise.all(promesas);
 
     const svgData = new XMLSerializer().serializeToString(clon);
@@ -455,7 +472,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
       const pngUrl = canvas.toDataURL("image/png");
       const nombreInput = document.getElementById("nombre-carta-input");
       let nombreBase = "carta astral";
@@ -466,7 +482,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       const sufijo = conFondo ? "con fondo" : "sin fondo";
       const nombreCompleto = nombreBase + " " + sufijo + ".png";
-
       const link = document.createElement("a");
       link.download = nombreCompleto;
       link.href = pngUrl;
@@ -486,14 +501,15 @@ document.addEventListener("DOMContentLoaded", () => {
     img.src = url;
   }
 
-  // ------------------------------------------------------------
+  // ----------------------------------------------------------------
   // FUNCIÓN PRINCIPAL DE DIBUJO (con repulsión global y números de grados/minutos)
-  // ------------------------------------------------------------
+  // ----------------------------------------------------------------
   function dibujarRadixManual(ascendenteAbs, mcAbs, planetas, mostrarContenido) {
-    // ---- Parámetros fijos de separación ----
-    const ANCHO_ICONO = 20;            // 20x20 px
-    const MARGEN_PLANETA_PLANETA = 10; // entre planetas
-    const MARGEN_PLANETA_EJE = 15;     // entre planeta y eje
+
+    // Parámetros fijos de separación
+    const ANCHO_ICONO = 20;
+    const MARGEN_PLANETA_PLANETA = 10;
+    const MARGEN_PLANETA_EJE = 15;
     const DIST_MIN_PLANETA = ANCHO_ICONO + MARGEN_PLANETA_PLANETA;
     const DIST_MIN_EJE = ANCHO_ICONO / 2 + MARGEN_PLANETA_EJE;
 
@@ -513,7 +529,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return (desfaceG - gradosOriginales) * (Math.PI / 180);
     }
 
-    // ---------- GENERACIÓN DE BLOQUES FUSIONADOS DE TÉRMINOS ----------
+    // GENERACIÓN DE BLOQUES FUSIONADOS DE TÉRMINOS
     const terminosAbsolutos = [];
     for (let signo = 0; signo < 12; signo++) {
       const lista = terminosData[signo];
@@ -527,6 +543,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     }
+
     const bloquesFusionados = [];
     if (terminosAbsolutos.length > 0) {
       let actual = { ...terminosAbsolutos[0] };
@@ -541,6 +558,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       bloquesFusionados.push(actual);
     }
+
     const limitesSet = new Set();
     for (const bloque of bloquesFusionados) {
       limitesSet.add(bloque.inicio);
@@ -759,6 +777,7 @@ document.addEventListener("DOMContentLoaded", () => {
       punto.setAttribute("class", "punto-grado");
       lienzoSvg.appendChild(punto);
     }
+
     for (let g = 0; g < 360; g += 30) {
       const rad = ajustarAngulo(g);
       const x = Math.round(CENTRO_X + RADIO_GRADOS * Math.cos(rad));
@@ -789,6 +808,7 @@ document.addEventListener("DOMContentLoaded", () => {
       punto.setAttribute("class", "punto-grado");
       lienzoSvg.appendChild(punto);
     }
+
     for (let g = 0; g < 360; g += 30) {
       const rad = ajustarAngulo(g);
       const x = Math.round(CENTRO_X + RADIO_ASPECTOS * Math.cos(rad));
@@ -816,7 +836,9 @@ document.addEventListener("DOMContentLoaded", () => {
         planetasValidos[nombre] = pos;
       }
     }
+
     const nombres = Object.keys(planetasValidos);
+
     if (nombres.length >= 2) {
       for (let i = 0; i < nombres.length; i++) {
         for (let j = i + 1; j < nombres.length; j++) {
@@ -829,22 +851,14 @@ document.addEventListener("DOMContentLoaded", () => {
             continue;
           }
 
+          // Quirón no hace aspectos con nadie
           if (p1 === 'QUIRON' || p2 === 'QUIRON') continue;
+
           const pos1 = planetasValidos[p1];
           const pos2 = planetasValidos[p2];
+
           let diff = Math.abs(pos1 - pos2) % 360;
           if (diff > 180) diff = 360 - diff;
-
-          let orb = 0;
-          // Para Nodo Norte y Nodo Sur, usar el orbe del otro planeta
-          if (p1 === 'NODO_NORTE' || p1 === 'NODO_SUR') {
-            orb = orbesPlanetarios[p2] || 0;
-          } else if (p2 === 'NODO_NORTE' || p2 === 'NODO_SUR') {
-            orb = orbesPlanetarios[p1] || 0;
-          } else {
-            orb = Math.max(orbesPlanetarios[p1] || 0, orbesPlanetarios[p2] || 0);
-          }
-          if (orb === 0) continue;
 
           const aspectos = [
             { tipo: 'conjuncion', angulo: 0 },
@@ -853,7 +867,31 @@ document.addEventListener("DOMContentLoaded", () => {
             { tipo: 'trigono', angulo: 120 },
             { tipo: 'oposicion', angulo: 180 }
           ];
+
           for (const asp of aspectos) {
+            let orb = 0;
+            const esNodo1 = (p1 === 'NODO_NORTE' || p1 === 'NODO_SUR');
+            const esNodo2 = (p2 === 'NODO_NORTE' || p2 === 'NODO_SUR');
+
+            if (esNodo1 && esNodo2) {
+              // Ya se excluyó antes, pero por seguridad
+              continue;
+            }
+
+            if (esNodo1) {
+              // Usar el orbe del otro planeta (p2)
+              orb = obtenerOrbePlaneta(p2, asp.tipo);
+            } else if (esNodo2) {
+              orb = obtenerOrbePlaneta(p1, asp.tipo);
+            } else {
+              // Ambos son planetas normales: usar el máximo de los orbes
+              const orb1 = obtenerOrbePlaneta(p1, asp.tipo);
+              const orb2 = obtenerOrbePlaneta(p2, asp.tipo);
+              orb = Math.max(orb1, orb2);
+            }
+
+            if (orb === 0) continue;
+
             if (Math.abs(diff - asp.angulo) <= orb) {
               const rad1 = ajustarAngulo(pos1);
               const rad2 = ajustarAngulo(pos2);
@@ -861,6 +899,7 @@ document.addEventListener("DOMContentLoaded", () => {
               const y1 = Math.round(CENTRO_Y + RADIO_ASPECTOS * Math.sin(rad1));
               const x2 = Math.round(CENTRO_X + RADIO_ASPECTOS * Math.cos(rad2));
               const y2 = Math.round(CENTRO_Y + RADIO_ASPECTOS * Math.sin(rad2));
+
               const lineaAspecto = document.createElementNS("http://www.w3.org/2000/svg", "line");
               lineaAspecto.setAttribute("x1", String(x1));
               lineaAspecto.setAttribute("y1", String(y1));
@@ -868,6 +907,7 @@ document.addEventListener("DOMContentLoaded", () => {
               lineaAspecto.setAttribute("y2", String(y2));
               lineaAspecto.setAttribute("class", `aspecto aspecto-${asp.tipo}`);
               lienzoSvg.appendChild(lineaAspecto);
+
               break;
             }
           }
@@ -877,11 +917,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ========== CAPA 8: Ejes, marcas de posición y planetas ==========
     if (mostrarContenido) {
-      // ---- Ejes (ASC y MC) ----
+
+      // Ejes (ASC y MC)
       const radAsc = ajustarAngulo(ascendenteAbs);
       const radMc = ajustarAngulo(mcAbs);
 
-      // Dibujar línea ASC
+      // Línea ASC
       const xAsc1 = CENTRO_X + RADIO_TERMINOS_INTERIOR * Math.cos(radAsc);
       const yAsc1 = CENTRO_Y + RADIO_TERMINOS_INTERIOR * Math.sin(radAsc);
       const xAsc2 = CENTRO_X + (RADIO_TERMINOS_INTERIOR - 55) * Math.cos(radAsc);
@@ -903,7 +944,7 @@ document.addEventListener("DOMContentLoaded", () => {
       imgAsc.setAttribute("href", "svg/asc.svg");
       lienzoSvg.appendChild(imgAsc);
 
-      // Dibujar línea MC
+      // Línea MC
       const xMc1 = CENTRO_X + RADIO_TERMINOS_INTERIOR * Math.cos(radMc);
       const yMc1 = CENTRO_Y + RADIO_TERMINOS_INTERIOR * Math.sin(radMc);
       const xMc2 = CENTRO_X + (RADIO_TERMINOS_INTERIOR - 55) * Math.cos(radMc);
@@ -948,7 +989,7 @@ document.addEventListener("DOMContentLoaded", () => {
       txtMcGrado.textContent = `${mcGradoNum}°`;
       lienzoSvg.appendChild(txtMcGrado);
 
-      // ---- OBTENER DATOS DE PLANETAS Y EJES ----
+      // OBTENER DATOS DE PLANETAS Y EJES
       let datosPlanetasForm = {};
       try {
         const raw = localStorage.getItem("datosRadixManual");
@@ -968,6 +1009,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Construir lista de puntos (planetas y ejes)
       const puntos = [];
+
       // Planetas
       for (const nombre of cuerpos) {
         if (planetas.hasOwnProperty(nombre)) {
@@ -988,6 +1030,7 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         }
       }
+
       // Ejes
       puntos.push({
         nombre: 'ASC',
@@ -1006,9 +1049,9 @@ document.addEventListener("DOMContentLoaded", () => {
         datos: { retrogrado: false }
       });
 
-      // ---- ALGORITMO DE REPULSIÓN GLOBAL ----
+      // ALGORITMO DE REPULSIÓN GLOBAL
       const MAX_ITER = 50;
-      const FACTOR = 0.5; // factor de suavizado para evitar oscilaciones
+      const FACTOR = 0.5;
 
       for (let iter = 0; iter < MAX_ITER; iter++) {
         let colisiones = false;
@@ -1018,12 +1061,11 @@ document.addEventListener("DOMContentLoaded", () => {
           for (let j = i + 1; j < puntos.length; j++) {
             const p1 = puntos[i];
             const p2 = puntos[j];
-            // Si ambos son ejes, no hay colisión (no se mueven)
+
             if (p1.tipo === 'eje' && p2.tipo === 'eje') continue;
 
             // Calcular distancia angular mínima
             let diff = p2.anguloActual - p1.anguloActual;
-            // Normalizar a [-PI, PI]
             diff = ((diff % (2 * Math.PI)) + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
             const absDiff = Math.abs(diff);
 
@@ -1046,7 +1088,7 @@ document.addEventListener("DOMContentLoaded", () => {
               } else if (p2.esMovil) {
                 correccion = (umbral - absDiff);
               } else {
-                continue; // ambos fijos (no debería pasar)
+                continue;
               }
 
               // Aplicar corrección con factor de suavizado
@@ -1069,7 +1111,6 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let k = 0; k < puntos.length; k++) {
           if (puntos[k].esMovil) {
             puntos[k].anguloActual += desplazamientos[k];
-            // Normalizar a [0, 2*PI)
             puntos[k].anguloActual = ((puntos[k].anguloActual % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
           }
         }
@@ -1077,9 +1118,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!colisiones) break;
       }
 
-      // ---- DIBUJAR PLANETAS CON ÁNGULOS ACTUALIZADOS Y NÚMEROS DE GRADOS/MINUTOS ----
+      // DIBUJAR PLANETAS CON ÁNGULOS ACTUALIZADOS Y NÚMEROS DE GRADOS/MINUTOS
       for (const p of puntos) {
         if (p.tipo !== 'planeta') continue;
+
         const nombre = p.nombre;
         const anguloRad = p.anguloActual;
         const anguloOriginal = p.anguloOriginal;
@@ -1087,7 +1129,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const xPlaneta = Math.round(CENTRO_X + RADIO_PLANETAS * Math.cos(anguloRad));
         const yPlaneta = Math.round(CENTRO_Y + RADIO_PLANETAS * Math.sin(anguloRad));
 
-        // Línea de posición desde el grado original (en RADIO_GRADOS) hasta el anillo de planetas (en el ángulo original)
+        // Línea de posición desde el grado original (en RADIO_GRADOS) hasta el anillo de planetas
         const xInicio = CENTRO_X + RADIO_GRADOS * Math.cos(anguloOriginal);
         const yInicio = CENTRO_Y + RADIO_GRADOS * Math.sin(anguloOriginal);
         const radioFinMarca = RADIO_GRADOS - 10;
@@ -1141,11 +1183,10 @@ document.addEventListener("DOMContentLoaded", () => {
           lienzoSvg.appendChild(txtRetro);
         }
 
-        // ---- NÚMEROS DE GRADOS Y MINUTOS (usando el ángulo final) ----
+        // NÚMEROS DE GRADOS Y MINUTOS (usando el ángulo final)
         const gradoNum = parseInt(p.datos.g, 10) || 0;
         const minutoNum = parseInt(p.datos.m, 10) || 0;
 
-        // Texto de grado
         const xGrado = CENTRO_X + RADIO_NUMEROS_GRADOS * Math.cos(anguloRad);
         const yGrado = CENTRO_Y + RADIO_NUMEROS_GRADOS * Math.sin(anguloRad);
         const txtGrado = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -1167,4 +1208,5 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   }
+
 });
